@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 import store from './game/Store/Store';
 import GamePage from './game/Dashboard/GamePage';
+import Homepage from './game/Homepage/Homepage';
+
+import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 
 import {
   addPlayerAction,
@@ -81,7 +84,18 @@ store.dispatch(addPlayerAction('New Player'));
 store.dispatch(setThisPlayerAction('hsg261'));
 
 function App() {
-  return <GamePage store={store} />;
+  return (
+    <Router>
+      <Switch>
+        <Route path="/game">
+          <GamePage store={store} />
+        </Route>
+        <Route path="/">
+          <Homepage />
+        </Route>
+      </Switch>
+    </Router>
+  );
 }
 
 export default App;
