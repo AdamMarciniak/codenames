@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import logo from './logo.svg';
-import Card from './game/cards/Card';
 import './App.css';
 import store from './game/Store/Store';
+import GamePage from './game/Dashboard/GamePage';
 
 import {
   addPlayerAction,
@@ -10,13 +9,6 @@ import {
   setPlayerTeamAction,
   setPlayerSpymasterAction,
 } from './game/Store/PlayersActions';
-
-import {
-  changeWordColorAction,
-  removeWordAction,
-  addWordAction,
-  flipWordAction,
-} from './game/Store/WordsActions';
 
 import {
   addPointsAction,
@@ -28,8 +20,9 @@ import {
   decrementRoundAction,
   setWinnerAction,
   setGameIdAction,
-  setThisPlayerAction,
 } from './game/Store/GameActions';
+
+import { setThisPlayerAction } from './game/Store/GameActions';
 
 const generateId = () => {
   return (
@@ -87,105 +80,8 @@ store.subscribe(() => console.log(store.getState()));
 store.dispatch(addPlayerAction('New Player'));
 store.dispatch(setThisPlayerAction('hsg261'));
 
-const GameBoard = props => {
-  return (
-    <>
-      <div className="gameBoard">
-        {props.gameState.words.map(item => (
-          <Card
-            item={item}
-            key={item.id}
-            width={120}
-            handleCardFlip={props.handleCardFlip}
-          />
-        ))}
-      </div>
-    </>
-  );
-};
-
-const Players = props => {
-  return (
-    <ul>
-      {props.gameState.players.map(player => (
-        <li style={{ background: player.team }} key={player.id}>
-          {player.name}
-        </li>
-      ))}
-    </ul>
-  );
-};
-
-const ScoreBoard = props => {
-  const getPoints = team => {
-    return props.gameState.words.filter(
-      word => word.color === team && word.flipped
-    ).length;
-  };
-
-  return (
-    <div style={{ display: 'flex' }}>
-      <div>
-        <h2>Red Points</h2>
-        <h3>{getPoints('red')}</h3>
-      </div>
-      <div>
-        <h2>Blue Points</h2>
-        <h3>{getPoints('blue')}</h3>
-      </div>
-    </div>
-  );
-};
-
-const Banner = props => {
-  return (
-    <span>
-      <h1
-        style={{
-          background:
-            props.gameState.game.currentTeam === 'blue' ? 'blue' : 'red',
-        }}
-      >{`${props.gameState.game.currentTeam}'s Turn`}</h1>
-      <h2>{`You Are On Team: ${
-        props.gameState.players.filter(player => {
-          return props.gameState.game.thisPlayer === player.id;
-        })[0].team
-      }`}</h2>
-    </span>
-  );
-};
-
 function App() {
-  const [gameState, setGameState] = useState(store.getState());
-
-  useEffect(() => {
-    return store.subscribe(() => setGameState(store.getState()));
-  }, [setGameState]);
-  const handleCardFlip = card => {
-    if (
-      gameState.players
-        .filter(player => player.team === gameState.game.currentTeam)
-        .filter(player => player.id === gameState.game.thisPlayer).length > 0
-    ) {
-      store.dispatch(flipWordAction(card.id));
-    }
-  };
-
-  const handleNextRound = () => {
-    store.dispatch(toggleCurrentTeamAction());
-  };
-
-  return (
-    <>
-      <Banner gameState={gameState} />
-      <div style={{ display: 'flex' }}>
-        <button onClick={handleNextRound}>End Turn</button>
-        <ScoreBoard gameState={gameState} />
-        <Players gameState={gameState} />
-      </div>
-      <GameBoard handleCardFlip={handleCardFlip} gameState={gameState} />
-    </>
-  );
+  return <GamePage store={store} />;
 }
 
 export default App;

@@ -44,7 +44,7 @@ const Card = props => {
           word={props.item.word}
           width={props.width}
           color={color}
-          handleClick={e => console.log(e)}
+          handleClick={e => {}}
         />
       </ReactCardFlip>
     </div>
