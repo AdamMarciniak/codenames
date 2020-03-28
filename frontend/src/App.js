@@ -3,6 +3,7 @@ import './App.css';
 import store from './game/Store/Store';
 import GamePage from './game/Dashboard/GamePage';
 import Homepage from './game/Homepage/Homepage';
+import God from './game/God/God';
 
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 
@@ -89,6 +90,9 @@ function App() {
       <Switch>
         <Route path="/game">
           <GamePage store={store} />
+        </Route>
+        <Route path="/god">
+          <God />
         </Route>
         <Route path="/">
           <Homepage />
