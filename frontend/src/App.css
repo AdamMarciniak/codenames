@@ -1,7 +1,77 @@
+html, body, #root {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+*, *:before, *:after {
+  box-sizing: border-box;
+}
+
 .gameBoard {
   height: 60%;
   width: 60%;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-around;
+}
+
+.form-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.form {
+  max-width: 350px;
+  width: 100%;
+}
+
+.form * {
+  width: 100%;
+}
+
+button, a.button {
+  padding: 20px 40px;
+  border: 1px solid #fcd117;
+  border-radius: 8px;
+  background-color: #fcd117;
+  display: block;
+  color: black;
+  font-size: 20px;
+  text-align: center;
+  outline: none;
+  cursor: pointer;
+}
+
+button:focus, a.button:focus {
+  box-shadow: 0 0 4px rgba(23,65,252, 0.2);
+  border-color: #1741fc;
+}
+
+input {
+  padding: 20px 20px;
+  border: 1px solid rgba(0,0,0,0.5);
+  border-radius: 8px;
+  display: block;
+  color: black;
+  font-size: 20px;
+  margin-top: 10px;
+  outline: none;
+}
+
+input:focus {
+  border-color: #1741fc;
+  box-shadow: 0 0 4px rgba(23,65,252, 0.2);
+}
+
+.form * + .button,
+.form * + button {
+  margin-top: 20px;
+}
+
+a {
+  text-decoration: none;
 }
