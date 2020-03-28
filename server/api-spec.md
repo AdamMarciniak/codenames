@@ -86,7 +86,7 @@ Requests from Client to Server
       ('becomeCluegiver' /* no second argument */) => GameState | ConflictingCluegiverError | NoActiveGameError
 
     RevealWord:
-      ('revealWord', { secret: String, wordId: Number }) => GameState | InvalidInputError | InvalidMoveError | NoActiveGameError
+      ('revealWord', {wordId: Number }) => GameState | InvalidInputError | InvalidMoveError | NoActiveGameError
 
     EndTurn:
       ('endTurn' /* no second argument */) => GameState | InvalidMoveError | NoActiveGameError
