@@ -48,7 +48,7 @@ const getGameState = (gameWords, gameMoves, players, firstTeam, gameCode) => {
   const wordState = [];
 
   gameWords.forEach(word => {
-    wordState.push({ id: word_id, text: word.text, flipped: false });
+    wordState.push({ id: word.word_id, text: word.text, flipped: false });
   });
 
   gameMoves.forEach(move => {
@@ -58,9 +58,9 @@ const getGameState = (gameWords, gameMoves, players, firstTeam, gameCode) => {
       currentTeam = "RED";
     }
 
-    gameWords.forEach(word => {
-      if (word.word_id === move.word_id) {
-        wordState.push({ id: word_id, text: word.text, flipped: true });
+    wordState.forEach(word => {
+      if (word.id === move.word_id) {
+        word.flipped = true;
       }
     });
   });
