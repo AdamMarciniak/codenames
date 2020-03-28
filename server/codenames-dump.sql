@@ -920,7 +920,7 @@ ALTER TABLE ONLY public.moves
 --
 
 ALTER TABLE ONLY public.moves
-    ADD CONSTRAINT moves_word_id_fkey FOREIGN KEY (word_id) REFERENCES public.game_words(word_id);
+    ADD CONSTRAINT moves_word_id_fkey FOREIGN KEY (word_id) REFERENCES public.words(id);
 
 
 --
