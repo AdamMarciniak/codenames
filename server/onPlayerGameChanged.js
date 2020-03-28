@@ -15,7 +15,11 @@ const formatGameStateForPlayer = (playerId, rawGameState) => ({
 const broadcastGameState = (rawGameState) => {
   Object.keys(rawGameState.players).forEach((playerId) => {
     const formattedGameState = formatGameStateForPlayer(playerId, rawGameState);
-    socketsByPlayerId[playerId].emit('gameState', formattedGameState);
+    try {
+      socketsByPlayerId[playerId].emit('gameState', formattedGameState);
+    } catch (e) {
+      console.log(e);
+    }
   });
 }
 

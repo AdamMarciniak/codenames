@@ -79,14 +79,14 @@ Requests from Client to Server
 
   // These requests fail if you haven't joined a game yet.
 
-    Join Team: Assigns a player to a new team. Should fail if a move has already been made in this game.
+    Join Team: Assigns a player to a new team. 
       ('joinTeam', { team: 'RED' | 'BLUE' | 'SPECTATOR' }) => GameState | ForbiddenJoinTeamError | InvalidInputError | NoActiveGameError
 
     Become Cluegiver:
       ('becomeCluegiver' /* no second argument */) => GameState | ConflictingCluegiverError | NoActiveGameError
 
     RevealWord:
-      ('revealWord', { wordId: Number }) => GameState | InvalidInputError | InvalidMoveError | NoActiveGameError
+      ('revealWord', { secret: String, wordId: Number }) => GameState | InvalidInputError | InvalidMoveError | NoActiveGameError
 
     EndTurn:
       ('endTurn' /* no second argument */) => GameState | InvalidMoveError | NoActiveGameError

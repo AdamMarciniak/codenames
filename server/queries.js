@@ -60,15 +60,15 @@ const createGame = async (gameCode, currentPlayerName, firstTeam) => {
 
 const getGameStateForPlayer = async (playerId) => {
   await pool.query('BEGIN');
-
+  console.log(playerId)
   const gameId = (await pool.query('SELECT game_id FROM players WHERE id = $1', [playerId])).rows[0].game_id;
   const gameCode = (await pool.query('SELECT game_code FROM games WHERE id = $1', [gameId])).rows[0].game_code;
 
   const startingTeam = (await pool.query(`
     SELECT DISTINCT
       type, COUNT(id) AS count
-    FROM game_words WHERE type in ('RED', 'BLUE') AND game_id = 3 GROUP BY type ORDER BY count DESC LIMIT 1;
-  `)).rows[0].type
+    FROM game_words WHERE type in ('RED', 'BLUE') AND game_id = $1 GROUP BY type ORDER BY count DESC LIMIT 1;
+  `, [gameId])).rows[0].type
 
   const numberOfTurnEnds = (await pool.query(`
     SELECT
@@ -172,131 +172,91 @@ const getGameStateForPlayer = async (playerId) => {
   };
 }
 
-const addPlayer = (gameCode, name, callback) => {
-  return new Promise((resolve, reject) => {
-    pool.query(
-      `INSERT INTO players (game_code, name, team) VALUES ('${gameCode}', '${name}', 'OBSERVER') returning *`,
-      (err, result) => {
-        if (err) {
-          console.log("Error Occured Adding Player");
-          console.log(err);
-          reject(false);
-        } else {
-          const playerInfo = result.rows;
-          console.log(`Player Added. ${JSON.stringify(playerInfo)} `);
-          resolve(playerInfo);
-        }
-      }
-    );
-  });
+const joinGame = async (gameCode, name) => {
+  return (await pool.query(
+    `
+      INSERT INTO
+        players
+          (game_id, name)
+          (
+            SELECT
+            id, $2
+            FROM
+              games
+            WHERE
+              game_code = $1
+          )
+      RETURNING id
+    `,
+    [gameCode, name]
+  )).rows[0].id
 };
 
-const getPlayers = (gameCode, callback) => {
-  return new Promise((resolve, reject) => {
-    pool.query(
-      `SELECT name, team, is_cluegiver FROM players WHERE game_code = '${gameCode}' ORDER BY id`,
-      (err, result) => {
-        if (err) {
-          console.log("Error Occured Getting Players");
-          console.log(err);
-          reject(false);
-        } else {
-          const players = result.rows;
-          console.log(`Players Received: ${JSON.stringify(players)} `);
-          resolve(players);
-        }
-      }
-    );
-  });
+const joinTeam = async (playerId, team) => {
+  return (await pool.query(
+    `
+    UPDATE
+      players
+    SET 
+      team = $1
+    WHERE
+      id = $2
+    RETURNING id
+    `, [team, playerId]
+    )).rows[0].id
+}
+
+const becomeCluegiver = async (playerId) => {
+  return (await pool.query(
+    `
+    UPDATE
+      players
+    SET 
+      is_cluegiver = true
+    WHERE
+      id = $1
+    RETURNING id
+    `, [playerId]
+    )).rows[0].id
+}
+
+
+const isValidGameCode = async gameCode => {
+       return (await pool.query(
+        `
+          SELECT
+            id
+          FROM
+            games
+          WHERE
+            game_code = $1
+        `,
+        [gameCode]
+      )).rows[0]
 };
 
-const doesGameCodeExist = (gameCode, callback) => {
-  return new Promise((resolve, reject) => {
-    if (gameCode) {
-      pool.query(
-        `SELECT * FROM games WHERE game_code = '${gameCode}'`,
-        (err, result) => {
-          if (err) {
-            console.log("Error Occured");
-            console.log(err);
-            reject(false);
-          } else if (result.rows.length === 0) {
-            console.log(`ID: ${gameCode} Does not exist`);
-            reject(false);
-          } else {
-            console.log(`ID: ${gameCode} Does exist`);
-            resolve(true);
-          }
-        }
-      );
-    }
-  });
-};
 
-const getGameWords = gameCode => {
-  return new Promise((resolve, reject) => {
-    pool.query(
-      `SELECT * FROM game_words WHERE game_code = '${gameCode}' ORDER BY sort`,
-      (err, result) => {
-        if (err) {
-          console.log("Error Occured Getting Game Words");
-          console.log(err);
-          reject(false);
-        } else {
-          console.log(`Received Game Words`);
-          resolve(result.rows);
-        }
-      }
+const addMove = async (playerId, wordId, isTurnEnd) => {
+ 
+    await pool.query(
+      `
+      INSERT INTO
+        moves
+          (player_id, word_id, is_turn_end)
+        VALUES
+          ($1, $2, $3)
+      `,
+      [playerId, wordId, isTurnEnd]
     );
-  });
-};
 
-const getMoves = gameCode => {
-  console.log(gameCode);
-  return new Promise((resolve, reject) => {
-    pool.query(
-      `SELECT * FROM moves WHERE player_id IN (SELECT id FROM players WHERE game_code = '${gameCode}') ORDER BY id`,
-      (err, result) => {
-        if (err) {
-          console.log("Error Occured Getting  Moves");
-          console.log(err);
-          reject(false);
-        } else {
-          console.log(`Received  Moves: ${JSON.stringify(result.rows)}`);
-          resolve(result.rows);
-        }
-      }
-    );
-  });
-};
-
-const addMove = (player_id, word_id, isTurnEnd) => {
-  return new Promise((resolve, reject) => {
-    pool.query(
-      `INSERT INTO moves (player_id, word_id, is_turn_end) VALUES (${player_id}, ${word_id}, ${
-        isTurnEnd ? "TRUE" : "FALSE"
-      })`,
-      (err, result) => {
-        if (err) {
-          console.log("Error Occured Adding  Move");
-          console.log(err);
-          reject(false);
-        } else {
-          console.log(`Added  Move`);
-          resolve(result.rows);
-        }
-      }
-    );
-  });
 };
 
 module.exports = {
   createGame,
   getGameStateForPlayer,
-  addPlayer,
-  doesGameCodeExist,
-  getGameWords,
-  getMoves,
+  joinGame,
+  joinTeam,
+  isValidGameCode,
   addMove,
-  getPlayers
+  becomeCluegiver,
 };
