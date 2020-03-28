@@ -30,16 +30,65 @@ const startGame = async () => {
   db.addWords(gameCode, "WHITE", 7, callback);
   db.addWords(gameCode, "BLACK", 1, callback);
   const gameWords = await db.getGameWords(gameCode).catch(e => console.log(e));
-  const addMove = await db
-    .addMove("HCNQF", gameWords[0].id, false)
-    .catch(e => console.log(e));
-  const gameMoves = await db.getMoves("HCNQF").catch(e => console.log(e));
-  console.log(JSON.stringify(gameMoves));
+  const gameMoves = await db.getMoves(gameCode).catch(e => console.log(e));
+  const players = await db.getPlayers(gameCode).catch(e => console.log(e));
+  const state = getGameState(
+    gameWords,
+    gameMoves,
+    players,
+    firstTeam,
+    gameCode
+  );
+
+  console.log(state);
+};
+
+const getGameState = (gameWords, gameMoves, players, firstTeam, gameCode) => {
+  let currentTeam = firstTeam;
+  const wordState = [];
+
+  gameWords.forEach(word => {
+    wordState.push({ id: word_id, text: word.text, flipped: false });
+  });
+
+  gameMoves.forEach(move => {
+    if (currentTeam === "RED" && move.is_turn_end) {
+      currentTeam = "BLUE";
+    } else if (currentTeam === "BLUE" && move.is_turn_end) {
+      currentTeam = "RED";
+    }
+
+    gameWords.forEach(word => {
+      if (word.word_id === move.word_id) {
+        wordState.push({ id: word_id, text: word.text, flipped: true });
+      }
+    });
+  });
+
+  return { words: wordState, players, currentTeam, gameCode };
+};
+
+const joinGame = async () => {
+  const gameWords = await db.getGameWords(gameCode).catch(e => console.log(e));
+  const gameMoves = await db.getMoves(gameCode).catch(e => console.log(e));
+
+  const wordState = gameWords.map(word => ({
+    text: word.text,
+    id: word.id,
+    flipped: false,
+    type: null
+  }));
+
+  gameMoves.forEach(move => {
+    if (move.word_id) {
+      wordState.filter();
+    }
+  });
 };
 
 const checkID = async ID => {
   const idExists = await db
-    .gameCodeDoesExist(ID, callback)
+    .doesGameCodeExist(ID, callback)
     .catch(e => console.log(e));
   if (idExists) {
     console.log("Game ID exists");
@@ -52,7 +101,7 @@ const checkID = async ID => {
 startGame();
 
 const addPlayer = async (gameCode, name) => {
-  const result = await db
+  return await db
     .addPlayer(gameCode, name, callback)
     .catch(e => console.log(e));
 };

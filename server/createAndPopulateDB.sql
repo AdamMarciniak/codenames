@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS game_words (
 
 CREATE TABLE IF NOT EXISTS moves (
     id SERIAL PRIMARY KEY,
-    game_code VARCHAR(10) REFERENCES games(game_code) NOT NULL,
+    player_id INTEGER REFERENCES players(id) NOT NULL,
     word_id INTEGER REFERENCES game_words(id),
     is_turn_end BOOLEAN NOT NULL,
     last_updated_at TIMESTAMP WITH TIME ZONE NOT NULL default current_timestamp

@@ -76,14 +76,33 @@ const addPlayer = (gameCode, name, callback) => {
         } else {
           const playerInfo = result.rows;
           console.log(`Player Added. ${JSON.stringify(playerInfo)} `);
-          resolve(true);
+          resolve(playerInfo);
         }
       }
     );
   });
 };
 
-const gameCodeDoesExist = (gameCode, callback) => {
+const getPlayers = (gameCode, callback) => {
+  return new Promise((resolve, reject) => {
+    pool.query(
+      `SELECT name, team, is_cluegiver FROM players WHERE game_code = '${gameCode}' ORDER BY id`,
+      (err, result) => {
+        if (err) {
+          console.log("Error Occured Getting Players");
+          console.log(err);
+          reject(false);
+        } else {
+          const players = result.rows;
+          console.log(`Players Received: ${JSON.stringify(players)} `);
+          resolve(players);
+        }
+      }
+    );
+  });
+};
+
+const doesGameCodeExist = (gameCode, callback) => {
   return new Promise((resolve, reject) => {
     if (gameCode) {
       pool.query(
@@ -109,7 +128,7 @@ const gameCodeDoesExist = (gameCode, callback) => {
 const getGameWords = gameCode => {
   return new Promise((resolve, reject) => {
     pool.query(
-      `SELECT * FROM game_words WHERE game_code = '${gameCode}'`,
+      `SELECT * FROM game_words WHERE game_code = '${gameCode}' ORDER BY sort`,
       (err, result) => {
         if (err) {
           console.log("Error Occured Getting Game Words");
@@ -125,16 +144,17 @@ const getGameWords = gameCode => {
 };
 
 const getMoves = gameCode => {
+  console.log(gameCode);
   return new Promise((resolve, reject) => {
     pool.query(
-      `SELECT * FROM moves WHERE game_code = '${gameCode}' ORDER BY id`,
+      `SELECT * FROM moves WHERE player_id IN (SELECT id FROM players WHERE game_code = '${gameCode}') ORDER BY id`,
       (err, result) => {
         if (err) {
           console.log("Error Occured Getting  Moves");
           console.log(err);
           reject(false);
         } else {
-          console.log(`Received  Moves`);
+          console.log(`Received  Moves: ${JSON.stringify(result.rows)}`);
           resolve(result.rows);
         }
       }
@@ -142,10 +162,10 @@ const getMoves = gameCode => {
   });
 };
 
-const addMove = (gameCode, word_id, isTurnEnd) => {
+const addMove = (player_id, word_id, isTurnEnd) => {
   return new Promise((resolve, reject) => {
     pool.query(
-      `INSERT INTO moves (game_code, word_id, is_turn_end) VALUES ('${gameCode}', '${word_id}', ${
+      `INSERT INTO moves (player_id, word_id, is_turn_end) VALUES (${player_id}, ${word_id}, ${
         isTurnEnd ? "TRUE" : "FALSE"
       })`,
       (err, result) => {
@@ -166,8 +186,9 @@ module.exports = {
   addWords,
   createGame,
   addPlayer,
-  gameCodeDoesExist,
+  doesGameCodeExist,
   getGameWords,
   getMoves,
-  addMove
+  addMove,
+  getPlayers
 };
