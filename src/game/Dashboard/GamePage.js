@@ -34,7 +34,7 @@ const GamePage = props => {
 
   useEffect(() => {
     return props.store.subscribe(() => setGameState(props.store.getState()));
-  }, [setGameState]);
+  }, [setGameState, props.store]);
 
   const handleCardFlip = card => {
     if (

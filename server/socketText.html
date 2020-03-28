@@ -1,0 +1,35 @@
+<html>
+  <head>
+    <script src="../node_modules/socket.io-client/dist/socket.io.js"></script>
+  </head>
+
+  <body>
+    <input id="word" type="text" />
+    <button id="button">Submit</button>
+  </body>
+
+  <script>
+    const input = document.getElementById("word");
+    const button = document.getElementById("button");
+
+    const socket = io.connect("http://localhost:3001");
+
+    socket.on("connect", () => {
+      socket.emit("Hello!");
+    });
+
+    const sendWord = word => {
+      socket.emit("newWord", word, data => {
+        console.log(data);
+      });
+    };
+
+    button.addEventListener("click", () => {
+      const word = input.value;
+      input.value = "";
+      if (word) {
+        sendWord(word);
+      }
+    });
+  </script>
+</html>
