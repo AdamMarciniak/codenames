@@ -83,6 +83,42 @@ const RoleStatus = () => {
   }
 }
 
+
+const PlayersReadout = props => {
+  return (
+    <div className="players-readout">
+    <div className="team-side" style={{border: '#DE6228 solid 3px', borderRadius: '10px'}}>
+      {
+        Object.keys(props.gameState.players).
+          filter(id =>
+             props.gameState.players[id].team === 'RED'
+             )
+             .map(id => (
+                <div key={id} style={{margin: '5px', color: props.gameState.players[id].isCluegiver ? 'orange' : 'red'}}>
+                  {props.gameState.players[id].name}
+                </div>
+      )
+        
+      )}
+      </div>
+      <div className="team-side" style={{border: '#34BAEB solid 3px', borderRadius: '10px'}}>
+      {
+        Object.keys(props.gameState.players).
+          filter(id =>
+             props.gameState.players[id].team === 'BLUE'
+             )
+             .map(id => (
+                <div key={id} style={{margin: '5px', color: props.gameState.players[id].isCluegiver ? 'orange' : 'blue'}}>
+                  {props.gameState.players[id].name}
+                </div>
+      )
+        
+      )}
+      </div>
+    </div>
+  )
+}
+
 export default () => {
   const gameState = useGameState();
   const endTurn = useApiCall('endTurn');
@@ -106,8 +142,10 @@ export default () => {
   // you can join a team if you aren't already on one, or if you are but no cards have been flipped yet.
   const canJoinTeam = currentPlayer.team === 'OBSERVER' || (!gameState.words.find(({ flipped }) => flipped) && !currentPlayer.isCluegiver);
 
+
   return (
     <div className="game-wrap">
+    <PlayersReadout gameState={gameState}/>
       <div className="card-wrap">
         {gameState.words.map((word) => (
           <Card
