@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 11.5
--- Dumped by pg_dump version 11.5
+-- Dumped from database version 12.1
+-- Dumped by pg_dump version 12.1
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -61,7 +61,7 @@ CREATE TYPE public.team_options AS ENUM (
 
 SET default_tablespace = '';
 
-SET default_with_oids = false;
+SET default_table_access_method = heap;
 
 --
 -- Name: game_words; Type: TABLE; Schema: public; Owner: -
@@ -254,6 +254,36 @@ ALTER SEQUENCE public.players_id_seq OWNED BY public.players.id;
 
 
 --
+-- Name: secrets; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.secrets (
+    secret character varying(40),
+    playerid integer NOT NULL
+);
+
+
+--
+-- Name: secrets_playerid_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.secrets_playerid_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: secrets_playerid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.secrets_playerid_seq OWNED BY public.secrets.playerid;
+
+
+--
 -- Name: words; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -333,6 +363,13 @@ ALTER TABLE ONLY public.players ALTER COLUMN game_id SET DEFAULT nextval('public
 
 
 --
+-- Name: secrets playerid; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.secrets ALTER COLUMN playerid SET DEFAULT nextval('public.secrets_playerid_seq'::regclass);
+
+
+--
 -- Name: words id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -340,40 +377,110 @@ ALTER TABLE ONLY public.words ALTER COLUMN id SET DEFAULT nextval('public.words_
 
 
 --
--- Data for Name: game_words; Type: TABLE DATA; Schema: public; Owner: -
+-- Name: game_words game_words_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-COPY public.game_words (id, word_id, game_id, sort, type) FROM stdin;
-\.
-
-
---
--- Data for Name: games; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY public.games (id, created_at, game_code) FROM stdin;
-\.
+ALTER TABLE ONLY public.game_words
+    ADD CONSTRAINT game_words_pkey PRIMARY KEY (id);
 
 
 --
--- Data for Name: moves; Type: TABLE DATA; Schema: public; Owner: -
+-- Name: games games_game_code_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-COPY public.moves (id, player_id, word_id, is_turn_end, last_updated_at) FROM stdin;
-\.
-
-
---
--- Data for Name: players; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY public.players (id, game_id, name, team, is_cluegiver) FROM stdin;
-\.
+ALTER TABLE ONLY public.games
+    ADD CONSTRAINT games_game_code_key UNIQUE (game_code);
 
 
 --
--- Data for Name: words; Type: TABLE DATA; Schema: public; Owner: -
+-- Name: games games_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
+
+ALTER TABLE ONLY public.games
+    ADD CONSTRAINT games_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: moves moves_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.moves
+    ADD CONSTRAINT moves_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: players players_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.players
+    ADD CONSTRAINT players_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: words words_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.words
+    ADD CONSTRAINT words_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: words words_text_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.words
+    ADD CONSTRAINT words_text_key UNIQUE (text);
+
+
+--
+-- Name: game_words game_words_game_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.game_words
+    ADD CONSTRAINT game_words_game_id_fkey FOREIGN KEY (game_id) REFERENCES public.games(id);
+
+
+--
+-- Name: game_words game_words_word_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.game_words
+    ADD CONSTRAINT game_words_word_id_fkey FOREIGN KEY (word_id) REFERENCES public.words(id);
+
+
+--
+-- Name: moves moves_player_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.moves
+    ADD CONSTRAINT moves_player_id_fkey FOREIGN KEY (player_id) REFERENCES public.players(id);
+
+
+--
+-- Name: moves moves_word_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.moves
+    ADD CONSTRAINT moves_word_id_fkey FOREIGN KEY (word_id) REFERENCES public.words(id);
+
+
+--
+-- Name: players players_game_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.players
+    ADD CONSTRAINT players_game_id_fkey FOREIGN KEY (game_id) REFERENCES public.games(id);
+
+
+--
+-- Name: secrets secrets_playerid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.secrets
+    ADD CONSTRAINT secrets_playerid_fkey FOREIGN KEY (playerid) REFERENCES public.players(id);
+
+
+
 
 COPY public.words (id, text) FROM stdin;
 1	Hollywood
@@ -777,159 +884,6 @@ COPY public.words (id, text) FROM stdin;
 399	Board
 400	Bed
 \.
-
-
---
--- Name: game_words_game_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.game_words_game_id_seq', 1, false);
-
-
---
--- Name: game_words_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.game_words_id_seq', 1, false);
-
-
---
--- Name: game_words_word_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.game_words_word_id_seq', 1, false);
-
-
---
--- Name: games_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.games_id_seq', 1, false);
-
-
---
--- Name: moves_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.moves_id_seq', 1, false);
-
-
---
--- Name: players_game_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.players_game_id_seq', 1, false);
-
-
---
--- Name: players_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.players_id_seq', 1, false);
-
-
---
--- Name: words_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.words_id_seq', 400, true);
-
-
---
--- Name: game_words game_words_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.game_words
-    ADD CONSTRAINT game_words_pkey PRIMARY KEY (id);
-
-
---
--- Name: games games_game_code_key; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.games
-    ADD CONSTRAINT games_game_code_key UNIQUE (game_code);
-
-
---
--- Name: games games_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.games
-    ADD CONSTRAINT games_pkey PRIMARY KEY (id);
-
-
---
--- Name: moves moves_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.moves
-    ADD CONSTRAINT moves_pkey PRIMARY KEY (id);
-
-
---
--- Name: players players_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.players
-    ADD CONSTRAINT players_pkey PRIMARY KEY (id);
-
-
---
--- Name: words words_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.words
-    ADD CONSTRAINT words_pkey PRIMARY KEY (id);
-
-
---
--- Name: words words_text_key; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.words
-    ADD CONSTRAINT words_text_key UNIQUE (text);
-
-
---
--- Name: game_words game_words_game_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.game_words
-    ADD CONSTRAINT game_words_game_id_fkey FOREIGN KEY (game_id) REFERENCES public.games(id);
-
-
---
--- Name: game_words game_words_word_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.game_words
-    ADD CONSTRAINT game_words_word_id_fkey FOREIGN KEY (word_id) REFERENCES public.words(id);
-
-
---
--- Name: moves moves_player_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.moves
-    ADD CONSTRAINT moves_player_id_fkey FOREIGN KEY (player_id) REFERENCES public.players(id);
-
-
---
--- Name: moves moves_word_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.moves
-    ADD CONSTRAINT moves_word_id_fkey FOREIGN KEY (word_id) REFERENCES public.words(id);
-
-
---
--- Name: players players_game_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.players
-    ADD CONSTRAINT players_game_id_fkey FOREIGN KEY (game_id) REFERENCES public.games(id);
-
 
 --
 -- PostgreSQL database dump complete
