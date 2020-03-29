@@ -3,12 +3,14 @@ import React from "react";
 const CardSVG = ({ handleClick, color, outlineColor, word }) => {
   return (
     <svg
+      width="100%"
+      height="100%"
       viewBox="0 0 346 229"
       preserveAspectRatio="xMidYMid meet"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       onClick={handleClick}
-      style={{ cursor: "pointer", userSelect: "none" }}
+      style={{ userSelect: "none" }}
     >
       <rect
         x="24.0381"

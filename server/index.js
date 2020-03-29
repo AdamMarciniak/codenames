@@ -123,7 +123,7 @@ io.on("connection", socket => {
 
   authenticatedEndpoint(socket, "revealWord", async (playerId, { wordId }, callback) => {
     if (!wordId) {
-      return respondError(400, `The parameter "wordId" is missing or empty. (Must be Number.)`);
+      return respondError(callback, 400, `The parameter "wordId" is missing or empty. (Must be Number.)`);
     }
 
     try {

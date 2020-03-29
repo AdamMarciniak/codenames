@@ -2,7 +2,7 @@ import React, { useState, useCallback, useEffect } from 'react';
 import CardSVG from './CardSVG';
 import ReactCardFlip from './ReactCardFlip';
 
-const Card = ({ type, flipped, onClick, word }) => {
+const Card = ({ type, flipped, onClick, word, clickable }) => {
   const [color, setColor] = useState('E0D4BE');
 
   useEffect(() => {
@@ -17,7 +17,7 @@ const Card = ({ type, flipped, onClick, word }) => {
         setColor('000000');
         return;
       case 'NEUTRAL':
-        setColor('FFFFFF');
+        setColor('E0D4BE');
         return;
       default:
         setColor('E0D4BE');
@@ -26,12 +26,12 @@ const Card = ({ type, flipped, onClick, word }) => {
   }, [setColor, type]);
 
   return (
-    <div className="card">
+    <div className="card" style={{ cursor: clickable ? 'pointer' : 'default' }}>
       <ReactCardFlip isFlipped={flipped} flipDirection="horizontal">
         <CardSVG
           word={word}
           color={'E0D4BE'}
-          outlineColor={color}
+          outlineColor={(clickable || color === 'EOD4BE') ? 'AF9A87' : color}
           handleClick={onClick}
         />
         <CardSVG
