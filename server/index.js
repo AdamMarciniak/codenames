@@ -12,7 +12,6 @@ const authenticatedEndpoint = (socket, endpoint, handler) => {
   socket.on(endpoint, async (...params) => {
     const playerId = playerIdsBySocketId[socket.id];
     await handler(playerId, ...params);
-    onPlayerGameChanged(playerId);
   })
 };
 
@@ -71,7 +70,7 @@ io.on("connection", socket => {
       }
 
       if (! await db.isValidGameCode(gameCode)) {
-        return respondError(callback, 400, `The Game code does not exist.`)
+        return respondError(callback, 404, `We couldn't find a game with the code ${gameCode}`)
       }
 
       const playerId = await db.joinGame(
@@ -112,6 +111,9 @@ io.on("connection", socket => {
 
   authenticatedEndpoint(socket, "becomeCluegiver", async (playerId, params, callback) => {
     try {
+      if (! await db.isPlayerInActiveGame(playerId)) {
+        return respondError(callback, 401, `It looks like you haven't joined a game yet. ` )
+      }
       db.becomeCluegiver(playerId);
       onPlayerGameChanged(playerId);
       respondSuccess(callback);
@@ -127,6 +129,9 @@ io.on("connection", socket => {
     }
 
     try {
+      if (! await db.isPlayerInActiveGame(playerId)) {
+        return respondError(callback, 401, `It looks like you haven't joined a game yet. ` )
+      }
       db.addMove(playerId, wordId, isTurnEnd = false);
       onPlayerGameChanged(playerId);
       respondSuccess(callback);
@@ -137,15 +142,18 @@ io.on("connection", socket => {
   });
 
   authenticatedEndpoint(socket, "endTurn", async (playerId, params,callback) => {
-
+    
     try {
-      db.addMove(playerId, wordId = null, isTurnEnd = true);
+      if (! await db.isPlayerInActiveGame(playerId)) {
+        return respondError(callback, 401, `It looks like you haven't joined a game yet. `)
+      }
+
+      await db.addMove(playerId, wordId = null, isTurnEnd = true);
       onPlayerGameChanged(playerId);
       respondSuccess(callback);
 
     } catch (e) {
       respondError(callback, 500, e.message);
     }
-    respondSuccess(callback);
   });
 });
