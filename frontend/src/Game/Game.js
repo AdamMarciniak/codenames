@@ -101,7 +101,7 @@ export default () => {
   const isCurrentPlayerTurn = gameState.currentTurn === currentPlayer.team;
   const teamHasCluegiver = Object.values(gameState.players).find(({ team, isCluegiver }) => team === currentPlayer.team && isCluegiver);
   const canEndTurn = isCurrentPlayerTurn && teamHasCluegiver && !currentPlayer.isCluegiver;
-  const canClickCard = teamHasCluegiver && !currentPlayer.isCluegiver && currentPlayer.team !== 'OBSERVER';
+  const canClickCard = teamHasCluegiver && !currentPlayer.isCluegiver && isCurrentPlayerTurn;
 
   // you can join a team if you aren't already on one, or if you are but no cards have been flipped yet.
   const canJoinTeam = currentPlayer.team === 'OBSERVER' || (!gameState.words.find(({ flipped }) => flipped) && !currentPlayer.isCluegiver);

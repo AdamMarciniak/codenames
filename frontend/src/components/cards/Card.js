@@ -31,7 +31,7 @@ const Card = ({ type, flipped, onClick, word, clickable }) => {
         <CardSVG
           word={word}
           color={'E0D4BE'}
-          outlineColor={(clickable || color === 'EOD4BE') ? 'AF9A87' : color}
+          outlineColor={color === 'E0D4BE' ? null : color}
           handleClick={onClick}
         />
         <CardSVG

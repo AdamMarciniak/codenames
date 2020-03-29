@@ -40,7 +40,7 @@ button, a.button {
   background-color: #fcd117;
   display: block;
   color: black;
-  font-size: 20px;
+  font-size: 16px;
   text-align: center;
   outline: none;
   cursor: pointer;
@@ -107,11 +107,12 @@ a {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 0 10px;
 }
 
 .game-wrap .role-status {
   display: inline-block;
-  font-size: 25px;
+  font-size: 18px;
 }
 
 .game-wrap .buttons {
