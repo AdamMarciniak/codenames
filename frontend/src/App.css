@@ -78,13 +78,22 @@ a {
 
 .game-wrap footer {
   background-color: #1741fc;
-  padding: 20px;
+  padding: 15px 10px 15px 20px;
   color: white;
   text-align: center;
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.game-wrap .exit-button {
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 5px 10px;
 }
 
 .game-wrap {
@@ -122,4 +131,22 @@ a {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
   grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
+}
+
+.card {
+  position: relative;
+  transition: opacity 0.5s ease 1.4s;
+}
+
+.card svg {
+  animation: pop-in 0.5s;
+}
+
+@keyframes pop-in {
+  0% {
+    transform: scale(0.1);
+  }
+  100% {
+    transform: scale(1);
+  }
 }

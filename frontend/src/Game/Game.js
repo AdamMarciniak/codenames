@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useHistory } from 'react-router-dom';
+import cookies from 'browser-cookies';
 import useGameState from '../useGameState';
 import api, { useApiCall } from '../api';
 import Card from '../components/cards/Card';
@@ -88,6 +89,10 @@ export default () => {
   const joinRedTeam = useApiCall('joinTeam', { team: 'RED' });
   const joinBlueTeam = useApiCall('joinTeam', { team: 'BLUE' });
   const becomeCluegiver = useApiCall('becomeCluegiver');
+  const exitGame = useCallback(() => {
+    cookies.erase('secret');
+    window.location.href = '/'
+  });
 
   if (!gameState) {
     return null;
@@ -144,7 +149,10 @@ export default () => {
           }
         </div>
       </div>
-      <footer>Invite your friends! <strong>{window.location.protocol}//{window.location.host}/join/{gameState.gameCode}</strong></footer>
+      <footer>
+        <div>Invite your friends! <strong>{window.location.protocol}//{window.location.host}/join/{gameState.gameCode}</strong></div>
+        <div onClick={exitGame} className="exit-button">Exit this Game</div>
+      </footer>
     </div>
   )
 }

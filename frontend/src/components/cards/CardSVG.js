@@ -1,6 +1,6 @@
 import React from "react";
 
-const CardSVG = ({ handleClick, color, outlineColor, word }) => {
+const CardSVG = ({ handleClick, color, outlineColor, word, hidden }) => {
   return (
     <svg
       width="100%"
@@ -10,7 +10,7 @@ const CardSVG = ({ handleClick, color, outlineColor, word }) => {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       onClick={handleClick}
-      style={{ userSelect: "none" }}
+      style={{ userSelect: "none", display: hidden ? 'none' : '' }}
     >
       <rect
         x="24.0381"
@@ -19,7 +19,7 @@ const CardSVG = ({ handleClick, color, outlineColor, word }) => {
         height="180.101"
         rx="8.5"
         fill={`#${color}`}
-        stroke={`#${outlineColor}`}
+        stroke={`#${outlineColor || 'AF9A87'}`}
         strokeWidth="40"
       />
       <path

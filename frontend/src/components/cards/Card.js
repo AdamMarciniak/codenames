@@ -26,7 +26,7 @@ const Card = ({ type, flipped, onClick, word, clickable }) => {
   }, [setColor, type]);
 
   return (
-    <div className="card" style={{ cursor: clickable ? 'pointer' : 'default' }}>
+    <div className="card" style={{ cursor: clickable ? 'pointer' : 'default', opacity: flipped ? 0.25 : 1 }}>
       <ReactCardFlip isFlipped={flipped} flipDirection="horizontal">
         <CardSVG
           word={word}
@@ -37,7 +37,6 @@ const Card = ({ type, flipped, onClick, word, clickable }) => {
         <CardSVG
           word={word}
           color={color}
-          handleClick={onClick}
         />
       </ReactCardFlip>
     </div>
