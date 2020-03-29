@@ -141,6 +141,11 @@ io.on("connection", socket => {
     }
   });
 
+//   also add two queries: savePlayerSecret (playerId, secret) and getPlayerForSecret (secret)
+// and then replace references to the current secret object with async references to those
+
+
+
   authenticatedEndpoint(socket, "endTurn", async (playerId, params,callback) => {
     
     try {

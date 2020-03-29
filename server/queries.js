@@ -268,6 +268,37 @@ const isPlayerInActiveGame = async playerId => {
       )).rows[0] ? true : false;
 };
 
+const savePlayerSecret = async (playerId, secret) => {
+
+    await pool.query(
+      `
+      INSERT INTO
+        secrets
+          (player_id, secret)
+        VALUES
+          ($1, $2)
+      `,
+      [playerId, secret]
+    );
+
+};
+
+const getPlayerForSecret = async (secret) => {
+
+    await pool.query(
+      `
+      SELECT
+        player_id
+        FROM
+        secrets
+        WHERE
+        secret = $1
+      `,
+      [secret]
+    );
+
+};
+
 
 
 module.exports = {
@@ -279,4 +310,6 @@ module.exports = {
   addMove,
   becomeCluegiver,
   isPlayerInActiveGame,
+  savePlayerSecret,
+  getPlayerForSecret
 };
