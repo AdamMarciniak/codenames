@@ -60,7 +60,6 @@ const createGame = async (gameCode, currentPlayerName, firstTeam) => {
 
 const getGameStateForPlayer = async (playerId) => {
   await pool.query('BEGIN');
-  console.log(playerId)
   const gameId = (await pool.query('SELECT game_id FROM players WHERE id = $1', [playerId])).rows[0].game_id;
   const gameCode = (await pool.query('SELECT game_code FROM games WHERE id = $1', [gameId])).rows[0].game_code;
 
@@ -158,6 +157,8 @@ const getGameStateForPlayer = async (playerId) => {
       game_words.word_id = words.id
     WHERE
       game_words.game_id = $1
+    ORDER BY
+      game_words.sort
     `,
     [gameId]
   )).rows;
@@ -197,7 +198,7 @@ const joinTeam = async (playerId, team) => {
     `
     UPDATE
       players
-    SET 
+    SET
       team = $1
     WHERE
       id = $2
@@ -211,7 +212,7 @@ const becomeCluegiver = async (playerId) => {
     `
     UPDATE
       players
-    SET 
+    SET
       is_cluegiver = true
     WHERE
       id = $1
@@ -237,7 +238,7 @@ const isValidGameCode = async gameCode => {
 
 
 const addMove = async (playerId, wordId, isTurnEnd) => {
- 
+
     await pool.query(
       `
       INSERT INTO

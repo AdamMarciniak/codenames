@@ -16,18 +16,17 @@ const authenticatedEndpoint = (socket, endpoint, handler) => {
   })
 };
 
-
-
 io.on("connection", socket => {
   console.log("a user connected");
 
-  socket.on("identify", async ({secret}, callback) => {
-    if (playerIdsBySecret[secret]) {
-      registerPlayerSocket(playerIdsBySecret[secret], socket);
-      respondSuccess(callback);
+  socket.on("identify", async ({ secret }, callback) => {
+    const playerId = playerIdsBySecret[secret]
+    if (playerId) {
+      registerPlayerSocket(playerId, socket);
       onPlayerGameChanged(playerId);
+      respondSuccess(callback);
     } else {
-      respondError(callback, 404, 'Secret not recognized!');
+      respondError(callback, 404, `Secret ${secret} not recognized!`);
     }
   });
 
@@ -39,7 +38,7 @@ io.on("connection", socket => {
   socket.on("createGame", async ({ name }, callback) => {
     try {
       if (!name) {
-        return respondError(400, `The parameter "name" is missing or empty. (Must be string.)`);
+        return respondError(callback, 400, `The parameter "name" is missing or empty. (Must be string.)`);
       }
 
       const firstTeam = Math.random() > 0.5 ? "RED" : "BLUE";
@@ -79,8 +78,10 @@ io.on("connection", socket => {
         gameCode,
         name
       );
+      const secret = randomString(40);
+
       registerPlayerSocket(playerId, socket);
-      registerPlayerSecret(playerId, randomString(40));
+      registerPlayerSecret(playerId, secret);
 
       onPlayerGameChanged(playerId);
       respondSuccess(callback);

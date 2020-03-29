@@ -1,20 +1,23 @@
 import io from 'socket.io-client';
 import { useCallback } from 'react';
-const socket = io(window.location.hostname + ':3001');
+export const socket = io(window.location.hostname + ':3001');
+
+let index = 0;
 
 const api = (endpoint, params) => {
-  socket.emit(endpoint, params, (error) => {
-    if (error) {
-      console.error(error);
-    } else {
-      console.log('success!');
-    }
+  console.log(`API call ${index}:`, endpoint, params);
+  return new Promise((resolve, reject) => {
+    socket.emit(endpoint, params, (error) => {
+      if (error) {
+        console.error(error);
+        reject(error);
+      } else {
+        console.log(`Success  ${index} (${endpoint})`);
+        resolve();
+      }
+    });
   });
 }
-
-export const listen = (event, callback) => {
-  socket.on(event, callback);
-};
 
 export const useApiCall = (event, params) => useCallback(() => api(event, params), [event, params]);
 

@@ -75,3 +75,51 @@ input:focus {
 a {
   text-decoration: none;
 }
+
+.game-wrap footer {
+  background-color: #1741fc;
+  padding: 20px;
+  color: white;
+  text-align: center;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.game-wrap {
+  margin: 30px auto 0 auto;
+  width: 100vw;
+  max-width: calc(150vh - 90px - 135px - 99px); /* subtracted amount = = (footer_height * 1.5) + (3 * padding * 1.5) + (2 * controls_height * 1.5) */
+}
+
+.game-wrap .control-bar {
+  margin-top: 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.game-wrap .role-status {
+  display: inline-block;
+  font-size: 25px;
+}
+
+.game-wrap .buttons {
+  display: inline-flex;
+  justify-content: flex-end;
+}
+
+.game-wrap .buttons button {
+  border: 1px solid white;
+}
+
+.game-wrap .buttons button+button {
+  margin-left: 20px;
+}
+
+.card-wrap {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
+}

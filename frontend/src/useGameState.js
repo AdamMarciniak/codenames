@@ -1,11 +1,18 @@
-import { listen } from "./api";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { addListener, removeListener, getCurrentGameState } from "./gameStateWatcher";
 
 export default () => {
   const [gameState, setGameState] = useState(null);
-  listen('gameState', (newGameState) => {
-    console.log("received game state", newGameState);
-    setGameState(newGameState);
-  });
+  useEffect(() => {
+    setGameState(getCurrentGameState());
+    const listener = (newGameState) => {
+      setGameState(newGameState);
+    };
+    addListener(listener);
+    return () => {
+      removeListener(listener);
+    }
+  }, [setGameState]);
+
   return gameState;
 }
