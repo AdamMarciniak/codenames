@@ -78,9 +78,11 @@ const getGameStateForPlayer = async (playerId) => {
     WHERE
       is_turn_end = true
     AND player_id IN (
-      SELECT id FROM players WHERE game_id = 3
+      SELECT id FROM players WHERE game_id = $1
     )
-  `)).rows[0].count;
+  `,[gameId])).rows[0].count;
+
+  console.log(numberOfTurnEnds)
 
   let currentTurn;
   if (startingTeam === 'RED') {
@@ -251,6 +253,22 @@ const addMove = async (playerId, wordId, isTurnEnd) => {
 
 };
 
+const isPlayerInActiveGame = async playerId => {
+       return (await pool.query(
+        `
+          SELECT
+            id
+          FROM
+            players
+          WHERE
+            id = $1
+        `,
+        [playerId]
+      )).rows[0] ? true : false;
+};
+
+
+
 module.exports = {
   createGame,
   getGameStateForPlayer,
@@ -259,4 +277,5 @@ module.exports = {
   isValidGameCode,
   addMove,
   becomeCluegiver,
+  isPlayerInActiveGame,
 };

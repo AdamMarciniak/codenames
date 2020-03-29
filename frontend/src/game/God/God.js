@@ -12,6 +12,8 @@ const api = (endpoint, params) => {
   });
 }
 
+window.api = api;
+
 const useGameState = () => {
   const [gameState, setGameState] = useState(null);
   socket.on('gameState', (newGameState) => {
