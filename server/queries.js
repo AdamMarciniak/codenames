@@ -23,7 +23,6 @@ const addGameWords = (gameId, wordType, count) => pool.query(
 
 const createGame = async (gameCode, currentPlayerName, firstTeam) => {
   const secondTeam = firstTeam === "RED" ? "BLUE" : "RED";
-
   await pool.query('BEGIN');
 
   const insertGameResult = await pool.query(
@@ -53,6 +52,7 @@ const createGame = async (gameCode, currentPlayerName, firstTeam) => {
   await addGameWords(gameId, 'ASSASSIN', 1);
 
   await pool.query('COMMIT');
+
 
   return currentPlayerId;
 }
