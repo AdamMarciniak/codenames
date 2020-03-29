@@ -1,6 +1,6 @@
 import io from 'socket.io-client';
 import { useCallback } from 'react';
-export const socket = io(window.location.hostname + ':3001');
+export const socket = io(window.location.hostname + ':6969');
 
 let index = 0;
 
