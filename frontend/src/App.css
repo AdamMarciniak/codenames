@@ -158,11 +158,12 @@ a {
   justify-content: space-evenly;
 }
 
-.team-side {
+.team-display {
   width: 50%;
   margin: 5px;
   display: flex;
   flex-direction: row;
   flex-grow: 1;
   justify-content: center;
+  border-radius: 10px;
 }

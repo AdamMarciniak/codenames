@@ -83,38 +83,28 @@ const RoleStatus = () => {
   }
 }
 
+const TeamDisplay = props => (
+  <div className="team-display" style={{border: `${props.color} solid 3px`}}>
+    {
+      Object.keys(props.players).
+        filter(id =>
+          props.players[id].team === props.team
+        ).map(id => (
+          <div key={id} style={{
+            margin: '5px', color: props.players[id].isCluegiver ? 'orange' : props.color
+          }}>
+            {props.players[id].name}
+          </div>
+        ))
+      }
+  </div>
+)
 
 const PlayersReadout = props => {
   return (
     <div className="players-readout">
-    <div className="team-side" style={{border: '#DE6228 solid 3px', borderRadius: '10px'}}>
-      {
-        Object.keys(props.gameState.players).
-          filter(id =>
-             props.gameState.players[id].team === 'RED'
-             )
-             .map(id => (
-                <div key={id} style={{margin: '5px', color: props.gameState.players[id].isCluegiver ? 'orange' : 'red'}}>
-                  {props.gameState.players[id].name}
-                </div>
-      )
-        
-      )}
-      </div>
-      <div className="team-side" style={{border: '#34BAEB solid 3px', borderRadius: '10px'}}>
-      {
-        Object.keys(props.gameState.players).
-          filter(id =>
-             props.gameState.players[id].team === 'BLUE'
-             )
-             .map(id => (
-                <div key={id} style={{margin: '5px', color: props.gameState.players[id].isCluegiver ? 'orange' : 'blue'}}>
-                  {props.gameState.players[id].name}
-                </div>
-      )
-        
-      )}
-      </div>
+      <TeamDisplay color={'#34BAEB'} team="BLUE" players={props.gameState.players}/>
+      <TeamDisplay color={'#DE6228'} team="RED" players={props.gameState.players}/>
     </div>
   )
 }
