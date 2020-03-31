@@ -10,6 +10,8 @@ import { addListener } from './gameStateWatcher';
 import { createBrowserHistory } from 'history';
 const history = createBrowserHistory();
 
+console.log('Welcome to the game, friends.')
+
 addListener((gameState) => {
   if (gameState && !history.location.pathname.includes('/game')) {
     window.location.href = '/game';
