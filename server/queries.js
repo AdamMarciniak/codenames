@@ -81,8 +81,6 @@ const getGameStateForPlayer = async (playerId) => {
     )
   `,[gameId])).rows[0].count;
 
-  console.log(numberOfTurnEnds)
-
   let currentTurn;
   if (startingTeam === 'RED') {
     currentTurn = (numberOfTurnEnds % 2) === 0 ? 'RED' : 'BLUE';
@@ -299,6 +297,35 @@ const getPlayerForSecret = async (secret) => {
 
 };
 
+const insertAvatar = async (playerId, data) => {
+  await pool.query(
+    `
+    INSERT
+    INTO
+    avatars
+    (player_id, image)
+    values 
+    ($1, $2)`,
+    [playerId, data]
+  );
+}
+
+const getAvatar = async (playerId, data) => {
+  return (await pool.query(
+    `
+    SELECT
+    image
+    from
+    avatars
+    WHERE
+    player_id = $1`,
+    [playerId]
+  )).rows[0].image
+}
+
+
+
+
 
 
 module.exports = {
@@ -311,5 +338,7 @@ module.exports = {
   becomeCluegiver,
   isPlayerInActiveGame,
   savePlayerSecret,
-  getPlayerForSecret
+  getPlayerForSecret,
+  insertAvatar,
+  getAvatar
 };
