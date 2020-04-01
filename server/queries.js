@@ -110,6 +110,32 @@ const getGameStateForPlayer = async (playerId) => {
     [playerId]
   )).rows;
 
+  const svgs = (await pool.query(
+    `
+    SELECT 
+      player_id, id
+    FROM
+      avatars
+    WHERE
+      player_id IN (
+    SELECT 
+      id
+      FROM 
+        players
+      WHERE
+      game_id = (
+        SELECT
+          game_id
+        FROM
+          players
+        WHERE
+          id = $1
+      )
+    )
+    `,
+    [playerId]
+  )).rows
+
   const players = {};
 
   playersResult.forEach(({ id, name, team, is_cluegiver }) => {
@@ -117,7 +143,7 @@ const getGameStateForPlayer = async (playerId) => {
       id,
       name,
       team,
-      isCluegiver: is_cluegiver
+      isCluegiver: is_cluegiver,
     };
   });
 
@@ -169,7 +195,8 @@ const getGameStateForPlayer = async (playerId) => {
     gameCode,
     currentTurn,
     players,
-    words
+    words,
+    svgs
   };
 }
 
@@ -310,7 +337,7 @@ const insertAvatar = async (playerId, data) => {
   );
 }
 
-const getAvatar = async (playerId, data) => {
+const getSvgContents = async (id) => {
   return (await pool.query(
     `
     SELECT
@@ -318,14 +345,10 @@ const getAvatar = async (playerId, data) => {
     from
     avatars
     WHERE
-    player_id = $1`,
-    [playerId]
+    id = $1`,
+    [id]
   )).rows[0].image
 }
-
-
-
-
 
 
 module.exports = {
@@ -340,5 +363,5 @@ module.exports = {
   savePlayerSecret,
   getPlayerForSecret,
   insertAvatar,
-  getAvatar
+  getSvgContents,
 };

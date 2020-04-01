@@ -1,14 +1,18 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import cookies from 'browser-cookies';
 import useGameState from '../useGameState';
 import api, { useApiCall } from '../api';
 import Card from '../components/cards/Card';
+import C2S from './canvasSvg.js'
+import { socket } from '../api'
+
 
 export const JoinGame = ({ match: { params } }) => {
   const [name, setName] = useState('');
   const [code, setCode] = useState(params.code || '');
-  const joinGame = useApiCall('joinGame', { name, gameCode: code });
+  const [svg, setSvg] = useState(null);
+  const joinGame = useApiCall('joinGame', { name, gameCode: code, svg: svg });
   return (
     <div className="form-wrap">
       <div className="form">
@@ -22,15 +26,94 @@ export const JoinGame = ({ match: { params } }) => {
             <input value={code} placeholder="THFRC" onChange={e => setCode(e.currentTarget.value)} />
           </label>
         )}
+        <p>Draw Yourself!</p>
+        <AvatarCanvas setSvg={setSvg}/>
         <button onClick={joinGame}>Join Game</button>
       </div>
     </div>
   )
 }
 
+
+
+const AvatarCanvas = props => {
+  const canvasRef = useRef(null);
+  const [isMouseDown, setIsMouseDown] = useState(false);
+  const [ctx, setCtx] = useState(null);
+  const [fakeCtx, setFakeCtx] = useState(null);
+  const [rect, setRect] = useState(null);
+
+  const handleMouseMove = useCallback(e => {
+    if (isMouseDown) {
+      ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+      ctx.stroke();
+      fakeCtx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+      fakeCtx.stroke();
+      console.log(e.clientY);
+    }
+  },[ctx, isMouseDown, rect])
+
+  useEffect(() => {
+
+console.log(fakeCtx);
+  },[fakeCtx])
+
+  const handleMouseDown = useCallback(e => {
+    setIsMouseDown(true);
+    ctx.beginPath();
+    ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+    fakeCtx.beginPath();
+    fakeCtx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+    ctx.lineWidth = 10;
+    fakeCtx.lineWidth = 10;
+
+  },[setIsMouseDown, ctx, rect])
+
+   const handleMouseUp = useCallback(e => {
+    setIsMouseDown(false);
+    props.setSvg(fakeCtx.getSerializedSvg(true))
+
+  },[setIsMouseDown,fakeCtx])
+
+  useEffect(() => {
+    setRect(canvasRef.current.getBoundingClientRect());
+  },[setRect])
+
+  useEffect(() => {
+    setFakeCtx(new C2S(348,198));
+  },[])
+
+  useEffect(() => {
+    const ref = canvasRef.current;
+    setCtx(ref.getContext('2d'));
+    ref.addEventListener('mousedown', handleMouseDown)
+    ref.addEventListener('mouseup', handleMouseUp)
+    ref.addEventListener('mousemove', handleMouseMove)
+
+    return (
+      () => {
+        ref.removeEventListener('mousedown', handleMouseDown)
+        ref.removeEventListener('mouseup', handleMouseUp)
+        ref.removeEventListener('mousemove', handleMouseMove)
+      }
+    )
+  },[handleMouseDown, handleMouseUp, handleMouseMove, setCtx])
+
+
+  return (
+    <div className="canvas-wrapper">
+      <canvas ref={canvasRef} width="348px" height="198px" className="avatar-canvas"/>
+    </div>
+  )
+}
+
+
+
 export const CreateGame = () => {
+  const [svg, setSvg] = useState(null);
   const [name, setName] = useState('');
-  const createGame = useApiCall('createGame', { name });
+  const createGame = useApiCall('createGame', { name, svg });
+
   return (
     <div className="form-wrap">
       <div className="form">
@@ -38,6 +121,8 @@ export const CreateGame = () => {
           First - What's Your Name?
           <input value={name} placeholder="Baby Yoda" onChange={e => setName(e.currentTarget.value)} />
         </label>
+        <p>Draw Yourself!</p>
+        <AvatarCanvas setSvg={setSvg}/>
         <button onClick={createGame}>Create Game</button>
       </div>
     </div>
@@ -100,11 +185,34 @@ const TeamDisplay = props => (
   </div>
 )
 
+const SVG = props => {
+  const svgRef = useRef(null);
+  const getSvg = useApiCall('getSvg', { id: props.id });
+  const [svg, setSvg] = useState(null);
+  useEffect(() => {
+    getSvg().then(result => {setSvg(result); console.log(result);})
+
+  },[props.id,setSvg])
+
+  return (
+    <div dangerouslySetInnerHTML={{__html:svg }}>
+
+    </div>
+  )
+}
+
 const PlayersReadout = props => {
   return (
     <div className="players-readout">
       <TeamDisplay color={'#34BAEB'} team="BLUE" players={props.gameState.players}/>
       <TeamDisplay color={'#DE6228'} team="RED" players={props.gameState.players}/>
+      <div>
+        {
+          props.gameState.svgs.map(svg => (
+            <SVG id={svg.id} key={svg.id}></SVG>
+          ))
+        }
+      </div>
     </div>
   )
 }

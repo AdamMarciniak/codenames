@@ -16,8 +16,8 @@ const registerPlayerSecret = (playerId, secret) => {
 
 const unregisterSocket = (socketId) => {
   const playerId = playerIdsBySocketId[socketId];
-  delete socketsByPlayerId[playerId];
-  delete playerIdsBySocketId[socketId];
+  //delete socketsByPlayerId[playerId];
+  //delete playerIdsBySocketId[socketId];
 }
 
 module.exports = {
