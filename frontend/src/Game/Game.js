@@ -4,8 +4,7 @@ import cookies from 'browser-cookies';
 import useGameState from '../useGameState';
 import api, { useApiCall } from '../api';
 import Card from '../components/cards/Card';
-import C2S from './canvasSvg.js'
-import { socket } from '../api'
+import DrawBox from './DrawBox';
 
 
 export const JoinGame = ({ match: { params } }) => {
@@ -27,87 +26,12 @@ export const JoinGame = ({ match: { params } }) => {
           </label>
         )}
         <p>Draw Yourself!</p>
-        <AvatarCanvas setSvg={setSvg}/>
+        <DrawBox setSvg={setSvg}/>
         <button onClick={joinGame}>Join Game</button>
       </div>
     </div>
   )
 }
-
-
-
-const AvatarCanvas = props => {
-  const canvasRef = useRef(null);
-  const [isMouseDown, setIsMouseDown] = useState(false);
-  const [ctx, setCtx] = useState(null);
-  const [fakeCtx, setFakeCtx] = useState(null);
-  const [rect, setRect] = useState(null);
-
-  const handleMouseMove = useCallback(e => {
-    if (isMouseDown) {
-      ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
-      ctx.stroke();
-      fakeCtx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
-      fakeCtx.stroke();
-      console.log(e.clientY);
-    }
-  },[ctx, isMouseDown, rect])
-
-  useEffect(() => {
-
-console.log(fakeCtx);
-  },[fakeCtx])
-
-  const handleMouseDown = useCallback(e => {
-    setIsMouseDown(true);
-    ctx.beginPath();
-    ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
-    fakeCtx.beginPath();
-    fakeCtx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
-    ctx.lineWidth = 10;
-    fakeCtx.lineWidth = 10;
-
-  },[setIsMouseDown, ctx, rect])
-
-   const handleMouseUp = useCallback(e => {
-    setIsMouseDown(false);
-    props.setSvg(fakeCtx.getSerializedSvg(true))
-
-  },[setIsMouseDown,fakeCtx])
-
-  useEffect(() => {
-    setRect(canvasRef.current.getBoundingClientRect());
-  },[setRect])
-
-  useEffect(() => {
-    setFakeCtx(new C2S(348,198));
-  },[])
-
-  useEffect(() => {
-    const ref = canvasRef.current;
-    setCtx(ref.getContext('2d'));
-    ref.addEventListener('mousedown', handleMouseDown)
-    ref.addEventListener('mouseup', handleMouseUp)
-    ref.addEventListener('mousemove', handleMouseMove)
-
-    return (
-      () => {
-        ref.removeEventListener('mousedown', handleMouseDown)
-        ref.removeEventListener('mouseup', handleMouseUp)
-        ref.removeEventListener('mousemove', handleMouseMove)
-      }
-    )
-  },[handleMouseDown, handleMouseUp, handleMouseMove, setCtx])
-
-
-  return (
-    <div className="canvas-wrapper">
-      <canvas ref={canvasRef} width="348px" height="198px" className="avatar-canvas"/>
-    </div>
-  )
-}
-
-
 
 export const CreateGame = () => {
   const [svg, setSvg] = useState(null);
@@ -122,7 +46,7 @@ export const CreateGame = () => {
           <input value={name} placeholder="Baby Yoda" onChange={e => setName(e.currentTarget.value)} />
         </label>
         <p>Draw Yourself!</p>
-        <AvatarCanvas setSvg={setSvg}/>
+        <DrawBox setSvg={setSvg}/>
         <button onClick={createGame}>Create Game</button>
       </div>
     </div>
@@ -168,20 +92,29 @@ const RoleStatus = () => {
   }
 }
 
+const Player = props => (
+  <div className='player'>
+    <div className='playerName'>
+      {props.player.name}
+    </div>
+    <SVG id={props.svgId}/>
+  </div>
+)
+
 const TeamDisplay = props => (
   <div className="team-display" style={{border: `${props.color} solid 3px`}}>
     {
-      Object.keys(props.players).
+      Object.keys(props.gameState.players).
         filter(id =>
-          props.players[id].team === props.team
+          props.gameState.players[id].team === props.team
         ).map(id => (
-          <div key={id} style={{
-            margin: '5px', color: props.players[id].isCluegiver ? 'orange' : props.color
-          }}>
-            {props.players[id].name}
-          </div>
-        ))
-      }
+          <Player
+            player={props.gameState.players[id]}
+            svgId={props.gameState.svgs.filter(item => item.player_id == id)[0]['id']}
+            key={id}/>
+          )
+        )
+    }
   </div>
 )
 
@@ -189,14 +122,18 @@ const SVG = props => {
   const svgRef = useRef(null);
   const getSvg = useApiCall('getSvg', { id: props.id });
   const [svg, setSvg] = useState(null);
+  console.log(props.id);
   useEffect(() => {
     getSvg().then(result => {setSvg(result); console.log(result);})
 
   },[props.id,setSvg])
 
   return (
-    <div dangerouslySetInnerHTML={{__html:svg }}>
-
+    <div  style={{width:'100px', height:'75px'}}>
+    <svg style={{transform:'scale(0.75)'}} viewBox={'0 0 348 198'}>
+      <g dangerouslySetInnerHTML={{__html:svg }}>
+      </g>
+    </svg>
     </div>
   )
 }
@@ -204,15 +141,8 @@ const SVG = props => {
 const PlayersReadout = props => {
   return (
     <div className="players-readout">
-      <TeamDisplay color={'#34BAEB'} team="BLUE" players={props.gameState.players}/>
-      <TeamDisplay color={'#DE6228'} team="RED" players={props.gameState.players}/>
-      <div>
-        {
-          props.gameState.svgs.map(svg => (
-            <SVG id={svg.id} key={svg.id}></SVG>
-          ))
-        }
-      </div>
+      <TeamDisplay color={'#34BAEB'} team="BLUE" gameState={props.gameState}/>
+      <TeamDisplay color={'#DE6228'} team="RED" gameState={props.gameState}/>
     </div>
   )
 }
