@@ -7,13 +7,13 @@ let index = 0;
 const api = (endpoint, params) => {
   console.log(`API call ${index}:`, endpoint, params);
   return new Promise((resolve, reject) => {
-    socket.emit(endpoint, params, (error) => {
+    socket.emit(endpoint, params, (error, result) => {
       if (error) {
         console.error(error);
         reject(error);
       } else {
         console.log(`Success  ${index} (${endpoint})`);
-        resolve();
+        resolve(result);
       }
     });
   });

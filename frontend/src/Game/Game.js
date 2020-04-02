@@ -1,14 +1,17 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import cookies from 'browser-cookies';
 import useGameState from '../useGameState';
 import api, { useApiCall } from '../api';
 import Card from '../components/cards/Card';
+import DrawBox from './DrawBox';
+
 
 export const JoinGame = ({ match: { params } }) => {
   const [name, setName] = useState('');
   const [code, setCode] = useState(params.code || '');
-  const joinGame = useApiCall('joinGame', { name, gameCode: code });
+  const [svg, setSvg] = useState(null);
+  const joinGame = useApiCall('joinGame', { name, gameCode: code, svg: svg });
   return (
     <div className="form-wrap">
       <div className="form">
@@ -19,9 +22,11 @@ export const JoinGame = ({ match: { params } }) => {
         {!params.code && (
           <label>
             Game Code
-            <input value={code} placeholder="THFRC" onChange={e => setCode(e.currentTarget.value)} />
+            <input value={code} placeholder="-----" onChange={e => setCode(e.currentTarget.value)} />
           </label>
         )}
+        <p>Draw Yourself!</p>
+        <DrawBox setSvg={setSvg}/>
         <button onClick={joinGame}>Join Game</button>
       </div>
     </div>
@@ -29,8 +34,10 @@ export const JoinGame = ({ match: { params } }) => {
 }
 
 export const CreateGame = () => {
+  const [svg, setSvg] = useState(null);
   const [name, setName] = useState('');
-  const createGame = useApiCall('createGame', { name });
+  const createGame = useApiCall('createGame', { name, svg });
+
   return (
     <div className="form-wrap">
       <div className="form">
@@ -38,6 +45,8 @@ export const CreateGame = () => {
           First - What's Your Name?
           <input value={name} placeholder="Baby Yoda" onChange={e => setName(e.currentTarget.value)} />
         </label>
+        <p>Draw Yourself!</p>
+        <DrawBox setSvg={setSvg}/>
         <button onClick={createGame}>Create Game</button>
       </div>
     </div>
@@ -83,28 +92,63 @@ const RoleStatus = () => {
   }
 }
 
+
+
 const TeamDisplay = props => (
   <div className="team-display" style={{border: `${props.color} solid 3px`}}>
     {
-      Object.keys(props.players).
+      Object.keys(props.gameState.players).
         filter(id =>
-          props.players[id].team === props.team
+          props.gameState.players[id].team === props.team
         ).map(id => (
-          <div key={id} style={{
-            margin: '5px', color: props.players[id].isCluegiver ? 'orange' : props.color
-          }}>
-            {props.players[id].name}
-          </div>
-        ))
-      }
+          <Player
+            player={props.gameState.players[id]}
+            svgId={props.gameState.svgs.filter(item => item.player_id == id)[0]['id']}
+            key={id}/>
+          )
+        )
+    }
   </div>
 )
+
+const Player = props => (
+  <div className='player'>
+    <div className='player-name'
+         style={{color: props.player.team === 'BLUE' ? '#34BAEB' : '#DE6228',
+                border: props.player.isCluegiver ? 'solid 3px gold' : 'none' }}>
+      {props.player.name}
+    </div>
+    <PlayerSVG id={props.svgId}/>
+  </div>
+)
+
+const PlayerSVG = props => {
+  const getSvg = useApiCall('getSvg', { id: props.id });
+  const [svg, setSvg] = useState(null);
+  console.log(props.id);
+  useEffect(() => {
+    getSvg().then(result => {setSvg(result)})
+
+  },[props.id,setSvg])
+
+  return (
+    <div  style={{width:'100%',
+                  height:'auto',
+                  overflow: 'hidden',
+      }}>
+    <svg  width='100%' viewBox={'0 0 348 198'} preserveAspectRatio="xMidYMid meet">
+      <g dangerouslySetInnerHTML={{__html:svg }}>
+      </g>
+    </svg>
+    </div>
+  )
+}
 
 const PlayersReadout = props => {
   return (
     <div className="players-readout">
-      <TeamDisplay color={'#34BAEB'} team="BLUE" players={props.gameState.players}/>
-      <TeamDisplay color={'#DE6228'} team="RED" players={props.gameState.players}/>
+      <TeamDisplay color={'#34BAEB'} team="BLUE" gameState={props.gameState}/>
+      <TeamDisplay color={'#DE6228'} team="RED" gameState={props.gameState}/>
     </div>
   )
 }
