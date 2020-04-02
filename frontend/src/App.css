@@ -97,9 +97,9 @@ a {
 }
 
 .game-wrap {
-  margin: 30px auto 0 auto;
-  width: 100vw;
-  max-width: calc(150vh - 90px - 135px - 99px); /* subtracted amount = = (footer_height * 1.5) + (3 * padding * 1.5) + (2 * controls_height * 1.5) */
+  margin: 20px auto 0 auto;
+  width: 85vw;
+  max-width: calc(140vh - 90px - 135px - 99px); /* subtracted amount = = (footer_height * 1.5) + (3 * padding * 1.5) + (2 * controls_height * 1.5) */
 }
 
 .game-wrap .control-bar {
@@ -163,8 +163,7 @@ a {
   margin: 5px;
   display: flex;
   flex-direction: row;
-  flex-grow: 1;
-  justify-content: center;
+  justify-content: space-evenly;
   border-radius: 10px;
 }
 
@@ -185,9 +184,16 @@ a {
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  width: 100px;
+  width: 80px;
+  margin: 0 5px 0 5px;
 }
 
 .player-name {
-  font-size: 2vw;
+  font-size: 1vw;
+}
+
+.player-svg {
+  width:'100%';
+  height:'auto';
+  overflow: 'hidden';
 }

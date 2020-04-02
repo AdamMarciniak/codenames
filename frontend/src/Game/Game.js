@@ -127,7 +127,7 @@ const PlayerSVG = props => {
   const [svg, setSvg] = useState(null);
   console.log(props.id);
   useEffect(() => {
-    getSvg().then(result => {setSvg(result); console.log(result);})
+    getSvg().then(result => {setSvg(result)})
 
   },[props.id,setSvg])
 
