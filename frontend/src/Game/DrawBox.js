@@ -39,6 +39,7 @@ const DrawBox = props => {
    const handleMouseUp = useCallback(e => {
     setIsMouseDown(false);
     try {
+      // Doesn't work in safari since it doesn't support look behind. FAWWKK.
     const re = new RegExp('(?<=\<g>)(.*?)(?=\<\/g>)');
     const serializedSvg = fakeCtx.getSerializedSvg(true)
     const results = re.exec(serializedSvg)[0];
