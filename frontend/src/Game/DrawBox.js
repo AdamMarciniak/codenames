@@ -15,23 +15,24 @@ const DrawBox = props => {
       ctx.stroke();
       fakeCtx.lineTo(e.offsetX, e.offsetY);
       fakeCtx.stroke();
-      console.log(e.pageY);
     }
   },[ctx, isMouseDown, rect])
 
-  useEffect(() => {
-
-console.log(fakeCtx);
-  },[fakeCtx])
-
   const handleMouseDown = useCallback(e => {
     setIsMouseDown(true);
+    ctx.lineJoin = 'round';
+    ctx.lineCap = 'round';
+    ctx.strokeStyle = '#ff8000';
     ctx.beginPath();
     ctx.moveTo(e.offsetX, e.offsetY);
+    fakeCtx.strokeStyle = '#40663d';
+
+    fakeCtx.lineJoin = 'round';
+    fakeCtx.lineCap = 'round';
     fakeCtx.beginPath();
     fakeCtx.moveTo(e.offsetX, e.offsetY);
-    ctx.lineWidth = 10;
-    fakeCtx.lineWidth = 10;
+    ctx.lineWidth = 15;
+    fakeCtx.lineWidth = 15;
 
   },[setIsMouseDown, ctx, rect])
 

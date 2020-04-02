@@ -22,7 +22,7 @@ export const JoinGame = ({ match: { params } }) => {
         {!params.code && (
           <label>
             Game Code
-            <input value={code} placeholder="THFRC" onChange={e => setCode(e.currentTarget.value)} />
+            <input value={code} placeholder="-----" onChange={e => setCode(e.currentTarget.value)} />
           </label>
         )}
         <p>Draw Yourself!</p>
@@ -92,14 +92,7 @@ const RoleStatus = () => {
   }
 }
 
-const Player = props => (
-  <div className='player'>
-    <div className='playerName'>
-      {props.player.name}
-    </div>
-    <SVG id={props.svgId}/>
-  </div>
-)
+
 
 const TeamDisplay = props => (
   <div className="team-display" style={{border: `${props.color} solid 3px`}}>
@@ -118,8 +111,18 @@ const TeamDisplay = props => (
   </div>
 )
 
-const SVG = props => {
-  const svgRef = useRef(null);
+const Player = props => (
+  <div className='player'>
+    <div className='player-name'
+         style={{color: props.player.team === 'BLUE' ? '#34BAEB' : '#DE6228',
+                border: props.player.isCluegiver ? 'solid 3px gold' : 'none' }}>
+      {props.player.name}
+    </div>
+    <PlayerSVG id={props.svgId}/>
+  </div>
+)
+
+const PlayerSVG = props => {
   const getSvg = useApiCall('getSvg', { id: props.id });
   const [svg, setSvg] = useState(null);
   console.log(props.id);
@@ -129,8 +132,11 @@ const SVG = props => {
   },[props.id,setSvg])
 
   return (
-    <div  style={{width:'100px', height:'75px'}}>
-    <svg style={{transform:'scale(0.75)'}} viewBox={'0 0 348 198'}>
+    <div  style={{width:'100%',
+                  height:'auto',
+                  overflow: 'hidden',
+      }}>
+    <svg  width='100%' viewBox={'0 0 348 198'} preserveAspectRatio="xMidYMid meet">
       <g dangerouslySetInnerHTML={{__html:svg }}>
       </g>
     </svg>
