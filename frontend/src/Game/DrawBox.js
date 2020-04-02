@@ -11,11 +11,11 @@ const DrawBox = props => {
 
   const handleMouseMove = useCallback(e => {
     if (isMouseDown) {
-      ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+      ctx.lineTo(e.offsetX, e.offsetY);
       ctx.stroke();
-      fakeCtx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+      fakeCtx.lineTo(e.offsetX, e.offsetY);
       fakeCtx.stroke();
-      console.log(e.clientY);
+      console.log(e.pageY);
     }
   },[ctx, isMouseDown, rect])
 
@@ -27,9 +27,9 @@ console.log(fakeCtx);
   const handleMouseDown = useCallback(e => {
     setIsMouseDown(true);
     ctx.beginPath();
-    ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+    ctx.moveTo(e.offsetX, e.offsetY);
     fakeCtx.beginPath();
-    fakeCtx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+    fakeCtx.moveTo(e.offsetX, e.offsetY);
     ctx.lineWidth = 10;
     fakeCtx.lineWidth = 10;
 
