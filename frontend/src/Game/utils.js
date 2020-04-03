@@ -1,4 +1,4 @@
-const ctxHandler = (ref) => {
+export const ctxHandler = (ref) => {
   const ctx = ref.getContext('2d');
   ctx.lineWidth = 15;
   ctx.strokeStyle = '#ff8000';
@@ -29,7 +29,7 @@ const ctxHandler = (ref) => {
   )
 }
 
-const drawAvatar = (avatar, ctx) => {
+export const drawAvatar = (avatar, ctx) => {
   ctx.beginPath();
   ctx.lineWidth = 15;
   ctx.strokeStyle = '#ff8000';
@@ -48,7 +48,7 @@ const drawAvatar = (avatar, ctx) => {
   ctx.stroke();
 }
 
-const animateAvatar = (avatar, ctx) => {
+export const animateAvatar = (avatar, ctx) => {
   ctx.beginPath();
   ctx.lineWidth = 15;
   ctx.strokeStyle = '#ff8000';
@@ -77,7 +77,7 @@ const animateAvatar = (avatar, ctx) => {
   animate();
 }
 
-const copyContents = (contents) => {
+export const copyContents = (contents) => {
   const dummy = document.createElement("input");
   document.body.appendChild(dummy);
   dummy.setAttribute("id", "dummy_id");
@@ -88,4 +88,3 @@ const copyContents = (contents) => {
 }
 
 
-module.exports = { ctxHandler, drawAvatar, animateAvatar,copyContents }
