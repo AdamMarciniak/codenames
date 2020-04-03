@@ -72,10 +72,10 @@ const DrawBox = props => {
     )
   },[handleMouseDown, handleMouseUp, handleMouseMove, setCtx])
 
-
+  // canvas touch-action='none' is in here for safari/iphone support.
   return (
     <div className="canvas-wrapper">
-      <canvas ref={canvasRef} width="348px" height="198px" className="avatar-canvas"/>
+      <canvas touch-action='none' ref={canvasRef} width="348px" height="198px" className="avatar-canvas"/>
     </div>
   )
 }
