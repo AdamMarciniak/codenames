@@ -13,7 +13,7 @@ export const JoinGame = ({ match: { params } }) => {
   const [name, setName] = useState('');
   const [code, setCode] = useState(params.code || '');
   const [avatar, setAvatar] = useState(null);
-  const joinGame = useApiCall('joinGame', { name, gameCode: code, avatar: avatar });
+  const joinGame = useApiCall('joinGame', { name, gameCode: code.toUpperCase(), avatar: avatar });
   return (
     <div className="form-wrap">
       <div className="form">
@@ -24,7 +24,7 @@ export const JoinGame = ({ match: { params } }) => {
         {!params.code && (
           <label>
             Game Code
-            <input value={code} placeholder="-----" onChange={e => setCode(e.currentTarget.value)} />
+            <input value={code} placeholder="ABCDE" onChange={e => setCode(e.currentTarget.value)} />
           </label>
         )}
         <p>Draw Yourself!</p>
@@ -122,7 +122,6 @@ const Player = props => (
     <PlayerAvatar id={props.avatarId}/>
   </div>
 )
-
 
 const PlayersReadout = props => {
   return (
