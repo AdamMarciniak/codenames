@@ -110,7 +110,7 @@ const getGameStateForPlayer = async (playerId) => {
     [playerId]
   )).rows;
 
-  const svgs = (await pool.query(
+  const avatars = (await pool.query(
     `
     SELECT 
       player_id, id
@@ -196,7 +196,7 @@ const getGameStateForPlayer = async (playerId) => {
     currentTurn,
     players,
     words,
-    svgs
+    avatars
   };
 }
 
@@ -337,7 +337,7 @@ const insertAvatar = async (playerId, data) => {
   );
 }
 
-const getSvgContents = async (id) => {
+const getAvatar = async (id) => {
   return (await pool.query(
     `
     SELECT
@@ -363,5 +363,5 @@ module.exports = {
   savePlayerSecret,
   getPlayerForSecret,
   insertAvatar,
-  getSvgContents,
+  getAvatar,
 };

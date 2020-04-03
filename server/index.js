@@ -48,7 +48,7 @@ io.on("connection", socket => {
     }
   });
 
-  socket.on("createGame", async ({ name, svg }, callback) => {
+  socket.on("createGame", async ({ name, avatar }, callback) => {
     try {
       if (!name) {
         return respondError(callback, 400, `The parameter "name" is missing or empty. (Must be string.)`);
@@ -62,7 +62,7 @@ io.on("connection", socket => {
         firstTeam
       );
 
-      await db.insertAvatar(playerId, svg)
+      await db.insertAvatar(playerId, avatar)
   
       registerPlayerSocket(playerId, socket);
       registerPlayerSecret(playerId, randomString(40));
@@ -74,7 +74,7 @@ io.on("connection", socket => {
   });
 
 
-  socket.on("joinGame", async ({ name, gameCode, svg }, callback) => {
+  socket.on("joinGame", async ({ name, gameCode, avatar }, callback) => {
     try {
       if (!name) {
         return respondError(callback, 400, `The parameter "name" is missing or empty. (Must be string.)`);
@@ -92,7 +92,7 @@ io.on("connection", socket => {
         gameCode,
         name
       );
-      await db.insertAvatar(playerId, svg)
+      await db.insertAvatar(playerId, avatar)
       const secret = randomString(40);
 
       registerPlayerSocket(playerId, socket);
@@ -180,7 +180,7 @@ io.on("connection", socket => {
     }
   });
 
-  authenticatedEndpoint(socket, "getSvg", async (playerId, { id }, callback) => {
+  authenticatedEndpoint(socket, "getAvatar", async (playerId, { id }, callback) => {
     if (!id) {
       return respondError(callback, 400, `The parameter "id" is missing or empty. (Must be Number.)`);
     }
@@ -189,8 +189,7 @@ io.on("connection", socket => {
       if (! await db.isPlayerInActiveGame(playerId)) {
         return respondError(callback, 401, `It looks like you haven't joined a game yet. ` )
       }
-      console.log('getting svg contents')
-      callback(null,await db.getSvgContents(id));
+      callback(null,await db.getAvatar(id));
 
       onPlayerGameChanged(playerId);
       respondSuccess(callback);

@@ -1,64 +1,39 @@
 
-import C2S from './canvasSvg.js'
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import {ctxHandler} from './utils'
 
 const DrawBox = props => {
   const canvasRef = useRef(null);
   const [isMouseDown, setIsMouseDown] = useState(false);
   const [ctx, setCtx] = useState(null);
-  const [fakeCtx, setFakeCtx] = useState(null);
-  const [rect, setRect] = useState(null);
+
+  useEffect(() => {
+    setCtx(ctxHandler(canvasRef.current));
+  },[setCtx,canvasRef])
+
+  const handleMouseDown = useCallback(e => {
+    setIsMouseDown(true);
+    ctx.moveTo(e.offsetX, e.offsetY);
+  },[setIsMouseDown, ctx])
 
   const handleMouseMove = useCallback(e => {
     if (isMouseDown) {
       ctx.lineTo(e.offsetX, e.offsetY);
-      ctx.stroke();
-      fakeCtx.lineTo(e.offsetX, e.offsetY);
-      fakeCtx.stroke();
     }
-  },[ctx, isMouseDown, rect])
+  },[isMouseDown, ctx])
 
-  const handleMouseDown = useCallback(e => {
-    setIsMouseDown(true);
-    ctx.lineJoin = 'round';
-    ctx.lineCap = 'round';
-    ctx.strokeStyle = '#ff8000';
-    ctx.beginPath();
-    ctx.moveTo(e.offsetX, e.offsetY);
-    fakeCtx.strokeStyle = '#40663d';
-
-    fakeCtx.lineJoin = 'round';
-    fakeCtx.lineCap = 'round';
-    fakeCtx.beginPath();
-    fakeCtx.moveTo(e.offsetX, e.offsetY);
-    ctx.lineWidth = 15;
-    fakeCtx.lineWidth = 15;
-
-  },[setIsMouseDown, ctx, rect])
-
-   const handleMouseUp = useCallback(e => {
+  const handleMouseUp = useCallback(e => {
     setIsMouseDown(false);
     try {
-    const re = new RegExp('(?<=\<g>)(.*?)(?=\<\/g>)');
-    const serializedSvg = fakeCtx.getSerializedSvg(true)
-    const results = re.exec(serializedSvg)[0];
-    props.setSvg(results)
+      props.setAvatar(ctx.getCoords())
+      console.log(ctx.getCoords())
     } catch (e) {
       console.log(e)
     }
-  },[setIsMouseDown,fakeCtx])
-
-  useEffect(() => {
-    setRect(canvasRef.current.getBoundingClientRect());
-  },[setRect])
-
-  useEffect(() => {
-    setFakeCtx(new C2S(348,198));
-  },[])
+  },[setIsMouseDown, ctx])
 
   useEffect(() => {
     const ref = canvasRef.current;
-    setCtx(ref.getContext('2d'));
     ref.addEventListener('pointerdown', handleMouseDown)
     ref.addEventListener('pointerup', handleMouseUp)
     ref.addEventListener('pointermove', handleMouseMove)
@@ -70,9 +45,9 @@ const DrawBox = props => {
         ref.removeEventListener('pointermove', handleMouseMove)
       }
     )
-  },[handleMouseDown, handleMouseUp, handleMouseMove, setCtx])
+  },[handleMouseDown, handleMouseUp, handleMouseMove, canvasRef])
 
-  // canvas touch-action='none' is in here for safari/iphone support.
+  // canvas touch-action='none' is in here for safari/iphone support Doesn't seem to work though....
   return (
     <div className="canvas-wrapper">
       <canvas touch-action='none' ref={canvasRef} width="348px" height="198px" className="avatar-canvas"/>

@@ -5,13 +5,15 @@ import useGameState from '../useGameState';
 import api, { useApiCall } from '../api';
 import Card from '../components/cards/Card';
 import DrawBox from './DrawBox';
+import PlayerAvatar from './PlayerAvatar'
+import {copyContents} from './utils';
 
 
 export const JoinGame = ({ match: { params } }) => {
   const [name, setName] = useState('');
   const [code, setCode] = useState(params.code || '');
-  const [svg, setSvg] = useState(null);
-  const joinGame = useApiCall('joinGame', { name, gameCode: code, svg: svg });
+  const [avatar, setAvatar] = useState(null);
+  const joinGame = useApiCall('joinGame', { name, gameCode: code, avatar: avatar });
   return (
     <div className="form-wrap">
       <div className="form">
@@ -26,7 +28,7 @@ export const JoinGame = ({ match: { params } }) => {
           </label>
         )}
         <p>Draw Yourself!</p>
-        <DrawBox setSvg={setSvg}/>
+        <DrawBox setAvatar={setAvatar}/>
         <button onClick={joinGame}>Join Game</button>
       </div>
     </div>
@@ -34,9 +36,9 @@ export const JoinGame = ({ match: { params } }) => {
 }
 
 export const CreateGame = () => {
-  const [svg, setSvg] = useState(null);
+  const [avatar, setAvatar] = useState(null);
   const [name, setName] = useState('');
-  const createGame = useApiCall('createGame', { name, svg });
+  const createGame = useApiCall('createGame', { name, avatar });
 
   return (
     <div className="form-wrap">
@@ -46,7 +48,7 @@ export const CreateGame = () => {
           <input value={name} placeholder="Baby Yoda" onChange={e => setName(e.currentTarget.value)} />
         </label>
         <p>Draw Yourself!</p>
-        <DrawBox setSvg={setSvg}/>
+        <DrawBox setAvatar={setAvatar}/>
         <button onClick={createGame}>Create Game</button>
       </div>
     </div>
@@ -93,7 +95,6 @@ const RoleStatus = () => {
 }
 
 
-
 const TeamDisplay = props => (
   <div className="team-display" style={{border: `${props.color} solid 3px`}}>
     {
@@ -103,7 +104,7 @@ const TeamDisplay = props => (
         ).map(id => (
           <Player
             player={props.gameState.players[id]}
-            svgId={props.gameState.svgs.filter(item => item.player_id == id)[0]['id']}
+            avatarId={props.gameState.avatars.filter(item => item.player_id == id)[0]['id']}
             key={id}/>
           )
         )
@@ -118,31 +119,10 @@ const Player = props => (
                 border: props.player.isCluegiver ? 'solid 3px gold' : 'none' }}>
       {props.player.name}
     </div>
-    <PlayerSVG id={props.svgId}/>
+    <PlayerAvatar id={props.avatarId}/>
   </div>
 )
 
-const PlayerSVG = props => {
-  const getSvg = useApiCall('getSvg', { id: props.id });
-  const [svg, setSvg] = useState(null);
-  console.log(props.id);
-  useEffect(() => {
-    getSvg().then(result => {setSvg(result)})
-
-  },[props.id,setSvg])
-
-  return (
-    <div  style={{width:'100%',
-                  height:'auto',
-                  overflow: 'hidden',
-      }}>
-    <svg  width='100%' viewBox={'0 0 348 198'} preserveAspectRatio="xMidYMid meet">
-      <g dangerouslySetInnerHTML={{__html:svg }}>
-      </g>
-    </svg>
-    </div>
-  )
-}
 
 const PlayersReadout = props => {
   return (
@@ -164,6 +144,12 @@ export default () => {
     window.location.href = '/'
   });
 
+  const handleCopyInvite = useCallback(() => {
+    const contents = `${window.location.protocol}//${window.location.host}/join/${gameState.gameCode}`;
+    console.log(contents)
+    copyContents(contents);
+  })
+
   if (!gameState) {
     return null;
   }
@@ -175,7 +161,6 @@ export default () => {
 
   // you can join a team if you aren't already on one, or if you are but no cards have been flipped yet.
   const canJoinTeam = currentPlayer.team === 'OBSERVER' || (!gameState.words.find(({ flipped }) => flipped) && !currentPlayer.isCluegiver);
-
 
   return (
     <div className="game-wrap">
@@ -222,7 +207,7 @@ export default () => {
         </div>
       </div>
       <footer>
-        <div>Invite your friends! <strong>{window.location.protocol}//{window.location.host}/join/{gameState.gameCode}</strong></div>
+        <div className="invite">Invite your friends! <strong>{window.location.protocol}//{window.location.host}/join/{gameState.gameCode}</strong><div onClick={handleCopyInvite}className="copy-button">Copy</div></div>
         <div onClick={exitGame} className="exit-button">Exit this Game</div>
       </footer>
     </div>
