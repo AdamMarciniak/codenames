@@ -92,7 +92,13 @@ a {
 
 .game-wrap footer .invite {
   display: flex;
+  flex-direction: row;
   align-items: center;
+}
+
+.game-wrap footer strong {
+  margin-left: 8px;
+  overflow-wrap: anywhere;
 }
 
 .game-wrap footer .invite .copy-button {
@@ -203,7 +209,7 @@ a {
 }
 
 .player-name {
-  font-size: 1vw;
+  font-size: 80%;
 }
 
 .player-svg {
@@ -211,3 +217,13 @@ a {
   height:'auto';
   overflow: 'hidden';
 }
+
+@media (max-width: 500px) {
+  .game-wrap footer .invite {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+
