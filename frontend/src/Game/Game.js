@@ -6,6 +6,7 @@ import api, { useApiCall } from '../api';
 import Card from '../components/cards/Card';
 import DrawBox from './DrawBox';
 import PlayerAvatar from './PlayerAvatar'
+import {copyContents} from './utils';
 
 
 export const JoinGame = ({ match: { params } }) => {
@@ -143,6 +144,12 @@ export default () => {
     window.location.href = '/'
   });
 
+  const handleCopyInvite = useCallback(() => {
+    const contents = `${window.location.protocol}//${window.location.host}/join/${gameState.gameCode}`;
+    console.log(contents)
+    copyContents(contents);
+  })
+
   if (!gameState) {
     return null;
   }
@@ -154,7 +161,6 @@ export default () => {
 
   // you can join a team if you aren't already on one, or if you are but no cards have been flipped yet.
   const canJoinTeam = currentPlayer.team === 'OBSERVER' || (!gameState.words.find(({ flipped }) => flipped) && !currentPlayer.isCluegiver);
-
 
   return (
     <div className="game-wrap">
@@ -201,7 +207,7 @@ export default () => {
         </div>
       </div>
       <footer>
-        <div>Invite your friends! <strong>{window.location.protocol}//{window.location.host}/join/{gameState.gameCode}</strong></div>
+        <div className="invite">Invite your friends! <strong>{window.location.protocol}//{window.location.host}/join/{gameState.gameCode}</strong><div onClick={handleCopyInvite}className="copy-button">Copy</div></div>
         <div onClick={exitGame} className="exit-button">Exit this Game</div>
       </footer>
     </div>

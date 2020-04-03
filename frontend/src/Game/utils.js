@@ -77,5 +77,15 @@ const animateAvatar = (avatar, ctx) => {
   animate();
 }
 
+const copyContents = (contents) => {
+  const dummy = document.createElement("input");
+  document.body.appendChild(dummy);
+  dummy.setAttribute("id", "dummy_id");
+  document.getElementById("dummy_id").value=contents;
+  dummy.select();
+  document.execCommand("copy");
+  document.body.removeChild(dummy);
+}
 
-module.exports = { ctxHandler, drawAvatar, animateAvatar }
+
+module.exports = { ctxHandler, drawAvatar, animateAvatar,copyContents }

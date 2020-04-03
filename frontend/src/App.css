@@ -90,6 +90,20 @@ a {
   align-items: center;
 }
 
+.game-wrap footer .invite {
+  display: flex;
+  align-items: center;
+}
+
+.game-wrap footer .invite .copy-button {
+  margin-left: 10px;
+  font-weight: bold;
+  font-size: 15px;
+  text-decoration: underline;
+  cursor: pointer;
+  color: #ffd894;
+}
+
 .game-wrap .exit-button {
   text-decoration: underline;
   cursor: pointer;
