@@ -350,6 +350,17 @@ const getAvatar = async (id) => {
   )).rows[0].image
 }
 
+const getAllImages = async () => {
+  return (await pool.query(
+    `
+    SELECT
+    *
+    from
+    avatars
+    `
+  )).rows
+}
+
 
 module.exports = {
   createGame,
@@ -364,4 +375,5 @@ module.exports = {
   getPlayerForSecret,
   insertAvatar,
   getAvatar,
+  getAllImages,
 };

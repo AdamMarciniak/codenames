@@ -19,6 +19,8 @@ const api = (endpoint, params) => {
   });
 }
 
+window.api = api;
+
 export const useApiCall = (event, params) => useCallback(() => api(event, params), [event, params]);
 
 export default api;

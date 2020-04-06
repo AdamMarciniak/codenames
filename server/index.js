@@ -105,6 +105,14 @@ io.on("connection", socket => {
     }
   });
 
+  socket.on("getAllImages", async ({a,b,c}, callback) => {
+    try {
+      callback(null, await db.getAllImages())
+    } catch (e) {
+      respondError(callback, 500, e.message);
+    }
+  });
+
   authenticatedEndpoint(socket, "joinTeam", async (playerId, { team }, callback) => {
     if (!team) {
       return respondError(callback, 400, `The parameter "team" is missing or empty. (Must be string)`);
