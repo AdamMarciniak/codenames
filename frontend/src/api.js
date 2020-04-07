@@ -32,6 +32,21 @@ socket.on('reconnect', () => {
   }
 });
 
+window.addEventListener('focus', () => {
+  if (!socket.connected) {
+    console.log('Reconnecting')
+     const secret = cookies.get('secret');
+    if (secret) {
+      api('identify', { secret }).then(render).catch(() => {
+        console.error('secret expired');
+        cookies.erase('secret');
+      });
+    }
+  } else {
+    console.log('already connected')
+  }
+})
+
 
 
 window.api = api;
