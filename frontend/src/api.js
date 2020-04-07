@@ -33,7 +33,6 @@ socket.on('reconnect', () => {
 });
 
 window.addEventListener('focus', () => {
-  if (!socket.connected) {
     console.log('Reconnecting')
      const secret = cookies.get('secret');
     if (secret) {
@@ -42,9 +41,7 @@ window.addEventListener('focus', () => {
         cookies.erase('secret');
       });
     }
-  } else {
-    console.log('already connected')
-  }
+
 })
 
 
