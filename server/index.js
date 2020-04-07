@@ -6,8 +6,6 @@ const { playerIdsBySecret, playerIdsBySocketId, registerPlayerSocket, unregister
 
 const db = require("./queries");
 
-let totalUsersSinceRun = 0;
-
 const respondSuccess = (callback) => callback();
 const respondError = (callback, errorCode, errorMessage) => callback({ code: errorCode, message: errorMessage });
 
@@ -20,8 +18,6 @@ const authenticatedEndpoint = (socket, endpoint, handler) => {
 
 io.on("connection", socket => {
   console.log("a user connected");
-  totalUsersSinceRun += 1;
-  console.log(`Total Users So Far: ${totalUsersSinceRun}`)
   socket.on("identify", async ({ secret }, callback) => {
     const playerId = playerIdsBySecret[secret]
     if (playerId) {

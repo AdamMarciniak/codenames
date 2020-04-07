@@ -1,6 +1,9 @@
 import io from 'socket.io-client';
 import { useCallback } from 'react';
+import cookies from 'browser-cookies';
+import {render} from './index'
 export const socket = io(window.location.hostname + ':6969');
+
 
 let index = 0;
 
@@ -18,6 +21,18 @@ const api = (endpoint, params) => {
     });
   });
 }
+
+socket.on('reconnect', () => {
+  const secret = cookies.get('secret');
+  if (secret) {
+    api('identify', { secret }).then(render).catch(() => {
+      console.error('secret expired');
+      cookies.erase('secret');
+    });
+  }
+});
+
+
 
 window.api = api;
 

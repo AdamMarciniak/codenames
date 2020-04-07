@@ -20,7 +20,7 @@ addListener((gameState) => {
   }
 });
 
-const render = () => {
+export const render = () => {
   ReactDOM.render(
     <React.StrictMode>
       <App history={history} />
