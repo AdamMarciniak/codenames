@@ -10,10 +10,15 @@ import {copyContents} from './utils';
 
 
 export const JoinGame = ({ match: { params } }) => {
+  const gameState = useGameState();
   const [name, setName] = useState('');
   const [code, setCode] = useState(params.code || '');
   const [avatar, setAvatar] = useState(null);
   const joinGame = useApiCall('joinGame', { name, gameCode: code.toUpperCase(), avatar: avatar });
+  console.log('joingame', params.code)
+  if (gameState && gameState.gameCode === params.code) {
+    return <Game />;
+  }
   return (
     <div className="form-wrap">
       <div className="form">
@@ -96,7 +101,31 @@ const RoleStatus = () => {
 
 
 const TeamDisplay = props => (
-  <div className="team-display" style={{border: `${props.color} solid 3px`}}>
+  <div
+    className="team-display"
+    style={{
+      border: `${props.color} solid 3px`,
+      backgroundColor: props.gameState.currentTurn === props.team ? `${props.color}` : 'transparent',
+      color: props.gameState.currentTurn === props.team ? 'white' : `${props.color}`,
+      position: 'relative',
+    }}
+  >
+    {props.gameState.currentTurn === props.team && (
+      <div
+        style={{
+          position: 'absolute',
+          textAlign: 'center',
+          bottom: '100%',
+          left: 0,
+          right: 0,
+          color: props.color,
+          paddingBottom: 5,
+          fontWeight: 800
+        }}
+      >
+        {props.team}'s Turn!
+      </div>
+    )}
     {
       Object.keys(props.gameState.players).
         filter(id =>
@@ -115,8 +144,7 @@ const TeamDisplay = props => (
 const Player = props => (
   <div className='player'>
     <div className='player-name'
-         style={{color: props.player.team === 'BLUE' ? '#34BAEB' : '#DE6228',
-                border: props.player.isCluegiver ? 'solid 3px gold' : 'none' }}>
+         style={{ fontWeight: props.player.isCluegiver ? '800' : '' }}>
       {props.player.name}
     </div>
     <PlayerAvatar id={props.avatarId}/>
@@ -126,13 +154,13 @@ const Player = props => (
 const PlayersReadout = props => {
   return (
     <div className="players-readout">
-      <TeamDisplay color={'#34BAEB'} team="BLUE" gameState={props.gameState}/>
-      <TeamDisplay color={'#DE6228'} team="RED" gameState={props.gameState}/>
+      <TeamDisplay color={'rgb(255, 77, 59)'} team="RED" gameState={props.gameState}/>
+      <TeamDisplay color={'rgb(59, 161, 255)'} team="BLUE" gameState={props.gameState}/>
     </div>
   )
 }
 
-export default () => {
+const Game = () => {
   const gameState = useGameState();
   const endTurn = useApiCall('endTurn');
   const joinRedTeam = useApiCall('joinTeam', { team: 'RED' });
@@ -144,7 +172,7 @@ export default () => {
   });
 
   const handleCopyInvite = useCallback(() => {
-    const contents = `${window.location.protocol}//${window.location.host}/join/${gameState.gameCode}`;
+    const contents = `${window.location.protocol}//${window.location.host}/game/${gameState.gameCode}`;
     console.log(contents)
     copyContents(contents);
   })
@@ -163,7 +191,7 @@ export default () => {
 
   return (
     <div className="game-wrap">
-    <PlayersReadout gameState={gameState}/>
+      <PlayersReadout gameState={gameState}/>
       <div className="card-wrap">
         {gameState.words.map((word) => (
           <Card
@@ -206,9 +234,11 @@ export default () => {
         </div>
       </div>
       <footer>
-        <div className="invite">Invite your friends! <strong>{window.location.protocol}//{window.location.host}/join/{gameState.gameCode}</strong><div onClick={handleCopyInvite}className="copy-button">Copy</div></div>
+        <div className="invite">Invite your friends! <strong>{window.location.protocol}//{window.location.host}/game/{gameState.gameCode}</strong><div onClick={handleCopyInvite} className="copy-button">&lt;- Copy That</div></div>
         <div onClick={exitGame} className="exit-button">Exit this Game</div>
       </footer>
     </div>
   )
 }
+
+export default Game;

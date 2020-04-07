@@ -12,13 +12,10 @@ function App({ history }) {
         <Route path="/god">
           <God />
         </Route>
-        <Route path="/join/:code" component={JoinGame} />
+        <Route path="/game/:code" component={JoinGame} />
         <Route path="/join" component={JoinGame} />
         <Route path="/new">
           <CreateGame />
-        </Route>
-        <Route path="/game">
-          <Game />
         </Route>
         <Route path="/">
           <Menu />
