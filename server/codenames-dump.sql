@@ -536,7 +536,7 @@ ALTER TABLE ONLY public.secrets
 
 
 
-INSERT INTO words (text) VALUES 
+INSERT INTO public.words (text) VALUES 
 ('Hollywood'),
 ('Screen'),
 ('Play'),
