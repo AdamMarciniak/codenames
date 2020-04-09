@@ -2,7 +2,7 @@ import io from 'socket.io-client';
 import { useCallback } from 'react';
 import cookies from 'browser-cookies';
 import {render} from './index'
-export const socket = io(window.location.hostname + ':6969');
+export const socket = io(window.location.hostname + ':6970');
 
 
 let index = 0;
