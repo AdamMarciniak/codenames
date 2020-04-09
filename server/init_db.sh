@@ -1,3 +1,3 @@
 #! /bin/bash
 
-dropdb codenames; psql -d postgres -f codenames-dump.sql
+dropdb codenames-beta; psql -d postgres -f codenames-dump.sql

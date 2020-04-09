@@ -20,7 +20,7 @@ SET row_security = off;
 -- Name: codenames; Type: DATABASE; Schema: -; Owner: -
 --
 
-CREATE DATABASE codenames WITH TEMPLATE = template0 ENCODING = 'UTF8' LC_COLLATE = 'C' LC_CTYPE = 'C';
+CREATE DATABASE codenames-beta WITH TEMPLATE = template0 ENCODING = 'UTF8' LC_COLLATE = 'C' LC_CTYPE = 'C';
 
 
 \connect codenames
