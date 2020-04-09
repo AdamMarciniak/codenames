@@ -17,13 +17,13 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- Name: codenames-beta; Type: DATABASE; Schema: -; Owner: -
+-- Name: betaCodenames; Type: DATABASE; Schema: -; Owner: -
 --
 
-CREATE DATABASE codenames-beta WITH TEMPLATE = template0 ENCODING = 'UTF8' LC_COLLATE = 'C' LC_CTYPE = 'C';
+CREATE DATABASE betaCodenames WITH TEMPLATE = template0 ENCODING = 'UTF8' LC_COLLATE = 'C' LC_CTYPE = 'C';
 
 
-\connect codenames-beta
+\connect betaCodenames
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
