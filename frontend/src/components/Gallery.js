@@ -14,7 +14,7 @@ const GalleryImage = props => {
 
   return (
     <div className='avatar-container'>
-      <canvas className='avatar-canvas' width='348' height='198' ref={canvasRef}/>
+      <canvas className='avatar-canvas-gallery' width='348' height='198' ref={canvasRef}/>
     </div>
   )
 }

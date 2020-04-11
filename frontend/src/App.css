@@ -250,6 +250,11 @@ a {
   height: 49.5px;
 }
 
+.avatar-canvas-gallery {
+  width: 100%;
+  height: 100%;
+}
+
 @media (max-width: 500px) {
   .game-wrap footer .invite {
     display: flex;
