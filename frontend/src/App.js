@@ -2,6 +2,7 @@ import React from 'react';
 import './App.css';
 import Game, { Menu, JoinGame, CreateGame } from './Game/Game';
 import God from './God/God';
+import Gallery from './components/Gallery';
 
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 
@@ -11,6 +12,9 @@ function App({ history }) {
       <Switch>
         <Route path="/god">
           <God />
+        </Route>
+        <Route path ="/gallery">
+          <Gallery />
         </Route>
         <Route path="/game/:code" component={JoinGame} />
         <Route path="/join" component={JoinGame} />

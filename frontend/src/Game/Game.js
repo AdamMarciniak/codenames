@@ -8,6 +8,7 @@ import DrawBox from './DrawBox';
 import PlayerAvatar from './PlayerAvatar'
 import {copyContents} from './utils';
 
+window.api = api;
 
 export const JoinGame = ({ match: { params } }) => {
   const gameState = useGameState();

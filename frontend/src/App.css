@@ -232,6 +232,17 @@ a {
   overflow: 'hidden';
 }
 
+.galleryContainer {
+  
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.avatar-container {
+  width: 87px;
+  height: 49.5px;
+}
+
 @media (max-width: 500px) {
   .game-wrap footer .invite {
     display: flex;
