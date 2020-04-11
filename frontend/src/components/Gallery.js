@@ -36,10 +36,12 @@ export default () => {
   },[images])
   
   return (
-    <div className="galleryContainer">
-    {images.map(image => (
-      <GalleryImage key={image.player_id} image={image.image}></GalleryImage>
-    ))}
+    <div className="gallery">
+      <div className="galleryContainer">
+        {images.map(image => (
+          <GalleryImage key={image.player_id} image={image.image}></GalleryImage>
+        ))}
+      </div>
     </div>
   )
 }
