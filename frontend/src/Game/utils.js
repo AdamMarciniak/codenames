@@ -35,17 +35,22 @@ export const drawAvatar = (avatar, ctx) => {
   ctx.strokeStyle = '#ff8000';
   ctx.lineJoin = 'round';
   ctx.lineCap = 'round';
-
-  avatar.split(',').forEach(command => {
-    const [type, x, y] = command.split(' ');
+  if (avatar) {
+    avatar.split(',').forEach(command => {
+      if (command) {
+         const [type, x, y] = command.split(' ');
     switch (type) {
       case 'l':
         ctx.lineTo(x, y);
       case 'm':
         ctx.moveTo(x, y);
     }
+      }
+   
   });
   ctx.stroke();
+  }
+  
 }
 
 export const animateAvatar = (avatar, ctx) => {
