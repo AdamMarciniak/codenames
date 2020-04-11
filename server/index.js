@@ -101,7 +101,7 @@ io.on("connection", socket => {
     }
   });
 
-  socket.on("getAllImages", async ({a,b,c}, callback) => {
+  socket.on("getAllImages", async (params=null, callback) => {
     try {
       callback(null, await db.getAllImages())
     } catch (e) {
