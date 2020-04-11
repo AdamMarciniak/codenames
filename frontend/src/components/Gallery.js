@@ -26,7 +26,7 @@ export default () => {
   useEffect (() => {
     const fetchImages = async () => {
       const images = await api('getAllImages')
-      setImages(images);
+      setImages(images.filter(image => image.image.length > 10));
     }
     fetchImages();
   },[setImages])
