@@ -15,6 +15,14 @@ export const JoinGame = ({ match: { params } }) => {
   const [code, setCode] = useState(params.code || '');
   const [avatar, setAvatar] = useState(null);
   const [joinGame, joiningGame] = useApiCall('joinGame', { name, gameCode: code.toUpperCase(), avatar: avatar });
+  const [hasJoinedGame, setHasJoinedGame] = useState(false);
+
+  useEffect(() => {
+    if (joiningGame) {
+      setHasJoinedGame(true);
+    };
+  }, [joiningGame]);
+
   if (gameState && gameState.gameCode === params.code) {
     return <Game />;
   }
@@ -33,7 +41,7 @@ export const JoinGame = ({ match: { params } }) => {
         )}
         <p>Draw Yourself!</p>
         <DrawBox setAvatar={setAvatar}/>
-        <button disabled={joiningGame} onClick={joinGame}>Join Game</button>
+        <button disabled={joiningGame || hasJoinedGame} onClick={joinGame}>Join Game</button>
       </div>
     </div>
   )
@@ -43,6 +51,12 @@ export const CreateGame = () => {
   const [avatar, setAvatar] = useState(null);
   const [name, setName] = useState('');
   const [createGame, creatingGame] = useApiCall('createGame', { name, avatar });
+  const [hasCreatedGame, setHasCreatedGame] = useState(false);
+  useEffect(() => {
+    if (creatingGame) {
+      setHasCreatedGame(true);
+    };
+  }, [creatingGame]);
 
   return (
     <div className="form-wrap">
@@ -53,7 +67,7 @@ export const CreateGame = () => {
         </label>
         <p>Draw Yourself!</p>
         <DrawBox setAvatar={setAvatar}/>
-        <button onClick={createGame} disabled={creatingGame}>Create Game</button>
+        <button onClick={createGame} disabled={creatingGame || hasCreatedGame}>Create Game</button>
       </div>
     </div>
   )
