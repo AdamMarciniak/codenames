@@ -26,7 +26,6 @@ const DrawBox = props => {
     setIsMouseDown(false);
     try {
       props.setAvatar(ctx.getCoords())
-      console.log(ctx.getCoords())
     } catch (e) {
       console.log(e)
     }

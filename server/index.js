@@ -6,7 +6,7 @@ const { playerIdsBySecret, playerIdsBySocketId, registerPlayerSocket, unregister
 
 const db = require("./queries");
 
-const respondSuccess = (callback) => callback();
+const respondSuccess = (callback, result) => callback(null, result);
 const respondError = (callback, errorCode, errorMessage) => callback({ code: errorCode, message: errorMessage });
 
 const authenticatedEndpoint = (socket, endpoint, handler) => {
@@ -59,7 +59,7 @@ io.on("connection", socket => {
       );
 
       await db.insertAvatar(playerId, avatar)
-  
+
       registerPlayerSocket(playerId, socket);
       registerPlayerSecret(playerId, randomString(40));
       onPlayerGameChanged(playerId);
@@ -103,7 +103,7 @@ io.on("connection", socket => {
 
   socket.on("getAllImages", async (params=null, callback) => {
     try {
-      callback(null, await db.getAllImages())
+      respondSuccess(callback, await db.getAllImages());
     } catch (e) {
       respondError(callback, 500, e.message);
     }
@@ -169,7 +169,7 @@ io.on("connection", socket => {
 
 
   authenticatedEndpoint(socket, "endTurn", async (playerId, params,callback) => {
-    
+
     try {
       if (! await db.isPlayerInActiveGame(playerId)) {
         return respondError(callback, 401, `It looks like you haven't joined a game yet. `)
@@ -186,17 +186,21 @@ io.on("connection", socket => {
 
   authenticatedEndpoint(socket, "getAvatar", async (playerId, { id }, callback) => {
     if (!id) {
+      console.log('no id')
       return respondError(callback, 400, `The parameter "id" is missing or empty. (Must be Number.)`);
     }
 
     try {
-      if (! await db.isPlayerInActiveGame(playerId)) {
+      if (!await db.isPlayerInActiveGame(playerId)) {
+        console.log('bad player id')
         return respondError(callback, 401, `It looks like you haven't joined a game yet. ` )
       }
-      callback(null,await db.getAvatar(id));
+
+      const avatar = await db.getAvatar(id);
+      console.log('found avatar', avatar);
 
       onPlayerGameChanged(playerId);
-      respondSuccess(callback);
+      respondSuccess(callback, avatar);
 
     } catch (e) {
       respondError(callback, 500, e.message);

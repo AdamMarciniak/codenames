@@ -4,7 +4,7 @@ import { useApiCall } from '../api';
 
 export default () => {
   const [name, setName] = useState('');
-  const createGame = useApiCall('createGame', { name });
+  const [createGame, creatingGame] = useApiCall('createGame', { name });
 
   const gameState = useGameState();
 
@@ -12,7 +12,7 @@ export default () => {
     <div>
       <h3>Create Game</h3>
       <input onChange={(e) => setName(e.currentTarget.value)} value={name} />
-      <button onClick={createGame}>Do it</button>
+      <button onClick={createGame} disabled={creatingGame}>Do it</button>
 
       <h3>Current State</h3>
       <pre>

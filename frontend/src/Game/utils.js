@@ -46,11 +46,11 @@ export const drawAvatar = (avatar, ctx) => {
         ctx.moveTo(x, y);
     }
       }
-   
+
   });
   ctx.stroke();
   }
-  
+
 }
 
 export const animateAvatar = (avatar, ctx) => {
@@ -59,7 +59,7 @@ export const animateAvatar = (avatar, ctx) => {
   ctx.strokeStyle = '#ff8000';
   ctx.lineJoin = 'round';
   ctx.lineCap = 'round';
-  
+
   const splitAvatar = avatar.split(',');
   let i = 0 ;
   const animate = () => {
@@ -76,7 +76,6 @@ export const animateAvatar = (avatar, ctx) => {
     if (i === splitAvatar.length) {
       return
     }
-    console.log(i)
     requestAnimationFrame(animate);
   }
   animate();

@@ -112,15 +112,15 @@ const getGameStateForPlayer = async (playerId) => {
 
   const avatars = (await pool.query(
     `
-    SELECT 
+    SELECT
       player_id, id
     FROM
       avatars
     WHERE
       player_id IN (
-    SELECT 
+    SELECT
       id
-      FROM 
+      FROM
         players
       WHERE
       game_id = (
@@ -325,13 +325,14 @@ const getPlayerForSecret = async (secret) => {
 };
 
 const insertAvatar = async (playerId, data) => {
+  console.log('inserting avatar');
   await pool.query(
     `
     INSERT
     INTO
     avatars
     (player_id, image)
-    values 
+    values
     ($1, $2)`,
     [playerId, data]
   );

@@ -14,8 +14,7 @@ export const JoinGame = ({ match: { params } }) => {
   const [name, setName] = useState('');
   const [code, setCode] = useState(params.code || '');
   const [avatar, setAvatar] = useState(null);
-  const joinGame = useApiCall('joinGame', { name, gameCode: code.toUpperCase(), avatar: avatar });
-  console.log('joingame', params.code)
+  const [joinGame, joiningGame] = useApiCall('joinGame', { name, gameCode: code.toUpperCase(), avatar: avatar });
   if (gameState && gameState.gameCode === params.code) {
     return <Game />;
   }
@@ -34,7 +33,7 @@ export const JoinGame = ({ match: { params } }) => {
         )}
         <p>Draw Yourself!</p>
         <DrawBox setAvatar={setAvatar}/>
-        <button onClick={joinGame}>Join Game</button>
+        <button disabled={joiningGame} onClick={joinGame}>Join Game</button>
       </div>
     </div>
   )
@@ -43,7 +42,7 @@ export const JoinGame = ({ match: { params } }) => {
 export const CreateGame = () => {
   const [avatar, setAvatar] = useState(null);
   const [name, setName] = useState('');
-  const createGame = useApiCall('createGame', { name, avatar });
+  const [createGame, creatingGame] = useApiCall('createGame', { name, avatar });
 
   return (
     <div className="form-wrap">
@@ -54,7 +53,7 @@ export const CreateGame = () => {
         </label>
         <p>Draw Yourself!</p>
         <DrawBox setAvatar={setAvatar}/>
-        <button onClick={createGame}>Create Game</button>
+        <button onClick={createGame} disabled={creatingGame}>Create Game</button>
       </div>
     </div>
   )
@@ -162,10 +161,11 @@ const PlayersReadout = props => {
 
 const Game = () => {
   const gameState = useGameState();
-  const endTurn = useApiCall('endTurn');
-  const joinRedTeam = useApiCall('joinTeam', { team: 'RED' });
-  const joinBlueTeam = useApiCall('joinTeam', { team: 'BLUE' });
-  const becomeCluegiver = useApiCall('becomeCluegiver');
+  const [endTurn, endingTurn] = useApiCall('endTurn');
+  const [joinRedTeam, joiningRedTeam] = useApiCall('joinTeam', { team: 'RED' });
+  const [joinBlueTeam, joiningBlueTeam] = useApiCall('joinTeam', { team: 'BLUE' });
+  const [becomeCluegiver, becomingCluegiver] = useApiCall('becomeCluegiver');
+  const actionInFlight = endingTurn || joiningRedTeam || joiningBlueTeam || becomingCluegiver;
   const exitGame = useCallback(() => {
     cookies.erase('secret');
     window.location.href = '/'
@@ -209,15 +209,15 @@ const Game = () => {
           <RoleStatus />
         </div>
         <div className="buttons">
-          {canEndTurn && <button onClick={endTurn} style={{ backgroundColor: 'black', color: 'white' }}>End Turn</button>}
+          {canEndTurn && <button onClick={endTurn} disabled={actionInFlight} style={{ backgroundColor: 'black', color: 'white' }}>End Turn</button>}
           {
-            currentPlayer.team !== 'OBSERVER' && !teamHasCluegiver && <button onClick={becomeCluegiver}>Become Cluegiver</button>
+            currentPlayer.team !== 'OBSERVER' && !teamHasCluegiver && <button onClick={becomeCluegiver} disabled={actionInFlight}>Become Cluegiver</button>
           }
           {
             canJoinTeam
               && currentPlayer.team !== 'RED'
               && (
-                <button onClick={joinRedTeam} style={{ backgroundColor: '#FF7F6D' }}>
+                <button onClick={joinRedTeam} disabled={actionInFlight} style={{ backgroundColor: '#FF7F6D' }}>
                   {currentPlayer.team === 'OBSERVER' ? 'Join' : 'Switch to'} Red Team
                 </button>
               )
@@ -226,7 +226,7 @@ const Game = () => {
             canJoinTeam
               && currentPlayer.team !== 'BLUE'
               && (
-                  <button onClick={joinBlueTeam} style={{ backgroundColor: '#6DD3FF' }}>
+                  <button onClick={joinBlueTeam} disabled={actionInFlight} style={{ backgroundColor: '#6DD3FF' }}>
                   {currentPlayer.team === 'OBSERVER' ? 'Join' : 'Switch to'} Blue Team
                 </button>
               )
