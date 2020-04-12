@@ -9,6 +9,10 @@ html, body, #root {
   box-sizing: border-box;
 }
 
+#root {
+  overflow: hidden;
+}
+
 .gameBoard {
   height: 60%;
   width: 60%;
