@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import cookies from 'browser-cookies';
 import useGameState from '../useGameState';
 import api, { useApiCall } from '../api';
@@ -97,7 +97,7 @@ const RoleStatus = () => {
     let cluegiverLine;
     if (!currentTeamCluegiver) {
       cluegiverLine = <div>Your team doesn't have a cluegiver yet!</div>;
-    } else if (currentTeamCluegiver == currentPlayer) {
+    } else if (currentTeamCluegiver === currentPlayer) {
       cluegiverLine = <div><strong>You are the cluegiver!</strong></div>;
     } else {
       cluegiverLine = <div>Your cluegiver is {currentTeamCluegiver.name}</div>;
@@ -140,13 +140,12 @@ const TeamDisplay = props => (
       </div>
     )}
     {
-      Object.keys(props.gameState.players).
-        filter(id =>
-          props.gameState.players[id].team === props.team
-        ).map(id => (
+      Object.keys(props.gameState.players)
+        .filter(id => props.gameState.players[id].team === props.team)
+        .map(id => (
           <Player
             player={props.gameState.players[id]}
-            avatarId={props.gameState.avatars.filter(item => item.player_id == id)[0]['id']}
+            avatarId={props.gameState.avatars.filter(item => String(item.player_id) === id)[0]['id']}
             key={id}/>
           )
         )
@@ -174,6 +173,7 @@ const PlayersReadout = props => {
 }
 
 const Game = () => {
+  const isGodMode = window.location.href.includes('?god=1');
   const gameState = useGameState();
   const [endTurn, endingTurn] = useApiCall('endTurn');
   const [joinRedTeam, joiningRedTeam] = useApiCall('joinTeam', { team: 'RED' });
@@ -183,13 +183,12 @@ const Game = () => {
   const exitGame = useCallback(() => {
     cookies.erase('secret');
     window.location.href = '/'
-  });
+  }, []);
 
   const handleCopyInvite = useCallback(() => {
     const contents = `${window.location.protocol}//${window.location.host}/game/${gameState.gameCode}`;
-    console.log(contents)
     copyContents(contents);
-  })
+  }, [gameState])
 
   if (!gameState) {
     return null;
@@ -198,7 +197,7 @@ const Game = () => {
   const isCurrentPlayerTurn = gameState.currentTurn === currentPlayer.team;
   const teamHasCluegiver = Object.values(gameState.players).find(({ team, isCluegiver }) => team === currentPlayer.team && isCluegiver);
   const canEndTurn = isCurrentPlayerTurn && teamHasCluegiver && !currentPlayer.isCluegiver;
-  const canClickCard = teamHasCluegiver && !currentPlayer.isCluegiver && isCurrentPlayerTurn;
+  const canClickCard = isGodMode || (teamHasCluegiver && !currentPlayer.isCluegiver && isCurrentPlayerTurn);
 
   // you can join a team if you aren't already on one, or if you are but no cards have been flipped yet.
   const canJoinTeam = currentPlayer.team === 'OBSERVER' || (!gameState.words.find(({ flipped }) => flipped) && !currentPlayer.isCluegiver);
@@ -214,6 +213,7 @@ const Game = () => {
             type={word.type}
             flipped={word.flipped}
             clickable={canClickCard}
+            showColor={currentPlayer.isCluegiver}
             onClick={() => canClickCard && api('revealWord', { wordId: word.id })}
           />
         ))}
@@ -248,7 +248,7 @@ const Game = () => {
         </div>
       </div>
       <footer>
-        <div className="invite">Invite your friends! <strong>{window.location.protocol}//{window.location.host}/game/{gameState.gameCode}</strong><div onClick={handleCopyInvite} className="copy-button">&lt;- Copy That</div></div>
+        <div className="invite">Invite your friends! <strong>{`${window.location.protocol}//${window.location.host}`}/game/{gameState.gameCode}</strong><div onClick={handleCopyInvite} className="copy-button">&lt;- Copy That</div></div>
         <div onClick={exitGame} className="exit-button">Exit this Game</div>
       </footer>
     </div>

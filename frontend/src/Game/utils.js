@@ -29,6 +29,20 @@ export const ctxHandler = (ref) => {
   )
 }
 
+const drawOneAvatarLine = (ctx, command) => {
+  const [type, x, y] = command.split(' ');
+  switch (type) {
+    case 'l':
+      ctx.lineTo(x, y);
+      break;
+    case 'm':
+      ctx.moveTo(x, y);
+      break;
+    default:
+      throw new Error(`Unknown command "${type}"`);
+  }
+}
+
 export const drawAvatar = (avatar, ctx) => {
   ctx.beginPath();
   ctx.lineWidth = 15;
@@ -38,19 +52,11 @@ export const drawAvatar = (avatar, ctx) => {
   if (avatar) {
     avatar.split(',').forEach(command => {
       if (command) {
-         const [type, x, y] = command.split(' ');
-    switch (type) {
-      case 'l':
-        ctx.lineTo(x, y);
-      case 'm':
-        ctx.moveTo(x, y);
-    }
+        drawOneAvatarLine(ctx, command);
       }
-
-  });
-  ctx.stroke();
+    });
+    ctx.stroke();
   }
-
 }
 
 export const animateAvatar = (avatar, ctx) => {
@@ -64,13 +70,7 @@ export const animateAvatar = (avatar, ctx) => {
   let i = 0 ;
   const animate = () => {
     const command = splitAvatar[i];
-    const [type, x, y] = command.split(' ');
-    switch (type) {
-      case 'l':
-        ctx.lineTo(x, y);
-      case 'm':
-        ctx.moveTo(x, y);
-    }
+    drawOneAvatarLine(ctx, command);
     ctx.stroke();
     i += 1;
     if (i === splitAvatar.length) {

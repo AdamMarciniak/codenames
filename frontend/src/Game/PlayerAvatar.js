@@ -4,7 +4,7 @@ import { useApiCall } from '../api';
 
 const PlayerAvatar = props => {
   const avatarParams = useMemo(() => ({ id: props.id }), [props.id]);
-  const [getAvatar, gettingAvatar] = useApiCall('getAvatar', avatarParams);
+  const [getAvatar] = useApiCall('getAvatar', avatarParams);
   const canvasRef = useRef(null);
   const [avatar, setAvatar] = useState(null);
 

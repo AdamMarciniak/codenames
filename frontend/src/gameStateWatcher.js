@@ -4,7 +4,6 @@ import cookies from 'browser-cookies';
 const gameStateListeners = [];
 
 let currentGameState = null;
-let currentAvatarState = null;
 
 socket.on('gameState', (newGameState) => {
   currentGameState = newGameState;

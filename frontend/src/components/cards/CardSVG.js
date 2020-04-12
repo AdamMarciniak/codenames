@@ -1,6 +1,6 @@
 import React from "react";
 
-const CardSVG = ({ handleClick, color, outlineColor, word, hidden }) => {
+const CardSVG = ({ outlineColor, word }) => {
   return (
     <svg
       width="100%"
@@ -9,8 +9,6 @@ const CardSVG = ({ handleClick, color, outlineColor, word, hidden }) => {
       preserveAspectRatio="xMidYMid meet"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      onClick={handleClick}
-      style={{ userSelect: "none", display: hidden ? 'none' : '' }}
     >
       <rect
         x="24.0381"
@@ -18,8 +16,8 @@ const CardSVG = ({ handleClick, color, outlineColor, word, hidden }) => {
         width="297.089"
         height="180.101"
         rx="8.5"
-        fill={`#${color}`}
-        stroke={`#${outlineColor || 'AF9A87'}`}
+        fill="#E0D4BE"
+        stroke={outlineColor || 'AF9A87'}
         strokeWidth="40"
       />
       <path
@@ -50,21 +48,21 @@ const CardSVG = ({ handleClick, color, outlineColor, word, hidden }) => {
           fillRule="evenodd"
           clipRule="evenodd"
           d="M172.582 69.6262C182.031 69.6262 189.691 61.9662 189.691 52.5172C189.691 43.0681 182.031 35.4081 172.582 35.4081C163.133 35.4081 155.473 43.0681 155.473 52.5172C155.473 61.9662 163.133 69.6262 172.582 69.6262ZM172.581 62.7225C178.218 62.7225 182.787 58.1534 182.787 52.5171C182.787 46.8809 178.218 42.3118 172.581 42.3118C166.945 42.3118 162.376 46.8809 162.376 52.5171C162.376 58.1534 166.945 62.7225 172.581 62.7225Z"
-          fill={`#${color}`}
+          fill="#E0D4BE"
         />
       </g>
       <path
         fillRule="evenodd"
         clipRule="evenodd"
         d="M172.582 77.5399C186.402 77.5399 197.605 66.3368 197.605 52.5172C197.605 38.6975 186.402 27.4944 172.582 27.4944C158.763 27.4944 147.56 38.6975 147.56 52.5172C147.56 66.3368 158.763 77.5399 172.582 77.5399ZM172.582 69.6018C182.017 69.6018 189.666 61.9527 189.666 52.5171C189.666 43.0815 182.017 35.4324 172.582 35.4324C163.146 35.4324 155.497 43.0815 155.497 52.5171C155.497 61.9527 163.146 69.6018 172.582 69.6018Z"
-        fill={`#${color}`}
+        fill="#E0D4BE"
       />
-      <circle cx="172.701" cy="52.3979" r="10.0859" fill={`#${color}`} />
+      <circle cx="172.701" cy="52.3979" r="10.0859" fill="#E0D4BE" />
       <path
         fillRule="evenodd"
         clipRule="evenodd"
         d="M25.3662 0.594238C11.5591 0.594238 0.366211 11.7871 0.366211 25.5942V203.78C0.366211 217.587 11.5591 228.78 25.3662 228.78H319.797C333.604 228.78 344.797 217.587 344.797 203.78V25.5942C344.797 11.7871 333.604 0.594238 319.797 0.594238H25.3662ZM32.5376 23.1368C27.0147 23.1368 22.5376 27.614 22.5376 33.1369V196.238C22.5376 201.76 27.0148 206.238 32.5376 206.238H312.627C318.149 206.238 322.627 201.76 322.627 196.238V33.1368C322.627 27.614 318.149 23.1368 312.627 23.1368H32.5376Z"
-        fill={`#${color}`}
+        fill="#E0D4BE"
       />
       <path
         d="M279.223 23.1368L312.756 23.1369L217.556 151.988L217.556 105.376L279.223 23.1368Z"

@@ -186,18 +186,15 @@ io.on("connection", socket => {
 
   authenticatedEndpoint(socket, "getAvatar", async (playerId, { id }, callback) => {
     if (!id) {
-      console.log('no id')
       return respondError(callback, 400, `The parameter "id" is missing or empty. (Must be Number.)`);
     }
 
     try {
       if (!await db.isPlayerInActiveGame(playerId)) {
-        console.log('bad player id')
         return respondError(callback, 401, `It looks like you haven't joined a game yet. ` )
       }
 
       const avatar = await db.getAvatar(id);
-      console.log('found avatar', avatar);
 
       onPlayerGameChanged(playerId);
       respondSuccess(callback, avatar);

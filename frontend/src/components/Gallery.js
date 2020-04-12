@@ -10,7 +10,7 @@ const GalleryImage = props => {
   useEffect(() => {
     const ctx = canvasRef.current.getContext('2d');
     drawAvatar(props.image, ctx)
-  }, [canvasRef])
+  }, [canvasRef, props.image])
 
   return (
     <div className='avatar-container'>
@@ -22,7 +22,7 @@ const GalleryImage = props => {
 
 export default () => {
   const [images, setImages] = useState([]);
-  
+
   useEffect (() => {
     const fetchImages = async () => {
       const images = await api('getAllImages')
@@ -34,7 +34,7 @@ export default () => {
   useEffect(() => {
     console.log(images)
   },[images])
-  
+
   return (
     <div className="gallery">
       <div className="galleryContainer">

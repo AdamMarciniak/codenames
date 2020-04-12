@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {ctxHandler} from './utils'
 
-const DrawBox = props => {
+const DrawBox = ({ setAvatar }) => {
   const canvasRef = useRef(null);
   const [isMouseDown, setIsMouseDown] = useState(false);
   const [ctx, setCtx] = useState(null);
@@ -25,11 +25,11 @@ const DrawBox = props => {
   const handleMouseUp = useCallback(e => {
     setIsMouseDown(false);
     try {
-      props.setAvatar(ctx.getCoords())
+      setAvatar(ctx.getCoords())
     } catch (e) {
-      console.log(e)
+      console.error(e)
     }
-  },[setIsMouseDown, ctx])
+  }, [setAvatar, setIsMouseDown, ctx])
 
   useEffect(() => {
     const ref = canvasRef.current;
