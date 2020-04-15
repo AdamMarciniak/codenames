@@ -33,7 +33,9 @@ export const JoinGame = ({ match: { params } }) => {
   useEffect(() => {
     if (joiningGame) {
       setHasJoinedGame(true);
-    };
+    } else {
+      setHasJoinedGame(false);
+    }
   }, [joiningGame]);
 
   if (gameState && gameState.gameCode === params.code) {
@@ -84,7 +86,9 @@ export const CreateGame = () => {
   useEffect(() => {
     if (creatingGame) {
       setHasCreatedGame(true);
-    };
+    } else {
+      setHasCreatedGame(false);
+    }
   }, [creatingGame]);
 
   useEffect(() => {
