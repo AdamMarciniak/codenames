@@ -33,7 +33,7 @@ socket.on('reconnect', () => {
   }
 });
 
-export const useApiCall = (event, params) => {
+export const useApiCall = (event, params, setError=null) => {
   const [inFlight, setInFlight] = useState(false);
   const callback = useCallback(
     async () => {
@@ -44,6 +44,9 @@ export const useApiCall = (event, params) => {
         return result;
       } catch (e) {
         setInFlight(false);
+        if(setError) {
+          setError(e);
+        }
         throw e;
       }
     },

@@ -3,6 +3,7 @@ import './App.css';
 import { Menu, JoinGame, CreateGame } from './Game/Game';
 import Gallery from './components/Gallery'
 
+
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 
 function App({ history }) {
