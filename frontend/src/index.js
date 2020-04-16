@@ -1,22 +1,22 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import * as serviceWorker from './serviceWorker';
-import cookies from 'browser-cookies';
-
-import api from './api';
-import { addListener } from './gameStateWatcher';
-import { createBrowserHistory } from 'history';
+import React from "react";
+import ReactDOM from "react-dom";
+import "./index.css";
+import App from "./App";
+import * as serviceWorker from "./serviceWorker";
+import cookies from "browser-cookies";
+import LogRocket from "logrocket";
+import api from "./api";
+import { addListener } from "./gameStateWatcher";
+import { createBrowserHistory } from "history";
 const history = createBrowserHistory();
 
-console.log('Welcome to the game, friends.')
+console.log("Welcome to the game, friends.");
 
 addListener((gameState) => {
-  if (gameState && !history.location.pathname.includes('/game')) {
-    window.location.href = '/game/' + gameState.gameCode;
-  } else if (!gameState && history.location.pathname.includes('/game')) {
-    window.location.href = '/';
+  if (gameState && !history.location.pathname.includes("/game")) {
+    window.location.href = "/game/" + gameState.gameCode;
+  } else if (!gameState && history.location.pathname.includes("/game")) {
+    window.location.href = "/";
   }
 });
 
@@ -25,16 +25,18 @@ export const render = () => {
     <React.StrictMode>
       <App history={history} />
     </React.StrictMode>,
-    document.getElementById('root')
+    document.getElementById("root")
   );
-}
+};
 
-const secret = cookies.get('secret');
+const secret = cookies.get("secret");
 if (secret) {
-  api('identify', { secret }).then(render).catch(() => {
-    cookies.erase('secret');
-    render();
-  });
+  api("identify", { secret })
+    .then(render)
+    .catch(() => {
+      cookies.erase("secret");
+      render();
+    });
 } else {
   render();
 }
@@ -43,3 +45,5 @@ if (secret) {
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA
 serviceWorker.unregister();
+
+LogRocket.init("p3pydi/gamecraft");
