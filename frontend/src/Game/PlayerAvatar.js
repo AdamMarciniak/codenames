@@ -28,7 +28,7 @@ const PlayerAvatar = props => {
 
   return (
     <div className='avatar-container'>
-      <canvas className='avatar-canvas' ref={canvasRef}/>
+      <canvas className='avatar-canvas' width="348px" height="198px" ref={canvasRef}/>
     </div>
   )
 }
