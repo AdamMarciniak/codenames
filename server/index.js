@@ -34,16 +34,6 @@ io.on("connection", socket => {
     unregisterSocket(socket.id);
   });
 
-  socket.on("getAvatars", async ({playerId}, callback) => {
-    try {
-      if (!playerId) {
-        return respondError(callback, 400, `The parameter "playerId" is missing or empty. (Must be integer.)`);
-      }
-    } catch (e) {
-      respondError(callback, 500, e.message);
-    }
-  });
-
   socket.on("createGame", async ({ name, avatar }, callback) => {
     try {
       if (!name) {
