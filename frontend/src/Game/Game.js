@@ -371,7 +371,7 @@ const Game = () => {
     <div className="game-wrap" >
       <PlayersReadout gameState={gameState} />
       <div className="card-wrap-container">
-        <GameModal showModal={!isEnabled} text={'You need at least two players per team and each team needs one cluegiver to start. Share the link below.'}/>
+        <GameModal showModal={!isEnabled} text={'To start the game, you need at least two players per team and each team needs one cluegiver. Share the game with some friends!'}/>
         <div className="card-wrap" style={isEnabled ? {opacity: '1', pointerEvents: 'all'} : {opacity: '0.3', pointerEvents: 'none'}}>
           {gameState.words.map((word) => (
             <Card
