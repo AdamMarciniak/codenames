@@ -155,11 +155,11 @@ export const Menu = () => {
   return (
     <div className="form-wrap">
       <div className="form">
+      <Link className="button" to="/new">
+          Start a new game
+        </Link>
         <Link className="button" to="/join">
           Join an existing game
-        </Link>
-        <Link className="button" to="/new">
-          Start a new game
         </Link>
       </div>
     </div>
