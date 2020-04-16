@@ -1,6 +1,6 @@
 export const ctxHandler = (ref) => {
   const ctx = ref.getContext('2d');
-  ctx.lineWidth = 15;
+  ctx.lineWidth = 8;
   ctx.strokeStyle = '#ff8000';
   ctx.lineJoin = 'round';
   ctx.lineCap = 'round';
@@ -45,7 +45,7 @@ const drawOneAvatarLine = (ctx, command) => {
 
 export const drawAvatar = (avatar, ctx) => {
   ctx.beginPath();
-  ctx.lineWidth = 15;
+  ctx.lineWidth = 8;
   ctx.strokeStyle = '#ff8000';
   ctx.lineJoin = 'round';
   ctx.lineCap = 'round';
@@ -61,7 +61,7 @@ export const drawAvatar = (avatar, ctx) => {
 
 export const animateAvatar = (avatar, ctx) => {
   ctx.beginPath();
-  ctx.lineWidth = 15;
+  ctx.lineWidth = 8;
   ctx.strokeStyle = '#ff8000';
   ctx.lineJoin = 'round';
   ctx.lineCap = 'round';
