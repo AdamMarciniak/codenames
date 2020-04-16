@@ -60,6 +60,43 @@ html, body, #root {
   align-self: center;
 }
 
+.card-wrap-container {
+  position: relative;
+}
+
+.game-modal {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.game-modal-inner {
+  max-width: 500px;
+  min-width: 300px;
+  width: 50%;
+  height: 30%;
+  background: #faf9d7;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+}
+
+.game-modal-inner > .text {
+  width: 75%;
+  text-align: center;
+  font-size: 1em;
+  color: #353535;
+  font-weight: bold;
+}
+
 .gameBoard {
   height: 60%;
   width: 60%;
