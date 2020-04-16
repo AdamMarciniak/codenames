@@ -4,7 +4,6 @@ import "./index.css";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 import cookies from "browser-cookies";
-import LogRocket from "logrocket";
 import api from "./api";
 import { addListener } from "./gameStateWatcher";
 import { createBrowserHistory } from "history";
@@ -46,5 +45,3 @@ if (secret) {
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA
 serviceWorker.unregister();
-
-LogRocket.init("p3pydi/gamecraft");
