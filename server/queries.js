@@ -3,7 +3,17 @@ const Pool = require("pg").Pool;
 
 const pool = new Pool(require('./dbConfig'));
 
-const addGameWords = (gameId, wordType, count) => pool.query(
+const query = async (...args) => {
+  try {
+    const result = await pool.query(...args);
+    return result;
+  } catch (e) {
+    console.log("Error in query", ...args);
+    throw e;
+  }
+}
+
+const addGameWords = (gameId, wordType, count) => query(
   `
     INSERT INTO game_words (word_id, game_id, type)
     (
@@ -21,55 +31,107 @@ const addGameWords = (gameId, wordType, count) => pool.query(
   [gameId, wordType, count]
 );
 
-const createGame = async (gameCode, currentPlayerName, firstTeam) => {
-  const secondTeam = firstTeam === "RED" ? "BLUE" : "RED";
-  await pool.query('BEGIN');
+const createRoomAndGame = async (roomCode, currentPlayerName, avatar, firstTeam) => {
+  await query('BEGIN');
 
-  const insertGameResult = await pool.query(
-    `INSERT INTO games (created_at, game_code) VALUES (current_timestamp, $1) RETURNING id`,
-    [gameCode]
+  const createRoomResult = await query(
+    `
+      INSERT INTO rooms
+        (code)
+      VALUES
+        ($1)
+      RETURNING
+        id
+    `,
+    [roomCode]
   );
-  const gameId = insertGameResult.rows[0].id;
 
-  const insertPlayerResult = await pool.query(
+  const roomId = createRoomResult.rows[0].id
+
+  await createGame(roomId, firstTeam);
+
+  const insertPlayerResult = await query(
     `
       INSERT INTO players
-        (game_id, name)
+        (room_id, name)
       VALUES
         (
           $1,
           $2
         )
-      RETURNING id
+      RETURNING
+        id
     `,
-    [gameId, currentPlayerName]
+    [roomId, currentPlayerName]
   );
+
   const currentPlayerId = insertPlayerResult.rows[0].id;
+
+  await insertAvatar(currentPlayerId, avatar);
+
+  await query('COMMIT');
+
+  return currentPlayerId;
+}
+
+const createGame = async (roomId, firstTeam, withTransaction = false) => {
+  const secondTeam = firstTeam === "RED" ? "BLUE" : "RED";
+  if (withTransaction) {
+    await query('BEGIN');
+  }
+
+  const createGameResult = await query(
+    `
+      INSERT INTO games
+        (created_at, room_id)
+      VALUES
+        (current_timestamp, $1)
+      RETURNING
+        id
+    `,
+    [roomId]
+  );
+
+  const gameId = createGameResult.rows[0].id;
 
   await addGameWords(gameId, firstTeam, 9);
   await addGameWords(gameId, secondTeam, 8);
   await addGameWords(gameId, 'NEUTRAL', 7);
   await addGameWords(gameId, 'ASSASSIN', 1);
 
-  await pool.query('COMMIT');
-
-
-  return currentPlayerId;
+  if (withTransaction) {
+    await query('COMMIT');
+  }
 }
 
+const createNewGame = async (playerId, firstTeam) => {
+  await query('BEGIN');
+  const roomId = (await query(`SELECT room_id FROM players WHERE id = $1`, [playerId])).rows[0].room_id;
+  await query(`
+    UPDATE players
+    SET
+      is_cluegiver = false,
+      team = 'OBSERVER'
+    WHERE
+      room_id = $1;
+  `, [roomId]);
+  await createGame(roomId, firstTeam);
+  await query('COMMIT');
+}
 
 const getGameStateForPlayer = async (playerId) => {
-  await pool.query('BEGIN');
-  const gameId = (await pool.query('SELECT game_id FROM players WHERE id = $1', [playerId])).rows[0].game_id;
-  const gameCode = (await pool.query('SELECT game_code FROM games WHERE id = $1', [gameId])).rows[0].game_code;
+  await query('BEGIN');
+  const roomId = (await query('SELECT room_id FROM players WHERE id = $1', [playerId])).rows[0].room_id;
+  const roomCode = (await query('SELECT code FROM rooms WHERE id = $1', [roomId])).rows[0].code;
+  const gameId = (await query('SELECT id FROM games WHERE room_id = $1 ORDER BY created_at DESC LIMIT 1', [roomId])).rows[0].id;
 
-  const startingTeam = (await pool.query(`
+  const startingTeam = (await query(`
     SELECT DISTINCT
       type, COUNT(id) AS count
     FROM game_words WHERE type in ('RED', 'BLUE') AND game_id = $1 GROUP BY type ORDER BY count DESC LIMIT 1;
   `, [gameId])).rows[0].type
 
-  const numberOfTurnEnds = (await pool.query(`
+  const numberOfTurnEnds = (await query(`
     SELECT
       COUNT(id) AS count
     FROM
@@ -77,9 +139,9 @@ const getGameStateForPlayer = async (playerId) => {
     WHERE
       is_turn_end = true
     AND player_id IN (
-      SELECT id FROM players WHERE game_id = $1
+      SELECT id FROM players WHERE room_id = $1
     )
-  `,[gameId])).rows[0].count;
+  `, [roomId])).rows[0].count;
 
   let currentTurn;
   if (startingTeam === 'RED') {
@@ -88,7 +150,7 @@ const getGameStateForPlayer = async (playerId) => {
     currentTurn = (numberOfTurnEnds % 2) === 0 ? 'BLUE' : 'RED';
   }
 
-  const playersResult = (await pool.query(
+  const playersResult = (await query(
     `
       SELECT
         id,
@@ -98,19 +160,12 @@ const getGameStateForPlayer = async (playerId) => {
       FROM
         players
       WHERE
-        game_id = (
-          SELECT
-            game_id
-          FROM
-            players
-          WHERE
-            id = $1
-        )
+        room_id = $1
     `,
-    [playerId]
+    [roomId]
   )).rows;
 
-  const avatars = (await pool.query(
+  const avatars = (await query(
     `
     SELECT
       player_id, id
@@ -123,17 +178,10 @@ const getGameStateForPlayer = async (playerId) => {
       FROM
         players
       WHERE
-      game_id = (
-        SELECT
-          game_id
-        FROM
-          players
-        WHERE
-          id = $1
-      )
+        room_id = $1
     )
     `,
-    [playerId]
+    [roomId]
   )).rows
 
   const players = {};
@@ -147,8 +195,7 @@ const getGameStateForPlayer = async (playerId) => {
     };
   });
 
-
-  const words = (await pool.query(`
+  const words = (await query(`
     SELECT
       words.id AS id,
       words.text AS text,
@@ -160,15 +207,7 @@ const getGameStateForPlayer = async (playerId) => {
           FROM
             moves
           WHERE
-            player_id
-          IN (
-            SELECT
-              id
-            FROM
-              players
-            WHERE
-              game_id = $1
-          )
+            game_id = $1
         ) THEN true
         ELSE false
       END as flipped,
@@ -189,10 +228,10 @@ const getGameStateForPlayer = async (playerId) => {
     [gameId]
   )).rows;
 
-  await pool.query('COMMIT');
+  await query('COMMIT');
 
   return {
-    gameCode,
+    roomCode,
     currentTurn,
     players,
     words,
@@ -200,28 +239,28 @@ const getGameStateForPlayer = async (playerId) => {
   };
 }
 
-const joinGame = async (gameCode, name) => {
-  return (await pool.query(
+const joinGame = async (roomCode, name) => {
+  return (await query(
     `
       INSERT INTO
         players
-          (game_id, name)
+          (room_id, name)
           (
             SELECT
-            id, $2
+              id, $2
             FROM
-              games
+              rooms
             WHERE
-              game_code = $1
+              code = $1
           )
       RETURNING id
     `,
-    [gameCode, name]
+    [roomCode, name]
   )).rows[0].id
 };
 
 const joinTeam = async (playerId, team) => {
-  return (await pool.query(
+  return (await query(
     `
     UPDATE
       players
@@ -235,7 +274,7 @@ const joinTeam = async (playerId, team) => {
 }
 
 const becomeCluegiver = async (playerId) => {
-  return (await pool.query(
+  return (await query(
     `
     UPDATE
       players
@@ -244,58 +283,71 @@ const becomeCluegiver = async (playerId) => {
     WHERE
       id = $1
     RETURNING id
-    `, [playerId]
-    )).rows[0].id
+    `,
+    [playerId]
+  )).rows[0].id
 }
 
 
-const isValidGameCode = async gameCode => {
-       return (await pool.query(
-        `
-          SELECT
-            id
-          FROM
-            games
-          WHERE
-            game_code = $1
-        `,
-        [gameCode]
-      )).rows[0]
+const isValidroomCode = async roomCode => {
+  return (await query(
+    `
+      SELECT
+        id
+      FROM
+        rooms
+      WHERE
+        code = $1
+    `,
+    [roomCode]
+  )).rows[0]
 };
 
 
 const addMove = async (playerId, wordId, isTurnEnd) => {
-
-    await pool.query(
-      `
-      INSERT INTO
-        moves
-          (player_id, word_id, is_turn_end)
-        VALUES
-          ($1, $2, $3)
-      `,
-      [playerId, wordId, isTurnEnd]
-    );
-
+  await query(
+    `
+    INSERT INTO
+      moves
+        (player_id, word_id, game_id, is_turn_end)
+      VALUES
+        (
+          $1,
+          $2,
+          (
+            SELECT id
+            FROM games
+            WHERE room_id = (
+              SELECT room_id
+              FROM players
+              WHERE id = $1
+            )
+            ORDER BY created_at DESC LIMIT 1
+          ),
+          $3
+        )
+    `,
+    [playerId, wordId, isTurnEnd]
+  );
 };
 
 const isPlayerInActiveGame = async playerId => {
-       return (await pool.query(
-        `
-          SELECT
-            id
-          FROM
-            players
-          WHERE
-            id = $1
-        `,
-        [playerId]
-      )).rows[0] ? true : false;
+  return (await query(
+    `
+      SELECT
+        id
+      FROM
+        players
+      WHERE
+        id = $1
+    `,
+    [playerId]
+  )).rows[0] ? true : false;
 };
 
 const savePlayerSecret = async (playerId, secret) => {
 
-    await pool.query(
+    await query(
       `
       INSERT INTO
         secrets
@@ -309,66 +361,64 @@ const savePlayerSecret = async (playerId, secret) => {
 };
 
 const getPlayerForSecret = async (secret) => {
-
-    await pool.query(
-      `
-      SELECT
-        player_id
-        FROM
-        secrets
-        WHERE
-        secret = $1
-      `,
-      [secret]
-    );
-
+  await query(
+    `
+    SELECT
+      player_id
+    FROM
+      secrets
+    WHERE
+      secret = $1
+    `,
+    [secret]
+  );
 };
 
 const insertAvatar = async (playerId, data) => {
-  console.log('inserting avatar');
-  await pool.query(
+  await query(
     `
-    INSERT
-    INTO
-    avatars
-    (player_id, image)
-    values
-    ($1, $2)`,
+      INSERT INTO avatars
+        (player_id, image)
+      VALUES
+        ($1, $2)
+    `,
     [playerId, data]
   );
 }
 
 const getAvatar = async (id) => {
-  return (await pool.query(
+  return (await query(
     `
-    SELECT
-    image
-    from
-    avatars
-    WHERE
-    id = $1`,
+      SELECT
+      image
+      from
+      avatars
+      WHERE
+      id = $1
+    `,
     [id]
   )).rows[0].image
 }
 
 const getAllImages = async () => {
-  return (await pool.query(
+  return (await query(
     `
-    SELECT
-    *
-    from
-    avatars
+      SELECT
+        *
+      FROM
+        avatars
     `
   )).rows
 }
 
-
 module.exports = {
   createGame,
+  createNewGame,
+  createRoomAndGame,
   getGameStateForPlayer,
   joinGame,
   joinTeam,
-  isValidGameCode,
+  isValidroomCode,
   addMove,
   becomeCluegiver,
   isPlayerInActiveGame,

@@ -17,7 +17,7 @@ export const JoinGame = ({ match: { params } }) => {
   const [error, setError] = useState(null);
   const [joinGame, joiningGame] = useApiCall(
     "joinGame",
-    { name, gameCode: code.toUpperCase(), avatar: avatar },
+    { name, roomCode: code.toUpperCase(), avatar: avatar },
     setError
   );
   const [hasJoinedGame, setHasJoinedGame] = useState(false);
@@ -41,7 +41,7 @@ export const JoinGame = ({ match: { params } }) => {
     }
   }, [joiningGame]);
 
-  if (gameState && gameState.gameCode === params.code) {
+  if (gameState && gameState.roomCode === params.code) {
     return <Game />;
   }
 
@@ -94,11 +94,7 @@ export const CreateGame = () => {
   const [avatar, setAvatar] = useState(null);
   const [name, setName] = useState("");
   const [error, setError] = useState(null);
-  const [createGame, creatingGame] = useApiCall(
-    "createGame",
-    { name, avatar },
-    setError
-  );
+  const [createRoomAndGame, creatingGame] = useApiCall('createRoomAndGame', { name, avatar }, setError);
   const [hasCreatedGame, setHasCreatedGame] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [modalText, setModalText] = useState("");
@@ -125,17 +121,13 @@ export const CreateGame = () => {
       setModalText("Please enter a nickname!");
       setShowModal(true);
     } else {
-      createGame();
+      createRoomAndGame();
     }
   };
 
   return (
     <div className="form-wrap">
-      <Modal
-        setShowModal={setShowModal}
-        showModal={showModal}
-        text={modalText}
-      />
+      <Modal setShowModal={setShowModal} showModal={showModal} text={modalText} />
       <div className="form">
         <label>
           First - Choose a nickname!
@@ -295,21 +287,19 @@ const PlayersReadout = (props) => {
 const Game = () => {
   const isGodMode = window.location.href.includes("?god=1");
   const gameState = useGameState();
-  const [endTurn, endingTurn] = useApiCall("endTurn");
-  const [joinRedTeam, joiningRedTeam] = useApiCall("joinTeam", { team: "RED" });
-  const [joinBlueTeam, joiningBlueTeam] = useApiCall("joinTeam", {
-    team: "BLUE",
-  });
-  const [becomeCluegiver, becomingCluegiver] = useApiCall("becomeCluegiver");
-  const actionInFlight =
-    endingTurn || joiningRedTeam || joiningBlueTeam || becomingCluegiver;
+  const [endTurn, endingTurn] = useApiCall('endTurn');
+  const [joinRedTeam, joiningRedTeam] = useApiCall('joinTeam', { team: 'RED' });
+  const [joinBlueTeam, joiningBlueTeam] = useApiCall('joinTeam', { team: 'BLUE' });
+  const [becomeCluegiver, becomingCluegiver] = useApiCall('becomeCluegiver');
+  const actionInFlight = endingTurn || joiningRedTeam || joiningBlueTeam || becomingCluegiver;
+  const [startNewGame, startingNewGame] = useApiCall('startNewGame');
   const exitGame = useCallback(() => {
     cookies.erase("secret");
     window.location.href = "/";
   }, []);
 
   const handleCopyInvite = useCallback(() => {
-    const contents = `${window.location.protocol}//${window.location.host}/game/${gameState.gameCode}`;
+    const contents = `${window.location.protocol}//${window.location.host}/game/${gameState.roomCode}`;
     copyContents(contents);
   }, [gameState]);
 
@@ -393,18 +383,10 @@ const Game = () => {
         </div>
       </div>
       <footer>
-        <div className="invite">
-          Invite your friends!{" "}
-          <strong>
-            {`${window.location.protocol}//${window.location.host}`}/game/
-            {gameState.gameCode}
-          </strong>
-          <div onClick={handleCopyInvite} className="copy-button">
-            &lt;- Copy That
-          </div>
-        </div>
-        <div onClick={exitGame} className="exit-button">
-          Exit this Game
+        <div className="invite">Invite your friends! <strong>{`${window.location.protocol}//${window.location.host}`}/game/{gameState.roomCode}</strong><div onClick={handleCopyInvite} className="copy-button">&lt;- Copy That</div></div>
+        <div style={{display: 'flex'}}>
+          <div onClick={exitGame} className="exit-button">Exit Game</div>
+          <div onClick={startNewGame} className="exit-button" disabled={!startingNewGame}>New Game</div>
         </div>
       </footer>
     </div>

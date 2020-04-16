@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 12.1
--- Dumped by pg_dump version 12.1
+-- Dumped from database version 11.5
+-- Dumped by pg_dump version 11.5
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -61,7 +61,7 @@ CREATE TYPE public.team_options AS ENUM (
 
 SET default_tablespace = '';
 
-SET default_table_access_method = heap;
+SET default_with_oids = false;
 
 --
 -- Name: avatars; Type: TABLE; Schema: public; Owner: -
@@ -174,7 +174,7 @@ ALTER SEQUENCE public.game_words_word_id_seq OWNED BY public.game_words.word_id;
 CREATE TABLE public.games (
     id integer NOT NULL,
     created_at timestamp with time zone NOT NULL,
-    game_code character varying(10) NOT NULL
+    room_id integer NOT NULL
 );
 
 
@@ -207,7 +207,8 @@ CREATE TABLE public.moves (
     player_id integer NOT NULL,
     word_id integer,
     is_turn_end boolean DEFAULT false NOT NULL,
-    last_updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
+    last_updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    game_id integer NOT NULL
 );
 
 
@@ -237,31 +238,11 @@ ALTER SEQUENCE public.moves_id_seq OWNED BY public.moves.id;
 
 CREATE TABLE public.players (
     id integer NOT NULL,
-    game_id integer NOT NULL,
     name character varying(40) NOT NULL,
     team public.team_options DEFAULT 'OBSERVER'::public.team_options NOT NULL,
-    is_cluegiver boolean DEFAULT false NOT NULL
+    is_cluegiver boolean DEFAULT false NOT NULL,
+    room_id integer
 );
-
-
---
--- Name: players_game_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.players_game_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: players_game_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.players_game_id_seq OWNED BY public.players.game_id;
 
 
 --
@@ -282,6 +263,37 @@ CREATE SEQUENCE public.players_id_seq
 --
 
 ALTER SEQUENCE public.players_id_seq OWNED BY public.players.id;
+
+
+--
+-- Name: rooms; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.rooms (
+    id integer NOT NULL,
+    code character varying(10) NOT NULL,
+    created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+
+--
+-- Name: rooms_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.rooms_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: rooms_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.rooms_id_seq OWNED BY public.rooms.id;
 
 
 --
@@ -394,10 +406,10 @@ ALTER TABLE ONLY public.players ALTER COLUMN id SET DEFAULT nextval('public.play
 
 
 --
--- Name: players game_id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: rooms id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.players ALTER COLUMN game_id SET DEFAULT nextval('public.players_game_id_seq'::regclass);
+ALTER TABLE ONLY public.rooms ALTER COLUMN id SET DEFAULT nextval('public.rooms_id_seq'::regclass);
 
 
 --
@@ -431,14 +443,6 @@ ALTER TABLE ONLY public.game_words
 
 
 --
--- Name: games games_game_code_key; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.games
-    ADD CONSTRAINT games_game_code_key UNIQUE (game_code);
-
-
---
 -- Name: games games_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -460,6 +464,14 @@ ALTER TABLE ONLY public.moves
 
 ALTER TABLE ONLY public.players
     ADD CONSTRAINT players_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: rooms rooms_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.rooms
+    ADD CONSTRAINT rooms_pkey PRIMARY KEY (id);
 
 
 --
@@ -503,6 +515,22 @@ ALTER TABLE ONLY public.game_words
 
 
 --
+-- Name: games games_room_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.games
+    ADD CONSTRAINT games_room_id_fkey FOREIGN KEY (room_id) REFERENCES public.rooms(id);
+
+
+--
+-- Name: moves moves_game_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.moves
+    ADD CONSTRAINT moves_game_id_fkey FOREIGN KEY (game_id) REFERENCES public.games(id);
+
+
+--
 -- Name: moves moves_player_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -519,11 +547,11 @@ ALTER TABLE ONLY public.moves
 
 
 --
--- Name: players players_game_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: players players_room_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.players
-    ADD CONSTRAINT players_game_id_fkey FOREIGN KEY (game_id) REFERENCES public.games(id);
+    ADD CONSTRAINT players_room_id_fkey FOREIGN KEY (room_id) REFERENCES public.rooms(id);
 
 
 --

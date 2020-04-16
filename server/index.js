@@ -11,8 +11,13 @@ const respondError = (callback, errorCode, errorMessage) => callback({ code: err
 
 const authenticatedEndpoint = (socket, endpoint, handler) => {
   socket.on(endpoint, async (...params) => {
-    const playerId = playerIdsBySocketId[socket.id];
-    await handler(playerId, ...params);
+    try {
+      const playerId = playerIdsBySocketId[socket.id];
+      await handler(playerId, ...params);
+    } catch (e) {
+      console.error(e);
+      respondError(callback, 500, e.message);
+    }
   })
 };
 
@@ -30,73 +35,60 @@ io.on("connection", socket => {
   });
 
   socket.on("disconnect", () => {
-    console.log("user disconnected");
+    console.log("a user disconnected");
     unregisterSocket(socket.id);
   });
 
-  socket.on("createGame", async ({ name, avatar }, callback) => {
-    try {
-      if (!name) {
-        return respondError(callback, 400, `The parameter "name" is missing or empty. (Must be string.)`);
-      }
+  const randomTeam = () => Math.random() > 0.5 ? "RED" : "BLUE";
 
-      const firstTeam = Math.random() > 0.5 ? "RED" : "BLUE";
-
-      const playerId = await db.createGame(
-        randomString(5),
-        name,
-        firstTeam
-      );
-
-      await db.insertAvatar(playerId, avatar)
-
-      registerPlayerSocket(playerId, socket);
-      registerPlayerSecret(playerId, randomString(40));
-      onPlayerGameChanged(playerId);
-      respondSuccess(callback);
-    } catch (e) {
-      respondError(callback, 500, e.message);
+  socket.on("createRoomAndGame", async ({ name, avatar }, callback) => {
+    if (!name) {
+      return respondError(callback, 400, `The parameter "name" is missing or empty. (Must be string.)`);
     }
+
+    const playerId = await db.createRoomAndGame(
+      randomString(5),
+      name,
+      avatar,
+      randomTeam()
+    );
+
+    registerPlayerSocket(playerId, socket);
+    registerPlayerSecret(playerId, randomString(40));
+    onPlayerGameChanged(playerId);
+    respondSuccess(callback);
   });
 
 
-  socket.on("joinGame", async ({ name, gameCode, avatar }, callback) => {
-    try {
-      if (!name) {
-        return respondError(callback, 400, `The parameter "name" is missing or empty. (Must be string.)`);
-      }
-
-      if (!gameCode) {
-        return respondError(callback, 400, `The parameter "gameCode" is missing or empty. (Must be string.)`);
-      }
-
-      if (! await db.isValidGameCode(gameCode)) {
-        return respondError(callback, 404, `We couldn't find a game with the code ${gameCode}`)
-      }
-
-      const playerId = await db.joinGame(
-        gameCode,
-        name
-      );
-      await db.insertAvatar(playerId, avatar)
-      const secret = randomString(40);
-
-      registerPlayerSocket(playerId, socket);
-      registerPlayerSecret(playerId, secret);
-
-      onPlayerGameChanged(playerId);
-      respondSuccess(callback);
-    } catch (e) {
-      respondError(callback, 500, e.message);
+  socket.on("joinGame", async ({ name, roomCode, avatar }, callback) => {
+    if (!name) {
+      return respondError(callback, 400, `The parameter "name" is missing or empty. (Must be string.)`);
     }
+
+    if (!roomCode) {
+      return respondError(callback, 400, `The parameter "roomCode" is missing or empty. (Must be string.)`);
+    }
+
+    if (! await db.isValidroomCode(roomCode)) {
+      return respondError(callback, 404, `We couldn't find a game with the code ${roomCode}`)
+    }
+
+    const playerId = await db.joinGame(
+      roomCode,
+      name
+    );
+    await db.insertAvatar(playerId, avatar)
+    const secret = randomString(40);
+
+    registerPlayerSocket(playerId, socket);
+    registerPlayerSecret(playerId, secret);
+
+    onPlayerGameChanged(playerId);
+    respondSuccess(callback);
   });
 
   socket.on("getAllImages", async (params=null, callback) => {
-    try {
-      respondSuccess(callback, await db.getAllImages());
-    } catch (e) {
-      respondError(callback, 500, e.message);
-    }
+    respondSuccess(callback, await db.getAllImages());
   });
 
   authenticatedEndpoint(socket, "joinTeam", async (playerId, { team }, callback) => {
@@ -107,30 +99,20 @@ io.on("connection", socket => {
       return respondError(callback, 400, `The parameter "team" is not valid. Choose "RED", "BLUE", or "OBSERVER"`);
     }
 
-    try {
-      await db.joinTeam(playerId, team);
-      onPlayerGameChanged(playerId);
-      respondSuccess(callback);
-    }
-    catch (e) {
-      respondError(callback, 500, e.message)
-    }
+    await db.joinTeam(playerId, team);
+    onPlayerGameChanged(playerId);
+    respondSuccess(callback);
   });
 
 
 
   authenticatedEndpoint(socket, "becomeCluegiver", async (playerId, params, callback) => {
-    try {
-      if (! await db.isPlayerInActiveGame(playerId)) {
-        return respondError(callback, 401, `It looks like you haven't joined a game yet. ` )
-      }
-      db.becomeCluegiver(playerId);
-      onPlayerGameChanged(playerId);
-      respondSuccess(callback);
-
-    } catch (e) {
-      respondError(callback, 500, e.message);
+    if (!(await db.isPlayerInActiveGame(playerId))) {
+      return respondError(callback, 401, `It looks like you haven't joined a game yet. ` )
     }
+    db.becomeCluegiver(playerId);
+    onPlayerGameChanged(playerId);
+    respondSuccess(callback);
   });
 
   authenticatedEndpoint(socket, "revealWord", async (playerId, { wordId }, callback) => {
@@ -138,17 +120,13 @@ io.on("connection", socket => {
       return respondError(callback, 400, `The parameter "wordId" is missing or empty. (Must be Number.)`);
     }
 
-    try {
-      if (! await db.isPlayerInActiveGame(playerId)) {
-        return respondError(callback, 401, `It looks like you haven't joined a game yet. ` )
-      }
-      db.addMove(playerId, wordId, isTurnEnd = false);
-      onPlayerGameChanged(playerId);
-      respondSuccess(callback);
-
-    } catch (e) {
-      respondError(callback, 500, e.message);
+    if (!(await db.isPlayerInActiveGame(playerId))) {
+      return respondError(callback, 401, `It looks like you haven't joined a game yet. ` )
     }
+
+    db.addMove(playerId, wordId, isTurnEnd = false);
+    onPlayerGameChanged(playerId);
+    respondSuccess(callback);
   });
 
 
@@ -158,20 +136,14 @@ io.on("connection", socket => {
 
 
 
-  authenticatedEndpoint(socket, "endTurn", async (playerId, params,callback) => {
-
-    try {
-      if (! await db.isPlayerInActiveGame(playerId)) {
-        return respondError(callback, 401, `It looks like you haven't joined a game yet. `)
-      }
-
-      await db.addMove(playerId, wordId = null, isTurnEnd = true);
-      onPlayerGameChanged(playerId);
-      respondSuccess(callback);
-
-    } catch (e) {
-      respondError(callback, 500, e.message);
+  authenticatedEndpoint(socket, "endTurn", async (playerId, params, callback) => {
+    if (!await db.isPlayerInActiveGame(playerId)) {
+      return respondError(callback, 401, `It looks like you haven't joined a game yet. `)
     }
+
+    await db.addMove(playerId, wordId = null, isTurnEnd = true);
+    onPlayerGameChanged(playerId);
+    respondSuccess(callback);
   });
 
   authenticatedEndpoint(socket, "getAvatar", async (playerId, { id }, callback) => {
@@ -179,18 +151,24 @@ io.on("connection", socket => {
       return respondError(callback, 400, `The parameter "id" is missing or empty. (Must be Number.)`);
     }
 
-    try {
-      if (!await db.isPlayerInActiveGame(playerId)) {
-        return respondError(callback, 401, `It looks like you haven't joined a game yet. ` )
-      }
-
-      const avatar = await db.getAvatar(id);
-
-      onPlayerGameChanged(playerId);
-      respondSuccess(callback, avatar);
-
-    } catch (e) {
-      respondError(callback, 500, e.message);
+    if (!await db.isPlayerInActiveGame(playerId)) {
+      return respondError(callback, 401, `It looks like you haven't joined a game yet. ` )
     }
+
+    const avatar = await db.getAvatar(id);
+
+    onPlayerGameChanged(playerId);
+    respondSuccess(callback, avatar);
+  });
+
+  authenticatedEndpoint(socket, "startNewGame", async (playerId, params, callback) => {
+    if (!await db.isPlayerInActiveGame(playerId)) {
+      return respondError(callback, 401, `It looks like you haven't joined a game yet. ` )
+    }
+
+    await db.createNewGame(playerId, randomTeam());
+
+    onPlayerGameChanged(playerId);
+    respondSuccess(callback);
   });
 });

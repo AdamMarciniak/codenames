@@ -26,6 +26,13 @@ const broadcastGameState = (rawGameState) => {
   });
 }
 
-module.exports = async (playerId) => broadcastGameState(await db.getGameStateForPlayer(playerId));
+module.exports = async (playerId) => {
+  try {
+    const gameState = await db.getGameStateForPlayer(playerId);
+    return broadcastGameState(gameState);
+  } catch (e) {
+    throw e;
+  }
+};
 
 
