@@ -66,7 +66,7 @@ io.on("connection", socket => {
     }
 
     if (!roomCode) {
-      return respondError(callback, 400, `The parameter "roomCode" is missing or empty. (Must be string.)`);
+      return respondError(callback, 400, `Missing Game Code. Did you mean to start a new game?`);
     }
 
     if (! await db.isValidroomCode(roomCode)) {
