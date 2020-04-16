@@ -80,7 +80,7 @@ html, body, #root {
   max-width: 500px;
   min-width: 300px;
   width: 50%;
-  height: 30%;
+  height: 50%;
   background: #faf9d7;
   border-radius: 10px;
   display: flex;
@@ -376,6 +376,22 @@ a {
     flex-direction: column;
     align-items: center;
   }
+
+  button, a.button {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+
+  .game-wrap .buttons {
+    display: block;
+    justify-content: flex-end;
+  }
+
+  .game-wrap .buttons button+button {
+    margin-left: 0;
+  }
+
+
 }
 
 
