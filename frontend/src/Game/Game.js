@@ -8,6 +8,7 @@ import DrawBox from "./DrawBox";
 import PlayerAvatar from "./PlayerAvatar";
 import { copyContents } from "./utils";
 import Modal from "../components/Modal";
+import GameModal from "../components/GameModal"
 
 export const JoinGame = ({ match: { params } }) => {
   const gameState = useGameState();
@@ -284,6 +285,42 @@ const PlayersReadout = (props) => {
   );
 };
 
+const isGameEnabled = gameState => {
+  if (!gameState) {
+    return false;
+  }
+  const playersList = Object.values(gameState.players)
+
+  const isRedCluegiver = playersList.filter(
+    player =>
+      player.team === 'RED'
+      &&
+      player.isCluegiver === true
+      ).length > 0 ? true : false
+  const isBlueCluegiver = playersList.filter(
+    player =>
+      player.team === 'BLUE'
+      &&
+      player.isCluegiver === true
+      ).length > 0 ? true : false
+  const areRedNonCluegivers = playersList.filter(
+    player =>
+      player.team === 'RED'
+      &&
+      player.isCluegiver !== true
+      ).length > 0 ? true : false
+  const areBlueNonCluegivers = playersList.filter(
+    player =>
+      player.team === 'BLUE'
+      &&
+      player.isCluegiver !== true
+      ).length > 0 ? true : false
+  if (isRedCluegiver && isBlueCluegiver && areRedNonCluegivers && areBlueNonCluegivers) {
+    return true;
+  }
+  return false
+}
+
 const Game = () => {
   const isGodMode = window.location.href.includes("?god=1");
   const gameState = useGameState();
@@ -293,6 +330,13 @@ const Game = () => {
   const [becomeCluegiver, becomingCluegiver] = useApiCall('becomeCluegiver');
   const actionInFlight = endingTurn || joiningRedTeam || joiningBlueTeam || becomingCluegiver;
   const [startNewGame, startingNewGame] = useApiCall('startNewGame');
+  const [isEnabled, setIsEnabled] = useState(true)
+
+  useEffect(() => {
+    setIsEnabled(isGameEnabled(gameState));
+  },[setIsEnabled, gameState])
+  
+ 
   const exitGame = useCallback(() => {
     cookies.erase("secret");
     window.location.href = "/";
@@ -324,22 +368,25 @@ const Game = () => {
       !currentPlayer.isCluegiver);
 
   return (
-    <div className="game-wrap">
+    <div className="game-wrap" >
       <PlayersReadout gameState={gameState} />
-      <div className="card-wrap">
-        {gameState.words.map((word) => (
-          <Card
-            key={word.id}
-            word={word.text}
-            type={word.type}
-            flipped={word.flipped}
-            clickable={canClickCard}
-            showColor={currentPlayer.isCluegiver}
-            onClick={() =>
-              canClickCard && api("revealWord", { wordId: word.id })
-            }
-          />
-        ))}
+      <div className="card-wrap-container">
+        <GameModal showModal={!isEnabled} text={'You need at least two players per team and each team needs one cluegiver to start. Share the link below.'}/>
+        <div className="card-wrap" style={isEnabled ? {opacity: '1', pointerEvents: 'all'} : {opacity: '0.3', pointerEvents: 'none'}}>
+          {gameState.words.map((word) => (
+            <Card
+              key={word.id}
+              word={word.text}
+              type={word.type}
+              flipped={word.flipped}
+              clickable={canClickCard}
+              showColor={currentPlayer.isCluegiver}
+              onClick={() =>
+                canClickCard && api("revealWord", { wordId: word.id })
+              }
+            />
+          ))}
+        </div>
       </div>
       <div className="control-bar">
         <div className="role-status">
