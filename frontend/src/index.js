@@ -12,6 +12,7 @@ const history = createBrowserHistory();
 
 console.log("Welcome to the game, friends.");
 
+
 addListener((gameState) => {
   if (gameState && !history.location.pathname.includes("/game")) {
     window.location.href = "/game/" + gameState.roomCode;
