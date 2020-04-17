@@ -15,7 +15,7 @@ const authenticatedEndpoint = (socket, endpoint, handler) => {
     try {
       const playerId = playerIdsBySocketId[socket.id];
       if (!await db.isPlayerInActiveGame(playerId)) {
-        return respondError(callback, 401, `It looks like you haven't joined a game yet. ` )
+        return respondError(callback, 401, `It looks like you haven't joined a game yet.`)
       }
       await handler(playerId, ...params);
     } catch (e) {
