@@ -4,7 +4,9 @@ import { copyContents } from "./utils";
 import PlayerAvatar from "./PlayerAvatar";
 import useGameState from '../useGameState';
 import cx from 'classnames';
-import { getPlayer, getCurrentPlayer, getTeamPlayers } from "../gameStateSelectors";
+import { getPlayer, getCurrentPlayer, getTeamPlayers, getCanSwitchTeams } from "../gameStateSelectors";
+import { useApiCall } from "../api";
+import cookies from 'browser-cookies';
 
 const TEAM_NAMES = {
   RED: 'Red Team',
@@ -26,18 +28,27 @@ const Player = ({ id }) => {
 const Roster = ({ team }) => {
   const gameState = useGameState();
   const currentPlayer = getCurrentPlayer(gameState);
+  const canSwitchTeams = getCanSwitchTeams(gameState);
+  const [joinTeam, joiningTeam] = useApiCall('joinTeam', { team });
+  const [becomeCluegiver, becomingCluegiver] = useApiCall('becomeCluegiver');
   const players = useMemo(() => {
     const allPlayers = getTeamPlayers(gameState, team);
     return [
       allPlayers.find(({ isCluegiver }) => isCluegiver),
       ...allPlayers.filter(({ isCluegiver }) => !isCluegiver)
-    ];
+    ].filter(Boolean);
   }, [gameState, team]);
+  const hasCluegiver = !!players.find(({ isCluegiver }) => isCluegiver);
+  const missingPlayers = 2 - players.length;
   return (
     <div className={cx('game-roster', { 'red-team': team === 'RED', 'blue-team': team === 'BLUE' })}>
       <h4 className="game-roster-team-name">{TEAM_NAMES[team]}</h4>
-      {currentPlayer.team === team && <span className="game-your-team-annotation">(your team)</span>}
+      {currentPlayer.team === team && <span className="game-team-annotation">(your team)</span>}
+      {missingPlayers > 0 && <span className="game-team-annotation">Needs {missingPlayers} more player{missingPlayers === 1 ? '' : 's'}!</span>}
+      {missingPlayers <= 0 && !hasCluegiver && <span className="game-team-annotation">Needs a Cluegiver!</span>}
       {players.map((player) => <Player id={player.id} key={player.id} />)}
+      {currentPlayer.team !== team && canSwitchTeams && <button onClick={joinTeam} disabled={joiningTeam}>Join {TEAM_NAMES[team]}</button>}
+      {currentPlayer.team === team && !hasCluegiver && <button onClick={becomeCluegiver} disabled={becomingCluegiver}>Become Cluegiver</button>}
     </div>
   )
 }
@@ -56,14 +67,23 @@ const RoomLink = ({ code }) => {
 
 const PlayerSection = () => {
   const gameState = useGameState();
-  const currentPlayer = getCurrentPlayer(gameState);
-  const teamOrder = currentPlayer.team === 'OBSERVER' ? ['RED', 'BLUE'] : [currentPlayer.team, ['RED', 'BLUE'].find((x) => x !== currentPlayer.team)];
 
-  const code = "asdf";
+  const exitGame = useCallback(() => {
+    cookies.erase("secret");
+    window.location.href = "/";
+  }, []);
+
+  const [startNewGame, startingNewGame] = useApiCall('startNewGame');
+
+  const code = gameState.roomCode;
   return (
     <aside className="game-players">
       <RoomLink code={code} />
-      {teamOrder.map((team) => <Roster team={team} key={team} />)}
+      {['RED', 'BLUE'].map((team) => <Roster team={team} key={team} />)}
+      <div className="game-control-wrapper">
+        <button onClick={exitGame} className="game-exit-button">Leave Game</button>
+        <button onClick={startNewGame} className="game-new-button" disabled={startingNewGame}>End &amp; Start New</button>
+      </div>
     </aside>
   );
 }

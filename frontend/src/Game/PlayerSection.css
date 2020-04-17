@@ -2,6 +2,10 @@
   background-color: #c5baa9;
   width: 350px;
   color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: stretch;
 }
 
 .game-players .game-room-link {
@@ -12,7 +16,8 @@
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
   text-align: left;
-  margin: 20px 0;
+  margin: 20px 20px 20px 0;
+  background-color: #0081ff;
 }
 
 .game-room-link span {
@@ -44,6 +49,24 @@
   border-left: none;
 }
 
+.game-roster button {
+  margin-top: 20px;
+  background-color: white;
+  color: white;
+  font-size: 24px;
+  height: 66px;
+  border-radius: 33px;
+  width: calc(100% - 20px);
+}
+
+.red-team button {
+  color: #ff5454;
+}
+
+.blue-team button {
+  color: #0081ff;
+}
+
 .game-roster + .game-roster {
   margin-top: 20px;
 }
@@ -52,6 +75,15 @@
   font-size: 40px;
   margin: 0;
   padding: 0;
+}
+
+.game-team-annotation {
+  display: block;
+  font-size: 18px;
+}
+
+.game-team-annotation+.game-team-annotation {
+  margin-top: 5px;
 }
 
 .red-turn .red-team,
@@ -71,7 +103,7 @@
 }
 
 .game-roster .player:first-of-type {
-  margin-top: 20px;
+  margin-top: 25px;
 }
 
 .player {
@@ -89,9 +121,29 @@
 .player-cluegiver-annotation {
   text-transform: uppercase;
   font-size: 12px;
-  padding-top: 5px;
+  padding-top: 7px;
 }
 
 .player-avatar-crown {
   margin-left: 14px;
+}
+
+.game-control-wrapper {
+  padding: 20px;
+}
+
+.game-players .game-exit-button, .game-players .game-new-button {
+  border: 4px solid;
+  color: white;
+  background-color: transparent;
+  width: 100%;
+  font-size: 24px;
+}
+
+.game-players .game-exit-button {
+  border-color: transparent;
+}
+
+.game-players .game-new-button {
+  border-color: white;
 }
