@@ -1,0 +1,71 @@
+.game-board {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  padding: 20px;
+}
+
+
+.game-turn-readout {
+  display: inline-block;
+  text-align: center;
+  transform-origin: 50% 50%;
+}
+
+.red-turn .your-turn {
+  color: #ff5454;
+}
+
+.blue-turn .your-turn {
+  color: #0081ff;
+}
+
+.game-turn-readout.your-turn {
+  font-size: 48px;
+  transform: rotate(-4deg);
+}
+
+.game-turn-readout.their-turn {
+  font-size: 32px;
+  transform: rotate(4deg);
+  color: #c5baa9;
+}
+
+.game-card-wrap {
+  width: calc(100vw - 390px);
+  max-width: calc(150vh - 450px);
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
+  gap: 2px;
+
+  /* Default, no-turn state */
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.game-card-wrap .card {
+  background: transparent;
+  border-radius: 1.2vw;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.3);
+}
+
+.red-turn .game-card-wrap,
+.blue-turn .game-card-wrap {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.game-end-turn {
+  color: white;
+  font-size: 32px;
+}
+
+.red-turn .game-end-turn {
+  background-color: #ff5454;
+}
+
+.blue-turn .game-end-turn {
+  background-color: #0081ff;
+}

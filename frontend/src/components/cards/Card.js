@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import CardSVG from './CardSVG';
 import cx from 'classnames';
+import './Card.css';
 
 const getRotation = (word) => {
   return (((word.split('').map(c => c.charCodeAt(0)).reduce((a, b) => a + b) % 20) / 20) * 6) - 3;

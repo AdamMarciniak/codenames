@@ -1,0 +1,14 @@
+.game-view {
+  background-color: #f3ecdf;
+  height: 100vh;
+  width: 100vw;
+  display: grid;
+  grid-template-columns: 350px 1fr;
+}
+
+.game-view button, .game-view a.button {
+  border: none;
+  height: 80px;
+  border-radius: 40px;
+  padding: 0 40px;
+}

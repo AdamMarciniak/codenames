@@ -3,6 +3,7 @@ import useGameState from "../useGameState";
 import { useApiCall } from "../api";
 import DrawBox from "./DrawBox";
 import Modal from "../components/Modal";
+import Game from './Game';
 
 const JoinGame = ({ match: { params } }) => {
   const gameState = useGameState();
