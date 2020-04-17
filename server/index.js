@@ -4,8 +4,6 @@ const { randomString } = require("./utils");
 const onPlayerGameChanged = require('./onPlayerGameChanged');
 const { playerIdsBySecret, playerIdsBySocketId, registerPlayerSocket, unregisterSocket, registerPlayerSecret } = require('./identities');
 
-registerPlayerSecret(4, 'TEST_SECRET');
-
 const db = require("./queries");
 
 const respondSuccess = (callback, result) => callback(null, result);
