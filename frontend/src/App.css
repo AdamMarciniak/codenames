@@ -36,7 +36,7 @@ html, body, #root {
   border-radius: 10px;
   display: grid;
   grid-template-rows: 2fr 1fr;
-  grid-template-areas: 
+  grid-template-areas:
     "text"
     "button";
   box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
@@ -91,7 +91,6 @@ html, body, #root {
 
 .game-modal-inner > .text {
   width: 75%;
-  text-align: center;
   font-size: 1em;
   color: #353535;
   font-weight: bold;

@@ -1,15 +1,18 @@
 import { socket } from './api'
 import cookies from 'browser-cookies';
+import TEST_STATE from './testState.js';
+
+const USE_TEST_STATE = window.location.href.includes('//localhost') && true;
 
 const gameStateListeners = [];
 
 let currentGameState = null;
 
 socket.on('gameState', (newGameState) => {
-  currentGameState = newGameState;
-  console.log('received state', newGameState);
-  if (newGameState) {
-    cookies.set('secret', newGameState.currentPlayerSecret, { expires: 365 });
+  currentGameState = USE_TEST_STATE ? TEST_STATE : newGameState;
+  console.log('received state', currentGameState);
+  if (currentGameState) {
+    cookies.set('secret', currentGameState.currentPlayerSecret, { expires: 365 });
   }
   gameStateListeners.forEach((listener) => listener(currentGameState));
 });

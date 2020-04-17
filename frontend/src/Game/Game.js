@@ -335,8 +335,8 @@ const Game = () => {
   useEffect(() => {
     setIsEnabled(isGameEnabled(gameState));
   },[setIsEnabled, gameState])
-  
- 
+
+
   const exitGame = useCallback(() => {
     cookies.erase("secret");
     window.location.href = "/";
@@ -371,7 +371,18 @@ const Game = () => {
     <div className="game-wrap" >
       <PlayersReadout gameState={gameState} />
       <div className="card-wrap-container">
-        <GameModal showModal={!isEnabled} text={'To start the game, you need at least two players per team and each team needs one cluegiver. Share the game with some friends!'}/>
+        <GameModal showModal={!isEnabled}>
+          <p>
+            4+ players required!
+          </p>
+          <p>
+            To start the game, each team needs:
+          </p>
+          <ul>
+            <li>a CLUEGIVER</li>
+            <li>at least one NON-CLUEGIVER PLAYER</li>
+          </ul>
+        </GameModal>
         <div className="card-wrap" style={isEnabled ? {opacity: '1', pointerEvents: 'all'} : {opacity: '0.3', pointerEvents: 'none'}}>
           {gameState.words.map((word) => (
             <Card
