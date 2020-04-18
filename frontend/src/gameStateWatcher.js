@@ -5,13 +5,26 @@ const gameStateListeners = [];
 
 let currentGameState = null;
 
-socket.on('gameState', (newGameState) => {
-  currentGameState = newGameState;
+const receiveState = (state) => {
+  currentGameState = state;
   console.log('received state', currentGameState);
   if (currentGameState) {
     cookies.set('secret', currentGameState.currentPlayerSecret, { expires: 365 });
   }
   gameStateListeners.forEach((listener) => listener(currentGameState));
+}
+
+let hasForcedState = false;
+
+window['forceState'] = (state) => {
+  hasForcedState = true;
+  receiveState(state);
+}
+
+socket.on('gameState', (newGameState) => {
+  if (!hasForcedState) {
+    receiveState(newGameState);
+  }
 });
 
 export const addListener = (listener) => {

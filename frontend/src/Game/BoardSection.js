@@ -11,7 +11,7 @@ const TEAM_NAMES = {
   BLUE: 'Blue Team'
 };
 
-const BoardSection = () => {
+const BoardSection = ({ onClick }) => {
   const gameState = useGameState();
   const currentPlayer = getCurrentPlayer(gameState);
   const currentTurn = getCurrentTurn(gameState);
@@ -22,7 +22,7 @@ const BoardSection = () => {
   const canClickCard = window.location.href.includes("god=1") || yourTurn && !currentPlayer.isCluegiver;
 
   return (
-    <section className="game-board">
+    <section className="game-board" onClick={onClick}>
       <header className="game-header">
         {yourTurn && <div className="game-turn-readout your-turn">It's your turn!</div>}
         {currentPlayer.team !== 'OBSERVER' && theirTurn && <div className="game-turn-readout their-turn">Sit tight, <br />it's {TEAM_NAMES[currentTurn]}'s turn!</div>}

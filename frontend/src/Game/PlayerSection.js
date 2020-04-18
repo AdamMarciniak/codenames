@@ -65,7 +65,7 @@ const RoomLink = ({ code }) => {
   )
 }
 
-const PlayerSection = () => {
+const PlayerSection = ({ onClick }) => {
   const gameState = useGameState();
 
   const exitGame = useCallback(() => {
@@ -77,7 +77,7 @@ const PlayerSection = () => {
 
   const code = gameState.roomCode;
   return (
-    <aside className="game-players">
+    <aside className="game-players" onClick={onClick}>
       <RoomLink code={code} />
       {['RED', 'BLUE'].map((team) => <Roster team={team} key={team} />)}
       <div className="game-control-wrapper">
