@@ -155,12 +155,16 @@ a {
   display: flex;
   flex-wrap: wrap;
   overflow: scroll;
+  background: #6d6da5;
 }
 
 .avatar-canvas-gallery {
   width: 100%;
   height: 100%;
 }
+
+  
+
 
 
 
