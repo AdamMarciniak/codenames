@@ -15,10 +15,10 @@ const CreateGame = () => {
   useEffect(() => {
     if (creatingGame) {
       setHasCreatedGame(true);
-    } else {
+    } else if (error) {
       setHasCreatedGame(false);
     }
-  }, [creatingGame]);
+  }, [creatingGame, error]);
 
   useEffect(() => {
     if (error) {
@@ -30,6 +30,7 @@ const CreateGame = () => {
   }, [error]);
 
   const handleSubmit = () => {
+    setError(null);
     if (!/\S/.test(name)) {
       setModalText("Please enter a nickname!");
       setShowModal(true);
