@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { addListener, removeListener, getCurrentGameState } from "./gameStateWatcher";
 
 export default () => {
-  const [gameState, setGameState] = useState(null);
+  const [gameState, setGameState] = useState(getCurrentGameState());
   useEffect(() => {
     setGameState(getCurrentGameState());
     const listener = (newGameState) => {

@@ -2,8 +2,8 @@ import React, { useRef, useEffect, useState, useMemo } from 'react'
 import { animateAvatar } from './utils';
 import { useApiCall } from '../api';
 
-const PlayerAvatar = props => {
-  const avatarParams = useMemo(() => ({ id: props.id }), [props.id]);
+const PlayerAvatar = ({ id }) => {
+  const avatarParams = useMemo(() => ({ id }), [id]);
   const [getAvatar] = useApiCall('getAvatar', avatarParams);
   const canvasRef = useRef(null);
   const [avatar, setAvatar] = useState(null);

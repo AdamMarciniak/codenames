@@ -46,7 +46,7 @@ const drawOneAvatarLine = (ctx, command) => {
 export const drawAvatar = (avatar, ctx) => {
   ctx.beginPath();
   ctx.lineWidth = 8;
-  ctx.strokeStyle = '#ff8000';
+  ctx.strokeStyle = '#ffffff';
   ctx.lineJoin = 'round';
   ctx.lineCap = 'round';
   if (avatar) {
@@ -62,7 +62,7 @@ export const drawAvatar = (avatar, ctx) => {
 export const animateAvatar = (avatar, ctx) => {
   ctx.beginPath();
   ctx.lineWidth = 8;
-  ctx.strokeStyle = '#ff8000';
+  ctx.strokeStyle = '#ffffff';
   ctx.lineJoin = 'round';
   ctx.lineCap = 'round';
 
