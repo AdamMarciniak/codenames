@@ -96,6 +96,7 @@
   .game-board {
     padding: 10px 10px 10px 60px;
   }
+
   .game-card-wrap {
     width: calc(100vw - 80px);
     max-width: calc(86vh - 171px);
@@ -119,15 +120,32 @@
     padding: 0 25px;
   }
 
+  .red-turn .game-card-wrap,
+  .blue-turn .game-card-wrap {
+    opacity: 0.3;
+  }
+
+  .hide-player-section.red-turn .game-card-wrap,
+  .hide-player-section.blue-turn .game-card-wrap {
+    opacity: 1;
+  }
+
   .game-board:after {
     content: 'back to game!';
-    color: black;
-    display: block;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     opacity: 1;
     position: absolute;
-    top: calc(50% - 20px);
-    right: 3px;
+    top: calc(50% + 70px);
+    right: 20px;
     transform: rotate(90deg);
+    transform-origin: 100% 0;
+    border-radius: 20px;
+    height: 40px;
+    background-color: #0081ff;
+    padding: 0 20px;
   }
 
   .hide-player-section .game-board:after {
