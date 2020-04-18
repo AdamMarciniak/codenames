@@ -1,0 +1,27 @@
+.game-view {
+  background-color: #f3ecdf;
+  height: 100vh;
+  width: 100vw;
+  display: grid;
+  grid-template-columns: 350px 1fr;
+}
+
+.game-view button, .game-view a.button {
+  border: none;
+  height: 80px;
+  border-radius: 40px;
+  padding: 0 40px;
+}
+
+
+@media screen and (max-height: 960px), (max-width: 1200px) {
+  .game-view {
+    grid-template-columns: 250px 1fr;
+  }
+}
+
+@media screen and (max-width: 860px) {
+  .game-view {
+    display: block;
+  }
+}

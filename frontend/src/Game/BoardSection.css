@@ -1,0 +1,154 @@
+.game-board {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  height: 100vh;
+  padding: 10px 20px;
+  position: relative;
+}
+
+.game-turn-readout {
+  display: inline-block;
+  text-align: center;
+  transform-origin: 50% 50%;
+}
+
+.red-turn .your-turn {
+  color: #ff5454;
+}
+
+.blue-turn .your-turn {
+  color: #0081ff;
+}
+
+.game-turn-readout.your-turn {
+  font-size: 48px;
+  transform: rotate(-4deg);
+}
+
+.game-turn-readout.their-turn {
+  font-size: 32px;
+  transform: rotate(4deg);
+  color: #c5baa9;
+}
+
+.waiting-readout {
+  font-size: 24px;
+  color: #c5baa9;
+  text-align: center;
+}
+
+.game-card-wrap {
+  width: calc(100vw - 390px);
+  max-width: calc(150vh - 450px);
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
+  gap: 2px;
+
+  /* Default, no-turn state */
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.game-card-wrap .card {
+  background: transparent;
+  border-radius: 1.2vw;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.3);
+}
+
+.red-turn .game-card-wrap,
+.blue-turn .game-card-wrap {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.game-end-turn {
+  color: white;
+  font-size: 32px;
+}
+
+.red-turn .game-end-turn {
+  background-color: #ff5454;
+}
+
+.blue-turn .game-end-turn {
+  background-color: #0081ff;
+}
+
+.game-footer, .game-header {
+  width: 100%;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media screen and (max-height: 960px), (max-width: 1200px) {
+  .game-card-wrap {
+    width: calc(100vw - 290px);
+    max-width: calc(150vh - 450px);
+  }
+}
+
+@media screen and (max-width: 860px) {
+  .game-board {
+    padding: 10px 10px 10px 60px;
+  }
+
+  .game-card-wrap {
+    width: calc(100vw - 80px);
+    max-width: calc(86vh - 171px);
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+  }
+
+  .game-turn-readout.your-turn {
+    font-size: 24px;
+  }
+
+  .game-turn-readout.their-turn {
+    font-size: 16px;
+  }
+
+  .game-board .game-end-turn {
+    color: white;
+    font-size: 16px;
+    height: 50px;
+    border-radius: 25px;
+    padding: 0 25px;
+  }
+
+  .red-turn .game-card-wrap,
+  .blue-turn .game-card-wrap {
+    opacity: 0.3;
+  }
+
+  .hide-player-section.red-turn .game-card-wrap,
+  .hide-player-section.blue-turn .game-card-wrap {
+    opacity: 1;
+  }
+
+  .game-board:after {
+    content: 'back to game!';
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 1;
+    position: absolute;
+    top: calc(50% + 70px);
+    right: 10px;
+    transform: rotate(90deg);
+    transform-origin: 100% 0;
+    border-radius: 20px;
+    height: 40px;
+    background-color: #0081ff;
+    padding: 0 20px;
+  }
+
+  .hide-player-section .game-board:after {
+    display: none;
+  }
+}
