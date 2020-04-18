@@ -5,6 +5,7 @@
   align-items: center;
   height: 100vh;
   padding: 10px 20px;
+  position: relative;
 }
 
 .game-turn-readout {
@@ -116,5 +117,20 @@
     height: 50px;
     border-radius: 25px;
     padding: 0 25px;
+  }
+
+  .game-board:after {
+    content: 'back to game!';
+    color: black;
+    display: block;
+    opacity: 1;
+    position: absolute;
+    top: calc(50% - 20px);
+    right: 3px;
+    transform: rotate(90deg);
+  }
+
+  .hide-player-section .game-board:after {
+    display: none;
   }
 }
