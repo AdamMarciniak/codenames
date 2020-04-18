@@ -205,7 +205,8 @@
   }
   .game-roster button {
     margin-top: 10px;
-    font-size: 18px;
+    font-size: 16px;
+    line-height: 16px;
     height: 40px;
     border-radius: 20px;
     width: calc(100% - 20px);
