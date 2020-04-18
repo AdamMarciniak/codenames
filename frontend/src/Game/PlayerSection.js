@@ -15,11 +15,11 @@ const TEAM_NAMES = {
 
 const Player = ({ id }) => {
   const gameState = useGameState();
-  const { name, isCluegiver } = getPlayer(gameState, id);
+  const { name, isCluegiver, avatarId } = getPlayer(gameState, id);
   return (
     <div className="player">
       {isCluegiver && <><img className="player-avatar-crown" src={require('./crown.svg')} alt="cluegiver" /><span className="player-cluegiver-annotation">Cluegiver</span></>}
-      <PlayerAvatar id={id} />
+      <PlayerAvatar id={avatarId} />
       <h5 className="player-name">{name}</h5>
     </div>
   )
