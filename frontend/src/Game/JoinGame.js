@@ -32,16 +32,17 @@ const JoinGame = ({ match: { params } }) => {
   useEffect(() => {
     if (joiningGame) {
       setHasJoinedGame(true);
-    } else {
+    } else if (error) {
       setHasJoinedGame(false);
     }
-  }, [joiningGame]);
+  }, [joiningGame, error]);
 
   if (gameState && gameState.roomCode === params.code) {
     return <Game />;
   }
 
   const handleSubmit = () => {
+    setError(null);
     if (!/\S/.test(name)) {
       setModalText("Please enter a nickname!");
       setShowModal(true);
