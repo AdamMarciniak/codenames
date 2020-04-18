@@ -18,7 +18,7 @@ const Player = ({ id }) => {
   const { name, isCluegiver } = getPlayer(gameState, id);
   return (
     <div className="player">
-      {isCluegiver && <><img className="player-avatar-crown" src={require('./crown.svg')} /><span className="player-cluegiver-annotation">Cluegiver</span></>}
+      {isCluegiver && <><img className="player-avatar-crown" src={require('./crown.svg')} alt="cluegiver" /><span className="player-cluegiver-annotation">Cluegiver</span></>}
       <PlayerAvatar id={id} />
       <h5 className="player-name">{name}</h5>
     </div>

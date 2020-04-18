@@ -1,7 +1,6 @@
-import React, { useMemo, useCallback } from "react";
+import React from "react";
 import './BoardSection.css';
 import useGameState from '../useGameState';
-import cx from 'classnames';
 import { getCurrentPlayer, getCurrentTurn } from "../gameStateSelectors";
 import Card from '../components/cards/Card';
 import api, { useApiCall } from "../api";
@@ -19,7 +18,7 @@ const BoardSection = ({ onClick }) => {
 
   const yourTurn = currentTurn === currentPlayer.team;
   const theirTurn = currentTurn && currentTurn !== currentPlayer.team;
-  const canClickCard = window.location.href.includes("god=1") || yourTurn && !currentPlayer.isCluegiver;
+  const canClickCard = window.location.href.includes("god=1") || (yourTurn && !currentPlayer.isCluegiver);
 
   return (
     <section className="game-board" onClick={onClick}>

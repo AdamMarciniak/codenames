@@ -136,6 +136,7 @@ a {
   margin-top: 10px;
   border: solid grey 1px;
   height: 200px;
+  border-radius: 8px;
 }
 
 .avatar-canvas {

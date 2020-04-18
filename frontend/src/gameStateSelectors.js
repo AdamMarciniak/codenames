@@ -19,8 +19,9 @@ export const getCurrentTurn = (gameState) => {
 
 export const getCanSwitchTeams = (gameState) =>{
   const currentPlayer = getCurrentPlayer(gameState);
-  return (
-    !currentPlayer.isCluegiver &&
-    !gameState.words.find(({ flipped }) => flipped) || currentPlayer.team === 'OBSERVER'
-  );
+  if (currentPlayer.isCluegiver) {
+    return false;
+  } else {
+    return !gameState.words.find(({ flipped }) => flipped) || currentPlayer.team === 'OBSERVER';
+  }
 }

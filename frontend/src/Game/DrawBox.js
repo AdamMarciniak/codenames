@@ -34,13 +34,13 @@ const DrawBox = ({ setAvatar }) => {
   useEffect(() => {
     const ref = canvasRef.current;
     ref.addEventListener('pointerdown', handleMouseDown)
-    ref.addEventListener('pointerup', handleMouseUp)
+    document.addEventListener('pointerup', handleMouseUp)
     ref.addEventListener('pointermove', handleMouseMove)
 
     return (
       () => {
         ref.removeEventListener('pointerdown', handleMouseDown)
-        ref.removeEventListener('pointerup', handleMouseUp)
+        document.removeEventListener('pointerup', handleMouseUp)
         ref.removeEventListener('pointermove', handleMouseMove)
       }
     )

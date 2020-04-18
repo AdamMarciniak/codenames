@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback, useState } from "react";
+import React, { useState } from "react";
 import './Game.css';
 import useGameState from '../useGameState';
 import cx from 'classnames';
