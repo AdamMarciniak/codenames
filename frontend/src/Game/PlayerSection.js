@@ -75,7 +75,7 @@ const PlayerSection = ({ onClick }) => {
       <RoomLink code={code} />
       {['RED', 'BLUE'].map((team) => <Roster team={team} key={team} />)}
       <div className="game-control-wrapper">
-        <button onClick={startNewGame} className="game-new-button" disabled={startingNewGame}>End &amp; Start New</button>
+        <button onClick={startNewGame} className="game-new-button" disabled={startingNewGame}>New Game</button>
       </div>
     </aside>
   );
