@@ -8,7 +8,7 @@ import BoardSection from "./BoardSection";
 
 
 const Game = () => {
-  const gameState = useGameState();
+  const [gameState] = useGameState();
   const [playerSectionMinimized, setPlayerSectionMinimized] = useState(false);
   if (!gameState) {
     return null;

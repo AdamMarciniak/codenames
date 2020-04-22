@@ -1,7 +1,5 @@
 import io from 'socket.io-client';
 import { useCallback, useState } from 'react';
-import cookies from 'browser-cookies';
-import {render} from './index'
 export const socket = io(window.location.hostname + ':6969');
 
 
@@ -21,17 +19,6 @@ const api = (endpoint, params) => {
     });
   });
 }
-
-socket.on('reconnect', () => {
-  console.log('auto-reconnecting');
-  const secret = cookies.get('secret');
-  if (secret) {
-    api('identify', { secret }).then(render).catch(() => {
-      console.error('secret expired');
-      cookies.erase('secret');
-    });
-  }
-});
 
 export const useApiCall = (event, params, onError) => {
   const [inFlight, setInFlight] = useState(false);

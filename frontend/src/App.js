@@ -6,13 +6,14 @@ import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import Menu from './Game/Menu';
 import CreateGame from './Game/CreateGame';
 import JoinGame from './Game/JoinGame';
+import JoinOrPlayGame from './Game/JoinOrPlayGame';
 
 function App({ history }) {
   return (
     <Router history={history}>
       <Switch>
         <Route path="/gallery" component={Gallery} />
-        <Route path="/game/:code" component={JoinGame} />
+        <Route path="/game/:code" component={JoinOrPlayGame} />
         <Route path="/join" component={JoinGame} />
         <Route path="/new" component={CreateGame} />
         <Route path="/" component={Menu} />

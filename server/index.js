@@ -2,7 +2,7 @@ const io = require('./io');
 require('log-timestamp');
 const { randomString } = require("./utils");
 const onPlayerGameChanged = require('./onPlayerGameChanged');
-const { playerIdsBySecret, playerIdsBySocketId, registerPlayerSocket, unregisterSocket, registerPlayerSecret } = require('./identities');
+const { playerIdsBySocketId, registerPlayerSocket, unregisterSocket } = require('./identities');
 
 const db = require("./queries");
 
@@ -27,14 +27,15 @@ const authenticatedEndpoint = (socket, endpoint, handler) => {
 
 io.on("connection", socket => {
   console.log("a user connected");
-  socket.on("identify", async ({ secret }, callback) => {
-    const playerId = playerIdsBySecret[secret]
+  socket.on("identify", async ({ secret, roomCode }, callback) => {
+    const playerId = roomCode && await db.getPlayerId(roomCode, secret);
+
     if (playerId) {
       registerPlayerSocket(playerId, socket);
       onPlayerGameChanged(playerId);
       respondSuccess(callback);
     } else {
-      respondError(callback, 404, `Secret ${secret} not recognized!`);
+      respondError(callback, 404, `Uh oh, we couldn't find the room you're looking for!`);
     }
   });
 
@@ -45,26 +46,29 @@ io.on("connection", socket => {
 
   const randomTeam = () => Math.random() > 0.5 ? "RED" : "BLUE";
 
-  socket.on("createRoomAndGame", async ({ name, avatar }, callback) => {
+  socket.on("createRoomAndGame", async ({ name, avatar, secret }, callback) => {
     if (!name) {
       return respondError(callback, 400, `The parameter "name" is missing or empty. (Must be string.)`);
     }
 
+    const roomCode = randomString(5);
+    const playerSecret = secret || randomString(40);
+
     const playerId = await db.createRoomAndGame(
-      randomString(5),
+      roomCode,
       name,
       avatar,
+      playerSecret,
       randomTeam()
     );
 
     registerPlayerSocket(playerId, socket);
-    registerPlayerSecret(playerId, randomString(40));
     onPlayerGameChanged(playerId);
-    respondSuccess(callback);
+    respondSuccess(callback, { roomCode, playerSecret });
   });
 
 
-  socket.on("joinGame", async ({ name, roomCode, avatar }, callback) => {
+  socket.on("joinGame", async ({ name, roomCode, secret, avatar }, callback) => {
     if (!name) {
       return respondError(callback, 400, `The parameter "name" is missing or empty. (Must be string.)`);
     }
@@ -73,22 +77,24 @@ io.on("connection", socket => {
       return respondError(callback, 400, `Missing Game Code. Did you mean to start a new game?`);
     }
 
-    if (! await db.isValidroomCode(roomCode)) {
+    if (!await db.isValidroomCode(roomCode)) {
       return respondError(callback, 404, `We couldn't find a game with the code ${roomCode}`)
     }
 
+    const playerSecret = secret || randomString(40);
+
     const playerId = await db.joinGame(
       roomCode,
+      playerSecret,
       name
     );
+
     await db.insertAvatar(playerId, avatar)
-    const secret = randomString(40);
 
     registerPlayerSocket(playerId, socket);
-    registerPlayerSecret(playerId, secret);
 
     onPlayerGameChanged(playerId);
-    respondSuccess(callback);
+    respondSuccess(callback, { playerSecret });
   });
 
   socket.on("getAllImages", async (params=null, callback) => {
@@ -99,6 +105,7 @@ io.on("connection", socket => {
     if (!team) {
       return respondError(callback, 400, `The parameter "team" is missing or empty. (Must be string)`);
     }
+
     if (!(team === 'RED' || team === 'BLUE' || team === 'OBSERVER')){
       return respondError(callback, 400, `The parameter "team" is not valid. Choose "RED", "BLUE", or "OBSERVER"`);
     }
@@ -108,10 +115,8 @@ io.on("connection", socket => {
     respondSuccess(callback);
   });
 
-
-
   authenticatedEndpoint(socket, "becomeCluegiver", async (playerId, params, callback) => {
-    db.becomeCluegiver(playerId);
+    await db.becomeCluegiver(playerId);
     onPlayerGameChanged(playerId);
     respondSuccess(callback);
   });
@@ -121,17 +126,10 @@ io.on("connection", socket => {
       return respondError(callback, 400, `The parameter "wordId" is missing or empty. (Must be Number.)`);
     }
 
-    db.addMove(playerId, wordId, isTurnEnd = false);
+    await db.addMove(playerId, wordId, isTurnEnd = false);
     onPlayerGameChanged(playerId);
     respondSuccess(callback);
   });
-
-
-
-//   also add two queries: savePlayerSecret (playerId, secret) and getPlayerForSecret (secret)
-// and then replace references to the current secret object with async references to those
-
-
 
   authenticatedEndpoint(socket, "endTurn", async (playerId, params, callback) => {
     await db.addMove(playerId, wordId = null, isTurnEnd = true);
@@ -146,7 +144,6 @@ io.on("connection", socket => {
 
     const avatar = await db.getAvatar(id);
 
-    onPlayerGameChanged(playerId);
     respondSuccess(callback, avatar);
   });
 
