@@ -241,7 +241,8 @@ CREATE TABLE public.players (
     name character varying(40) NOT NULL,
     team public.team_options DEFAULT 'OBSERVER'::public.team_options NOT NULL,
     is_cluegiver boolean DEFAULT false NOT NULL,
-    room_id integer
+    room_id integer,
+    secret character varying(40)
 );
 
 
@@ -464,6 +465,14 @@ ALTER TABLE ONLY public.moves
 
 ALTER TABLE ONLY public.players
     ADD CONSTRAINT players_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: players players_room_id_secret_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.players
+    ADD CONSTRAINT players_room_id_secret_key UNIQUE (room_id, secret);
 
 
 --

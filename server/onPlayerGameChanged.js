@@ -31,6 +31,8 @@ module.exports = async (playerId) => {
     const gameState = await db.getGameStateForPlayer(playerId);
     return broadcastGameState(gameState);
   } catch (e) {
+    console.log(`Error getting game state for player ${playerId}`);
+    console.trace();
     throw e;
   }
 };
