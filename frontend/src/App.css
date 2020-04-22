@@ -181,6 +181,7 @@ a {
   margin: 15vh auto;
   animation-direction: alternate;
   animation: squiggly 0.25s linear infinite;
+  user-select: none;
 }
 
 @keyframes squiggly {
