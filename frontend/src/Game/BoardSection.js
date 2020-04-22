@@ -11,7 +11,7 @@ const TEAM_NAMES = {
 };
 
 const BoardSection = ({ onClick }) => {
-  const gameState = useGameState();
+  const [gameState] = useGameState();
   const currentPlayer = getCurrentPlayer(gameState);
   const currentTurn = getCurrentTurn(gameState);
   const [endTurn, endingTurn] = useApiCall('endTurn');

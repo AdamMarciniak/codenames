@@ -1,19 +1,17 @@
 import React, { useState, useEffect } from "react";
-import useGameState from "../useGameState";
 import { useApiCall } from "../api";
 import DrawBox from "./DrawBox";
 import Modal from "../components/Modal";
-import Game from './Game';
+import cookies from 'browser-cookies';
 
-const JoinGame = ({ match: { params } }) => {
-  const gameState = useGameState();
+const JoinGame = ({ codeFromURL }) => {
   const [name, setName] = useState("");
-  const [code, setCode] = useState(params.code || "");
+  const [code, setCode] = useState(codeFromURL || "");
   const [avatar, setAvatar] = useState(null);
   const [error, setError] = useState(null);
   const [joinGame, joiningGame] = useApiCall(
     "joinGame",
-    { name, roomCode: code.toUpperCase(), avatar: avatar },
+    { name, roomCode: code.toUpperCase(), avatar: avatar, secret: cookies.get('secret') },
     setError
   );
   const [hasJoinedGame, setHasJoinedGame] = useState(false);
@@ -37,17 +35,14 @@ const JoinGame = ({ match: { params } }) => {
     }
   }, [joiningGame, error]);
 
-  if (gameState && gameState.roomCode === params.code) {
-    return <Game />;
-  }
-
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     setError(null);
     if (!/\S/.test(name)) {
       setModalText("Please enter a nickname!");
       setShowModal(true);
     } else {
-      joinGame();
+      const { playerSecret } = await joinGame();
+      cookies.set('secret', playerSecret, { expires: 365 });
     }
   };
 
@@ -67,7 +62,7 @@ const JoinGame = ({ match: { params } }) => {
             onChange={(e) => setName(e.currentTarget.value)}
           />
         </label>
-        {!params.code && (
+        {!codeFromURL && (
           <label>
             Game Code
             <input
