@@ -16,7 +16,7 @@ const SquigglyText = (props) => (
         y="50%"
         dominantBaseline="middle"
         textAnchor="middle"
-        fontSize="1.3vw"
+        fontSize="80%"
         fontFamily="Rock Salt, cursive"
       >
         {props.children}
