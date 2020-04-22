@@ -179,6 +179,7 @@ a {
   /*   width:70vw;
   height: auto; */
   margin: 15vh auto;
+  animation-direction: alternate;
   animation: squiggly 0.25s linear infinite;
 }
 

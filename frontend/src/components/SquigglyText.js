@@ -45,18 +45,18 @@ const SquigglyText = (props) => (
             result="noise"
             seed="1"
           />
-          <feDisplacementMap in="SourceGraphic" in2="noise" scale="3" />
+          <feDisplacementMap in="SourceGraphic" in2="noise" scale="12" />
         </filter>
 
         <filter id="squiggly-2">
           <feTurbulence
             id="turbulence"
-            baseFrequency="0.01"
+            baseFrequency="0.001"
             numOctaves="3"
             result="noise"
             seed="2"
           />
-          <feDisplacementMap in="SourceGraphic" in2="noise" scale="2" />
+          <feDisplacementMap in="SourceGraphic" in2="noise" scale="5" />
         </filter>
         <filter id="squiggly-3">
           <feTurbulence
@@ -66,7 +66,7 @@ const SquigglyText = (props) => (
             result="noise"
             seed="3"
           />
-          <feDisplacementMap in="SourceGraphic" in2="noise" scale="3" />
+          <feDisplacementMap in="SourceGraphic" in2="noise" scale="6" />
         </filter>
 
         <filter id="squiggly-4">
