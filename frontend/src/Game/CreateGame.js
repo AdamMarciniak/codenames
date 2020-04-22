@@ -1,13 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useApiCall } from "../api";
 import DrawBox from "./DrawBox";
 import Modal from "../components/Modal";
+import cookies from "browser-cookies";
 
 const CreateGame = () => {
   const [avatar, setAvatar] = useState(null);
   const [name, setName] = useState("");
   const [error, setError] = useState(null);
-  const [createRoomAndGame, creatingGame] = useApiCall('createRoomAndGame', { name, avatar }, setError);
+  const secret = useMemo(() => cookies.get('secret'), []);
+  const [createRoomAndGame, creatingGame] = useApiCall('createRoomAndGame', { name, avatar, secret }, setError);
   const [hasCreatedGame, setHasCreatedGame] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [modalText, setModalText] = useState("");
@@ -29,13 +31,15 @@ const CreateGame = () => {
     }
   }, [error]);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     setError(null);
     if (!/\S/.test(name)) {
       setModalText("Please enter a nickname!");
       setShowModal(true);
     } else {
-      createRoomAndGame();
+      const {playerSecret, roomCode} = await createRoomAndGame();
+      cookies.set('secret', playerSecret, { expires: 365 });
+      window.location.href = '/game/' + roomCode;
     }
   };
 

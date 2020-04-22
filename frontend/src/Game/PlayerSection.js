@@ -6,7 +6,6 @@ import useGameState from '../useGameState';
 import cx from 'classnames';
 import { getPlayer, getCurrentPlayer, getTeamPlayers, getCanSwitchTeams } from "../gameStateSelectors";
 import { useApiCall } from "../api";
-import cookies from 'browser-cookies';
 
 const TEAM_NAMES = {
   RED: 'Red Team',
@@ -14,7 +13,7 @@ const TEAM_NAMES = {
 };
 
 const Player = ({ id }) => {
-  const gameState = useGameState();
+  const [gameState] = useGameState();
   const { name, isCluegiver, avatarId } = getPlayer(gameState, id);
   return (
     <div className="player">
@@ -26,7 +25,7 @@ const Player = ({ id }) => {
 }
 
 const Roster = ({ team }) => {
-  const gameState = useGameState();
+  const [gameState] = useGameState();
   const currentPlayer = getCurrentPlayer(gameState);
   const canSwitchTeams = getCanSwitchTeams(gameState);
   const [joinTeam, joiningTeam] = useApiCall('joinTeam', { team });
@@ -66,12 +65,7 @@ const RoomLink = ({ code }) => {
 }
 
 const PlayerSection = ({ onClick }) => {
-  const gameState = useGameState();
-
-  const exitGame = useCallback(() => {
-    cookies.erase("secret");
-    window.location.href = "/";
-  }, []);
+  const [gameState] = useGameState();
 
   const [startNewGame, startingNewGame] = useApiCall('startNewGame');
 
@@ -81,7 +75,6 @@ const PlayerSection = ({ onClick }) => {
       <RoomLink code={code} />
       {['RED', 'BLUE'].map((team) => <Roster team={team} key={team} />)}
       <div className="game-control-wrapper">
-        <button onClick={exitGame} className="game-exit-button">Leave Game</button>
         <button onClick={startNewGame} className="game-new-button" disabled={startingNewGame}>End &amp; Start New</button>
       </div>
     </aside>

@@ -13,6 +13,27 @@ const query = async (...args) => {
   }
 }
 
+const getPlayerId = async (roomCode, secret) => {
+  const result = await query(
+    `
+      SELECT id
+      FROM players
+      WHERE secret = $2
+      AND room_id = (
+        SELECT id
+        FROM rooms
+        WHERE code = $1
+      )
+    `,
+    [roomCode, secret]
+  );
+  if (result && result.rows && result.rows.length >= 1) {
+    return result.rows[0].id;
+  } else {
+    return null;
+  }
+}
+
 const addGameWords = (gameId, wordType, count) => query(
   `
     INSERT INTO game_words (word_id, game_id, type)
@@ -31,7 +52,7 @@ const addGameWords = (gameId, wordType, count) => query(
   [gameId, wordType, count]
 );
 
-const createRoomAndGame = async (roomCode, currentPlayerName, avatar, firstTeam) => {
+const createRoomAndGame = async (roomCode, currentPlayerName, avatar, currentPlayerSecret, firstTeam) => {
   await query('BEGIN');
 
   const createRoomResult = await query(
@@ -53,16 +74,17 @@ const createRoomAndGame = async (roomCode, currentPlayerName, avatar, firstTeam)
   const insertPlayerResult = await query(
     `
       INSERT INTO players
-        (room_id, name)
+        (room_id, name, secret)
       VALUES
         (
           $1,
-          $2
+          $2,
+          $3
         )
       RETURNING
         id
     `,
-    [roomId, currentPlayerName]
+    [roomId, currentPlayerName, currentPlayerSecret]
   );
 
   const currentPlayerId = insertPlayerResult.rows[0].id;
@@ -239,15 +261,15 @@ const getGameStateForPlayer = async (playerId) => {
   };
 }
 
-const joinGame = async (roomCode, name) => {
+const joinGame = async (roomCode, secret, name) => {
   return (await query(
     `
       INSERT INTO
         players
-          (room_id, name)
+          (room_id, name, secret)
           (
             SELECT
-              id, $2
+              id, $2, $3
             FROM
               rooms
             WHERE
@@ -255,7 +277,7 @@ const joinGame = async (roomCode, name) => {
           )
       RETURNING id
     `,
-    [roomCode, name]
+    [roomCode, name, secret]
   )).rows[0].id
 };
 
@@ -412,6 +434,7 @@ const getAllImages = async () => {
 }
 
 module.exports = {
+  getPlayerId,
   createGame,
   createNewGame,
   createRoomAndGame,

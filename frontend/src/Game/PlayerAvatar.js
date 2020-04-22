@@ -2,6 +2,8 @@ import React, { useRef, useEffect, useState, useMemo } from 'react'
 import { animateAvatar } from './utils';
 import { useApiCall } from '../api';
 
+const avatarCache = {};
+
 const PlayerAvatar = ({ id }) => {
   const avatarParams = useMemo(() => ({ id }), [id]);
   const [getAvatar] = useApiCall('getAvatar', avatarParams);
@@ -10,9 +12,16 @@ const PlayerAvatar = ({ id }) => {
 
   useEffect(
     () => {
-      getAvatar().then((avatar) => setAvatar(avatar));
+      if (avatarCache[id]) {
+        setAvatar(avatarCache[id]);
+      } else {
+        getAvatar().then((avatar) => {
+          setAvatar(avatar);
+          avatarCache[id] = avatar;
+        });
+      }
     },
-    [getAvatar, setAvatar]
+    [getAvatar, setAvatar, id]
   );
 
    useEffect(
