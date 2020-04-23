@@ -14,7 +14,7 @@ const GalleryImage = props => {
 
   return (
     <div className='avatar-container'>
-      <canvas className='avatar-canvas-gallery' width='348' height='198' ref={canvasRef}/>
+      <canvas id={props.id} className='avatar-canvas-gallery' width='348' height='198' ref={canvasRef}/>
     </div>
   )
 }
@@ -39,7 +39,7 @@ export default () => {
     <div className="gallery">
       <div className="galleryContainer">
         {images.map(image => (
-          <GalleryImage key={image.player_id} image={image.image}></GalleryImage>
+          <GalleryImage id={image.player_id} key={image.player_id} image={image.image}></GalleryImage>
         ))}
       </div>
     </div>
