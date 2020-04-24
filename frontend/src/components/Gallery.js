@@ -40,7 +40,9 @@ export default () => {
 
   useEffect(() => {
     console.log(images.length)
-    setLoading(false);
+    if (images.length < 0){
+      setLoading(false);
+    }
   },[images])
 
   if (loading) {
