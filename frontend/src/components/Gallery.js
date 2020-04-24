@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import api from '../api';
 import {drawAvatar} from '../Game/utils'
+import './Gallery.css'
 
 
 const GalleryImage = props => {
@@ -19,9 +20,17 @@ const GalleryImage = props => {
   )
 }
 
+const Loader = () => (
+  <div className={'loader-wrapper'} style={{display: 'flex', alignItems: 'center', flexDirection:'column'}}>
+    <div id={'loader'}/>
+    <h1>Loading..</h1>
+    <h3>There are LOTS of drawings</h3>
+  </div>
+);
 
 export default () => {
   const [images, setImages] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect (() => {
     const fetchImages = async () => {
@@ -32,10 +41,16 @@ export default () => {
   },[setImages])
 
   useEffect(() => {
-    console.log(images)
+    console.log(images.length)
+    setLoading(false);
   },[images])
 
-  return (
+  if (loading) {
+    return (
+      <Loader />
+    )
+  } else {
+    return (
     <div className="gallery">
       <div className="galleryContainer">
         {images.map(image => (
@@ -44,4 +59,8 @@ export default () => {
       </div>
     </div>
   )
+  }
+
+  
 }
+
