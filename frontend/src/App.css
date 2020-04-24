@@ -107,6 +107,13 @@ a.button {
   font-size: 20px;
 }
 
+.button.gallery{
+  color: blue;
+  background: #eadb98;
+  border: none;
+  padding: 15px;
+}
+
 button:focus,
 a.button:focus {
   box-shadow: 0 0 4px rgba(23, 65, 252, 0.2);
