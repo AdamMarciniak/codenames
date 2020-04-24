@@ -14,6 +14,9 @@ const Menu = () => {
           <Link className="button join" to="/join">
             Join an existing game
           </Link>
+          <Link className="button gallery" to="/gallery">
+            Avatar Gallery (Warning: NSFW)
+          </Link>
         </div>
       </div>
     </div>
