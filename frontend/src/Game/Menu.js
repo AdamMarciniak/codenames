@@ -6,6 +6,8 @@ const Menu = () => {
   return (
     <div className="menu-wrap">
       <SquigglyText>Those.Codes</SquigglyText>
+      <p style={{margin: '10px 10px', textAlign:'center', color:'grey'}}>A codenames clone you can play with friends!</p>
+      <p style={{margin: '0 10px 30px 10px',textAlign:'center', color:'grey'}}> Needs at least 4 players.</p>
       <div className="form-wrap">
         <div className="form">
           <Link className="button new" to="/new">
