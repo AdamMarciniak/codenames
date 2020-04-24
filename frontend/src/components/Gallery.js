@@ -6,8 +6,6 @@ import './Gallery.css'
 
 const GalleryImage = props => {
   const canvasRef = useRef(null);
-
-
   useEffect(() => {
     const ctx = canvasRef.current.getContext('2d');
     drawAvatar(props.image, ctx)
