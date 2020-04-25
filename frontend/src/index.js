@@ -6,6 +6,19 @@ import * as serviceWorker from "./serviceWorker";
 import { createBrowserHistory } from "history";
 const history = createBrowserHistory();
 
+const AntiIframeComponent = () => (
+  <>
+  <h1>Shit!</h1>
+  <h2>
+    Unfortunately, this website has stolen our game without asking us so we can't let you see it. Have a nice day.
+  </h2>
+  <h1>блять!</h1>
+  <h2>
+    К сожалению, этот сайт украл нашу игру, не спросив нас, поэтому мы не можем позволить вам увидеть ее. Хорошего дня.
+  </h2>
+  </>
+)
+
 function inIframe () {
     try {
         return window.self !== window.top;
@@ -17,7 +30,7 @@ function inIframe () {
 
   ReactDOM.render(
   <React.StrictMode>
-  {inIframe() ? <h1>Cyka Blyat</h1> : <App history={history} /> }
+  {inIframe() ? <AntiIframeComponent/> : <App history={history} /> }
   </React.StrictMode>,
   document.getElementById("root")
   );
