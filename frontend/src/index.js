@@ -14,17 +14,17 @@ function inIframe () {
     }
 }
 
-if (inIframe) {
+if (ionIframe()) {
   ReactDOM.render(
   <React.StrictMode>
-    <App history={history} />
+    <h1>CYKA BLYAT</h1>
   </React.StrictMode>,
   document.getElementById("root")
 );
 } else{
   ReactDOM.render(
   <React.StrictMode>
-    <h1>CYKA BLYAT</h1>
+    <App history={history} />
   </React.StrictMode>,
   document.getElementById("root")
 );
