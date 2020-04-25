@@ -16,6 +16,9 @@ const AntiIframeComponent = () => (
   <h2>
     К сожалению, этот сайт украл нашу игру, не спросив нас, поэтому мы не можем позволить вам увидеть ее. Хорошего дня.
   </h2>
+  <iframe width="420" height="315"
+src="https://www.youtube.com/watch?v=vWgjqMyP5kk?autoplay=1">
+</iframe>
   </>
 )
 
