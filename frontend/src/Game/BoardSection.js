@@ -44,7 +44,7 @@ const BoardSection = ({ onClick }) => {
   const theirTurn = currentTurn && currentTurn !== currentPlayer.team;
   const canClickCard = window.location.href.includes("god=1") || (yourTurn && !currentPlayer.isCluegiver);
 
-  if (gameState.winner) {
+  if (gameState.winner !== 'NULL') {
     return (
       <section className="game-board" onClick={onClick}>
       <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column'}}>
