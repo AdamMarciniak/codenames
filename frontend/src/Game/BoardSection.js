@@ -1,9 +1,34 @@
-import React from "react";
+import React, { useCallback } from "react";
 import './BoardSection.css';
 import useGameState from '../useGameState';
 import { getCurrentPlayer, getCurrentTurn } from "../gameStateSelectors";
 import Card from '../components/cards/Card';
 import api, { useApiCall } from "../api";
+import Confetti from 'react-confetti';
+
+const winningPhrases = [
+  'You must be so proud to have such a big brain.',
+  'If only Einstein were as smart as you.',
+  'Time to put this moment into a photo album. Go ahead. The losing team can wait.',
+  'Literally nobody ever gets to this stage. You are a god.',
+  
+]
+
+const losingPhrases = [
+  'Is this what your parents raised you for? To lose?',
+  'You poor despicable human.',
+  'Here is a tissue so you can cry into it.',
+  'Codenames? More like code LAME. Back me up Sam.'
+]
+
+const phrases = {
+  'win': winningPhrases,
+  'lose': losingPhrases,
+}
+
+const randomPhrase = (winState) => {
+    return phrases[winState][Math.floor(Math.random() * phrases[winState].length)];
+}
 
 const TEAM_NAMES = {
   RED: 'Red Team',
@@ -11,16 +36,40 @@ const TEAM_NAMES = {
 };
 
 const BoardSection = ({ onClick }) => {
-  const [gameState] = useGameState();
+  const [gameState] = useGameState(null);
   const currentPlayer = getCurrentPlayer(gameState);
   const currentTurn = getCurrentTurn(gameState);
   const [endTurn, endingTurn] = useApiCall('endTurn');
-
   const yourTurn = currentTurn === currentPlayer.team;
   const theirTurn = currentTurn && currentTurn !== currentPlayer.team;
   const canClickCard = window.location.href.includes("god=1") || (yourTurn && !currentPlayer.isCluegiver);
 
+  if (gameState.winner) {
+    return (
+      <section className="game-board" onClick={onClick}>
+      <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column'}}>
+        {currentPlayer.team === gameState.winner ?
+          <>  
+            <Confetti/>
+            <h1>You won!</h1>
+            <h2 style={{textAlign:'center'}}>{randomPhrase('win')}</h2>
+          </> :
+          <>
+          <h1>You lost :(</h1>
+          <h1 style={{textAlign:'center'}}>{randomPhrase('lose')}</h1>
+          </>}
+      </div>
+      <div className="game-card-wrap">
+        
+      </div>
+      <footer className="game-footer">
+      </footer>
+    </section>
+    )
+  }
+
   return (
+    
     <section className="game-board" onClick={onClick}>
       <header className="game-header">
         {yourTurn && <div className="game-turn-readout your-turn">It's your turn!</div>}
