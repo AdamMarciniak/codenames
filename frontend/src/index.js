@@ -14,21 +14,14 @@ function inIframe () {
     }
 }
 
-if (ionIframe()) {
+
   ReactDOM.render(
   <React.StrictMode>
-    <h1>CYKA BLYAT</h1>
+  {inIframe() ? <h1>Cyka Blyat</h1> : <App history={history} /> }
   </React.StrictMode>,
   document.getElementById("root")
-);
-} else{
-  ReactDOM.render(
-  <React.StrictMode>
-    <App history={history} />
-  </React.StrictMode>,
-  document.getElementById("root")
-);
-}
+  );
+
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
