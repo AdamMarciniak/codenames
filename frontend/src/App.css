@@ -100,6 +100,7 @@ a.button {
   text-align: center;
   outline: none;
   cursor: pointer;
+  overflow: hidden;
 }
 
 .button.new {
@@ -107,7 +108,7 @@ a.button {
   font-size: 20px;
 }
 
-.button.gallery{
+.button.gallery {
   color: blue;
   background: #eadb98;
   border: none;
