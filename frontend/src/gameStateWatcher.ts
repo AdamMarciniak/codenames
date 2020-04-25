@@ -1,8 +1,9 @@
 import { socket } from './api'
+import type Gamestate from '../types/.d'
 
-const gameStateListeners = [];
+const gameStateListeners : any[] = [];
 
-let currentGameState = null;
+let currentGameState : Gamestate  = null;
 
 const receiveState = (state) => {
   currentGameState = state;
