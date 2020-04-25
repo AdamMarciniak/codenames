@@ -6,14 +6,29 @@ import * as serviceWorker from "./serviceWorker";
 import { createBrowserHistory } from "history";
 const history = createBrowserHistory();
 
-console.log("Welcome to the game, friends.");
+function inIframe () {
+    try {
+        return window.self !== window.top;
+    } catch (e) {
+        return true;
+    }
+}
 
-ReactDOM.render(
+if (inIframe) {
+  ReactDOM.render(
   <React.StrictMode>
     <App history={history} />
   </React.StrictMode>,
   document.getElementById("root")
 );
+} else{
+  ReactDOM.render(
+  <React.StrictMode>
+    <h1>CYKA BLYAT</h1>
+  </React.StrictMode>,
+  document.getElementById("root")
+);
+}
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
