@@ -293,9 +293,10 @@ const getGameStateForPlayer = async (playerId) => {
     winner = 'RED';
   } else if (blueWon && !redWon) {
     winner = 'BLUE';
-  } else if (redWon && blueWon) {
-    throw new Error('Bad gamestate - both teams won');
   }
+
+  // if both teams win, just treat it as an un-won game.
+  // if we throw an error here it might cause problems for people returning ot old games.
 
   await query('COMMIT');
 
