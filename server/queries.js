@@ -164,10 +164,9 @@ const getGameStateForPlayer = async (playerId) => {
     INNER JOIN game_words
     ON game_words.word_id = moves.word_id
 
-    WHERE
-      player_id IN (
-        SELECT id FROM players WHERE room_id = $1
-      )
+    WHERE moves.game_id = $1
+
+    AND game_words.game_id = $1
 
     AND (
       is_turn_end = true
@@ -176,7 +175,7 @@ const getGameStateForPlayer = async (playerId) => {
       OR
       (players.team = 'BLUE' AND game_words.type != 'BLUE')
     )
-  `, [roomId])).rows[0].count;
+  `, [gameId])).rows[0].count;
 
   let currentTurn;
   if (startingTeam === 'RED') {
