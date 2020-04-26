@@ -88,8 +88,8 @@ const BoardSection = ({ onClick }) => {
           </> :
           <>
           <Confetti numberOfPieces={50}colors={['#6b6b6b']} drawShape={ctx => {
-            ctx.font = "40px Fredoka One";
-            ctx.fillText("BOO", 10, 50);
+            ctx.font = "30px Fredoka One";
+            ctx.fillText("BOO", 5, 30);
           }}/>
           <h1 style={{fontSize:'2rem', margin:'0', marginTop:'10px'}}>You lost</h1>
           <h2 style={{fontSize:'1rem', textAlign:'center', margin:'0'}}>{randomPhrase('lose')}</h2>
