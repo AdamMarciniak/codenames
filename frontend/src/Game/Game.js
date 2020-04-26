@@ -20,7 +20,6 @@ const Game = () => {
       cx(
         'game-view',
         {
-          'you-win': currentPlayerTeam === gameState.winner,
           'red-turn': currentTurn === 'RED' && !gameState.winner,
           'blue-turn': currentTurn === 'BLUE' && !gameState.winner,
           'no-turn': !currentTurn || !!gameState.winner,
