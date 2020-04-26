@@ -8,6 +8,18 @@
   position: relative;
 }
 
+.endgame-text-title {
+  color: #0081ff;
+  font-size: 40px;
+  margin-bottom: 0;
+}
+
+.endgame-text-subtitle {
+  color: #0081ff;
+  font-size: 18px;
+  margin-top: 10px;
+}
+
 .game-turn-readout {
   display: inline-block;
   text-align: center;

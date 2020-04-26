@@ -11,7 +11,7 @@ const winningPhrases = [
   'If only Einstein were as smart as you.',
   'Time to put this moment into a photo album. Go ahead. The losing team can wait.',
   'Literally nobody ever gets to this stage. You are a god.',
-  
+
 ]
 
 const losingPhrases = [
@@ -55,7 +55,7 @@ const BoardSection = ({ onClick }) => {
           clearTimeout(timer)
     }
     }
-   
+
   },[gameState, winner])
 
 
@@ -64,22 +64,26 @@ const BoardSection = ({ onClick }) => {
     return (
       <section className="game-board" onClick={onClick}>
       <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column'}}>
-        {currentPlayer.team === gameState.winner ?
-          <>  
-            <Confetti/>
-            <h1 style={{fontSize:'2rem', margin:'0', marginTop:'10px'}}>You won!</h1>
-            <h2 style={{fontSize:'1rem', textAlign:'center', margin:'0'}}>{randomPhrase('win')}</h2>
-          </> :
-          <>
-          <Confetti numberOfPieces={50}colors={['#6b6b6b']} drawShape={ctx => {
-            ctx.font = "40px Fredoka One";
-            ctx.fillText("BOO", 10, 50);
-          }}/>
-          <h1 style={{fontSize:'2rem', margin:'0', marginTop:'10px'}}>You lost</h1>
-          <h2 style={{fontSize:'1rem', textAlign:'center', margin:'0'}}>{randomPhrase('lose')}</h2>
-          
-          </>
-          }
+        {
+          currentPlayer.team === gameState.winner
+            ? (
+              <>
+                <Confetti/>
+                <h3 className="endgame-text-title">You won!</h3>
+                <h4 className="endgame-text-subtitle">{randomPhrase('win')}</h4>
+              </>
+            )
+            : (
+              <>
+                <Confetti numberOfPieces={50} colors={['#6b6b6b']} drawShape={ctx => {
+                  ctx.font = "40px Fredoka One";
+                  ctx.fillText("BOO", -50, 25);
+                }}/>
+                <h3 className="endgame-text-title">You lost</h3>
+                <h4 className="endgame-text-subtitle">{randomPhrase('lose')}</h4>
+              </>
+            )
+        }
       </div>
       <div className="game-card-wrap">
         {gameState.words.map((word) => (
@@ -104,7 +108,7 @@ const BoardSection = ({ onClick }) => {
   }
 
   return (
-    
+
     <section className="game-board" onClick={onClick}>
       <header className="game-header">
         {yourTurn && <div className="game-turn-readout your-turn">It's your turn!</div>}

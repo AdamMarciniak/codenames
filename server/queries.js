@@ -155,13 +155,26 @@ const getGameStateForPlayer = async (playerId) => {
 
   const numberOfTurnEnds = (await query(`
     SELECT
-      COUNT(id) AS count
-    FROM
-      moves
+      COUNT(moves.id) AS count
+    FROM moves
+
+    INNER JOIN players
+    ON players.id = moves.player_id
+
+    INNER JOIN game_words
+    ON game_words.word_id = moves.word_id
+
     WHERE
+      player_id IN (
+        SELECT id FROM players WHERE room_id = $1
+      )
+
+    AND (
       is_turn_end = true
-    AND player_id IN (
-      SELECT id FROM players WHERE room_id = $1
+      OR
+      (players.team = 'RED' AND game_words.type != 'RED')
+      OR
+      (players.team = 'BLUE' AND game_words.type != 'BLUE')
     )
   `, [roomId])).rows[0].count;
 
@@ -250,9 +263,45 @@ const getGameStateForPlayer = async (playerId) => {
     [gameId]
   )).rows;
 
+  const flippedWords = words.filter(({ flipped }) => flipped);
+  const redFlippedWords = flippedWords.filter(({ type }) => type === 'RED');
+  const blueFlippedWords = flippedWords.filter(({ type }) => type === 'BLUE');
+
+  const assassinFlipperResult = (await query(`
+    SELECT team
+    FROM players
+    WHERE id = (
+      SELECT player_id
+      FROM moves
+      WHERE game_id = $1
+      AND word_id = (
+        SELECT word_id
+        FROM game_words
+        WHERE type = 'ASSASSIN'
+        AND game_id = $1
+      )
+    )
+  `, [gameId]));
+
+  const assassinFlipper = assassinFlipperResult.rows && assassinFlipperResult.rows[0] && assassinFlipperResult.rows[0].team;
+
+  const redWon = assassinFlipper === 'BLUE' || redFlippedWords.length === (startingTeam === 'RED' ? 9 : 8);
+  const blueWon = assassinFlipper === 'RED' || blueFlippedWords.length === (startingTeam === 'BLUE' ? 9 : 8);
+
+  let winner = null;
+
+  if (redWon && !blueWon) {
+    winner = 'RED';
+  } else if (blueWon && !redWon) {
+    winner = 'BLUE';
+  } else if (redWon && blueWon) {
+    throw new Error('Bad gamestate - both teams won');
+  }
+
   await query('COMMIT');
 
   return {
+    winner,
     roomCode,
     currentTurn,
     players,
