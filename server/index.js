@@ -125,7 +125,6 @@ io.on("connection", socket => {
     if (!wordId) {
       return respondError(callback, 400, `The parameter "wordId" is missing or empty. (Must be Number.)`);
     }
-
     await db.addMove(playerId, wordId, isTurnEnd = false);
     onPlayerGameChanged(playerId);
     respondSuccess(callback);
