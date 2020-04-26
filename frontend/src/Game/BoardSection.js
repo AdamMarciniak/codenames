@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import './BoardSection.css';
 import useGameState from '../useGameState';
 import { getCurrentPlayer, getCurrentTurn } from "../gameStateSelectors";
@@ -43,26 +43,61 @@ const BoardSection = ({ onClick }) => {
   const yourTurn = currentTurn === currentPlayer.team;
   const theirTurn = currentTurn && currentTurn !== currentPlayer.team;
   const canClickCard = window.location.href.includes("god=1") || (yourTurn && !currentPlayer.isCluegiver);
+  const [winner, setWinner] = useState(gameState.winner);
+  const [startNewGame, startingNewGame] = useApiCall('startNewGame');
 
-  if (gameState.winner !== 'NULL') {
+  useEffect(() => {
+    if (gameState.winner === 'NULL' && winner !== 'NULL') {
+      setWinner(gameState.winner);
+    } else {
+        const timer = setTimeout(() => setWinner(gameState.winner), 3000)
+        return () => {
+          clearTimeout(timer)
+    }
+    }
+   
+  },[gameState, winner])
+
+
+
+  if (winner !== 'NULL') {
     return (
       <section className="game-board" onClick={onClick}>
       <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column'}}>
         {currentPlayer.team === gameState.winner ?
           <>  
             <Confetti/>
-            <h1>You won!</h1>
-            <h2 style={{textAlign:'center'}}>{randomPhrase('win')}</h2>
+            <h1 style={{fontSize:'2rem', margin:'0', marginTop:'10px'}}>You won!</h1>
+            <h2 style={{fontSize:'1rem', textAlign:'center', margin:'0'}}>{randomPhrase('win')}</h2>
           </> :
           <>
-          <h1>You lost :(</h1>
-          <h1 style={{textAlign:'center'}}>{randomPhrase('lose')}</h1>
-          </>}
+          <Confetti numberOfPieces={50}colors={['#6b6b6b']} drawShape={ctx => {
+            ctx.font = "40px Fredoka One";
+            ctx.fillText("BOO", 10, 50);
+          }}/>
+          <h1 style={{fontSize:'2rem', margin:'0', marginTop:'10px'}}>You lost</h1>
+          <h2 style={{fontSize:'1rem', textAlign:'center', margin:'0'}}>{randomPhrase('lose')}</h2>
+          
+          </>
+          }
       </div>
       <div className="game-card-wrap">
-        
+        {gameState.words.map((word) => (
+          <Card
+            key={word.id}
+            word={word.text}
+            type={word.type}
+            flipped={word.flipped}
+            clickable={canClickCard}
+            showColor={currentPlayer.isCluegiver}
+            onClick={() =>
+              canClickCard && api("revealWord", { wordId: word.id })
+            }
+          />
+        ))}
       </div>
       <footer className="game-footer">
+      <button onClick={startNewGame} className="game-new-button" disabled={startingNewGame}>New Game</button>
       </footer>
     </section>
     )
