@@ -11,6 +11,7 @@
 .winner-section .endgame-text-title,
 .winner-section .endgame-text-subtitle {
   animation: pop-in 1.0s;
+  text-align: center;
 }
 
 @keyframes pop-in {
