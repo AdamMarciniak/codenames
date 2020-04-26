@@ -3,6 +3,7 @@ import { useCallback, useState } from 'react';
 export const socket = io(window.location.hostname + ':6969');
 
 
+
 let index = 0;
 
 const api = (endpoint, params) => {
