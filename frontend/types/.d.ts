@@ -24,5 +24,6 @@ export default interface Gamestate  {
   currentPlayerId: number,
   currentTurn: 'RED' | 'BLUE',
   roomCode: string,
-  words: Word[]
+  words: Word[],
+  winner: 'RED' | 'BLUE' | 'NULL'
 }
