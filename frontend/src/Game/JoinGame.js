@@ -43,7 +43,7 @@ const JoinGame = ({ codeFromURL }) => {
     } else {
       const { playerSecret } = await joinGame();
       cookies.set('secret', playerSecret, { expires: 365 });
-      window.location.href = '/game/' + code;
+      window.location.href = '/game/' + code.toUpperCase();
     }
   };
 
