@@ -161,12 +161,16 @@ const getGameStateForPlayer = async (playerId) => {
     INNER JOIN players
     ON players.id = moves.player_id
 
-    INNER JOIN game_words
+    LEFT OUTER JOIN game_words
     ON game_words.word_id = moves.word_id
 
     WHERE moves.game_id = $1
 
-    AND game_words.game_id = $1
+    AND (
+      game_words.game_id = $1
+      OR
+      game_words.game_id IS NULL
+    )
 
     AND (
       is_turn_end = true
