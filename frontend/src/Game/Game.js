@@ -3,7 +3,7 @@ import './Game.css';
 import useGameState from '../useGameState';
 import cx from 'classnames';
 import PlayerSection from "./PlayerSection";
-import { getCurrentTurn } from '../gameStateSelectors';
+import { getCurrentTurn, getCurrentPlayer } from '../gameStateSelectors';
 import BoardSection from "./BoardSection";
 
 
@@ -14,14 +14,15 @@ const Game = () => {
     return null;
   }
   const currentTurn = getCurrentTurn(gameState);
+  const currentPlayerTeam = getCurrentPlayer(gameState).team;
   return (
     <div className={
       cx(
         'game-view',
         {
-          'red-turn': currentTurn === 'RED',
-          'blue-turn': currentTurn === 'BLUE',
-          'no-turn': !currentTurn,
+          'red-turn': currentTurn === 'RED' && !gameState.winner,
+          'blue-turn': currentTurn === 'BLUE' && !gameState.winner,
+          'no-turn': !currentTurn || !!gameState.winner,
           'hide-player-section': playerSectionMinimized,
         }
       )
