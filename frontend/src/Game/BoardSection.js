@@ -11,7 +11,7 @@ const winningPhrases = [
   'If only Einstein were as smart as you.',
   'Time to put this moment into a photo album. Go ahead. The losing team can wait.',
   'Literally nobody ever gets to this stage. You are a god.',
-  
+
 ]
 
 const losingPhrases = [
@@ -26,8 +26,9 @@ const phrases = {
   'lose': losingPhrases,
 }
 
-const randomPhrase = (winState) => {
-    return phrases[winState][Math.floor(Math.random() * phrases[winState].length)];
+const randomPhrase = (gameState, winState) => {
+  const sumOfWordIds = gameState.words.reduce((sum, {id}) => id + sum, 0);
+  return phrases[winState][sumOfWordIds % phrases[winState].length];
 }
 
 const TEAM_NAMES = {
@@ -43,68 +44,57 @@ const BoardSection = ({ onClick }) => {
   const yourTurn = currentTurn === currentPlayer.team;
   const theirTurn = currentTurn && currentTurn !== currentPlayer.team;
   const canClickCard = window.location.href.includes("god=1") || (yourTurn && !currentPlayer.isCluegiver);
-  const [winner, setWinner] = useState(gameState.winner);
   const [startNewGame, startingNewGame] = useApiCall('startNewGame');
 
-  useEffect(() => {
-    if (gameState.winner === 'NULL' && winner !== 'NULL') {
-      setWinner(gameState.winner);
-    } else {
-        const timer = setTimeout(() => setWinner(gameState.winner), 3000)
-        return () => {
-          clearTimeout(timer)
-    }
-    }
-   
-  },[gameState, winner])
-
-
-
-  if (winner !== 'NULL') {
+  if (gameState.winner) {
     return (
       <section className="game-board" onClick={onClick}>
-      <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column'}}>
-        {currentPlayer.team === gameState.winner ?
-          <>  
-            <Confetti/>
-            <h1 style={{fontSize:'2rem', margin:'0', marginTop:'10px'}}>You won!</h1>
-            <h2 style={{fontSize:'1rem', textAlign:'center', margin:'0'}}>{randomPhrase('win')}</h2>
-          </> :
-          <>
-          <Confetti numberOfPieces={50}colors={['#6b6b6b']} drawShape={ctx => {
-            ctx.font = "40px Fredoka One";
-            ctx.fillText("BOO", 10, 50);
-          }}/>
-          <h1 style={{fontSize:'2rem', margin:'0', marginTop:'10px'}}>You lost</h1>
-          <h2 style={{fontSize:'1rem', textAlign:'center', margin:'0'}}>{randomPhrase('lose')}</h2>
-          
-          </>
+        <div className="winner-section" style={{display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column'}}>
+          {
+            currentPlayer.team === gameState.winner
+              ? (
+                <>
+                  <Confetti/>
+                  <h3 className="endgame-text-title">You won!</h3>
+                  <h4 className="endgame-text-subtitle">{randomPhrase(gameState, 'win')}</h4>
+                </>
+              )
+              : (
+                <>
+                  <Confetti numberOfPieces={50} colors={['#6b6b6b']} drawShape={ctx => {
+                    ctx.font = "40px Fredoka One";
+                    ctx.fillText("BOO", -50, 25);
+                  }}/>
+                  <h3 className="endgame-text-title">You lost</h3>
+                  <h4 className="endgame-text-subtitle">{randomPhrase(gameState, 'lose')}</h4>
+                </>
+              )
           }
-      </div>
-      <div className="game-card-wrap">
-        {gameState.words.map((word) => (
-          <Card
-            key={word.id}
-            word={word.text}
-            type={word.type}
-            flipped={word.flipped}
-            clickable={canClickCard}
-            showColor={currentPlayer.isCluegiver}
-            onClick={() =>
-              canClickCard && api("revealWord", { wordId: word.id })
-            }
-          />
-        ))}
-      </div>
-      <footer className="game-footer">
-      <button onClick={startNewGame} className="game-new-button" disabled={startingNewGame}>New Game</button>
-      </footer>
-    </section>
+        </div>
+        <div className="game-card-wrap">
+          {gameState.words.map((word) => (
+            <Card
+              key={word.id}
+              word={word.text}
+              type={word.type}
+              flipped={word.flipped}
+              clickable={canClickCard}
+              showColor={currentPlayer.isCluegiver}
+              onClick={() =>
+                canClickCard && api("revealWord", { wordId: word.id })
+              }
+            />
+          ))}
+        </div>
+        <footer className="game-footer">
+          <button onClick={startNewGame} className="game-new-button" disabled={startingNewGame}>New Game</button>
+        </footer>
+      </section>
     )
   }
 
   return (
-    
+
     <section className="game-board" onClick={onClick}>
       <header className="game-header">
         {yourTurn && <div className="game-turn-readout your-turn">It's your turn!</div>}
