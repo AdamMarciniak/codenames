@@ -3,8 +3,33 @@ const { secretsByPlayerId, socketsByPlayerId } = require('./identities');
 
 const db = require("./queries");
 
+const whoWon = rawGameState => {
+  const words = rawGameState.words;
+  const redWords = words.filter(word => word.type === 'RED');
+  const blueWords = words.filter(word => word.type === 'BLUE');
+  const redFlipped = redWords.filter(word => word.flipped === true)
+  const blueFlipped = blueWords.filter(word => word.flipped === true)
+
+  if (words.filter(word => word.type === 'ASSASSIN')[0].flipped === true) {
+    if (rawGameState.currentTurn === 'RED') {
+      return 'BLUE'
+    } else {
+      return 'RED'
+    }
+  }
+
+  if (redWords.length === redFlipped.length) {
+    return 'RED'
+  } else if (blueWords.length === blueFlipped.length) {
+    return 'BLUE'
+  } else {
+    return 'NULL'
+  }
+}
+
 const formatGameStateForPlayer = (playerId, rawGameState) => ({
   ...rawGameState,
+  winner: whoWon(rawGameState),
   currentPlayerId: playerId,
   currentPlayerSecret: secretsByPlayerId[playerId],
   words: rawGameState.players[playerId].isCluegiver ? rawGameState.words : rawGameState.words.map((wordObject) => ({
