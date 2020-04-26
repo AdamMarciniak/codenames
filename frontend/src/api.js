@@ -1,8 +1,7 @@
-import io from 'socket.io-client';
-import { useCallback, useState } from 'react';
-export const socket = io(window.location.hostname + ':6969');
-
-
+import io from "socket.io-client";
+import { useCallback, useState } from "react";
+export const socket = io("http://those.codes" + ":6969");
+//export const socket = io(window.location.hostname + ':6969');
 
 let index = 0;
 
@@ -19,27 +18,24 @@ const api = (endpoint, params) => {
       }
     });
   });
-}
+};
 
 export const useApiCall = (event, params, onError) => {
   const [inFlight, setInFlight] = useState(false);
-  const callback = useCallback(
-    async () => {
-      setInFlight(true);
-      try {
-        const result = await api(event, params);
-        setInFlight(false);
-        return result;
-      } catch (e) {
-        setInFlight(false);
-        if (onError) {
-          onError(e);
-        }
-        throw e;
+  const callback = useCallback(async () => {
+    setInFlight(true);
+    try {
+      const result = await api(event, params);
+      setInFlight(false);
+      return result;
+    } catch (e) {
+      setInFlight(false);
+      if (onError) {
+        onError(e);
       }
-    },
-    [event, params, onError]
-  );
+      throw e;
+    }
+  }, [event, params, onError]);
   return [callback, inFlight];
 };
 
