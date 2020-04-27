@@ -34,7 +34,7 @@ const getPlayerId = async (roomCode, secret) => {
   }
 }
 
-const addGameWords = (gameId, wordType, count) => query(
+const addGameWords = (gameId, wordType, count, word_set) => query(
   `
     INSERT INTO game_words (word_id, game_id, type)
     (
@@ -45,11 +45,12 @@ const addGameWords = (gameId, wordType, count) => query(
         FROM game_words
         WHERE game_id = $1
       )
+      AND word_set = $4
       ORDER BY random()
       LIMIT $3
     )
   `,
-  [gameId, wordType, count]
+  [gameId, wordType, count, word_set]
 );
 
 const createRoomAndGame = async (roomCode, currentPlayerName, avatar, currentPlayerSecret, firstTeam) => {
