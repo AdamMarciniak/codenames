@@ -117,10 +117,10 @@ const createGame = async (roomId, firstTeam, withTransaction = false) => {
 
   const gameId = createGameResult.rows[0].id;
 
-  await addGameWords(gameId, firstTeam, 9);
-  await addGameWords(gameId, secondTeam, 8);
-  await addGameWords(gameId, 'NEUTRAL', 7);
-  await addGameWords(gameId, 'ASSASSIN', 1);
+  await addGameWords(gameId, firstTeam, 9, 'DEFAULT');
+  await addGameWords(gameId, secondTeam, 8, 'DEFAULT');
+  await addGameWords(gameId, 'NEUTRAL', 7, 'DEFAULT');
+  await addGameWords(gameId, 'ASSASSIN', 1, 'DEFAULT');
 
   if (withTransaction) {
     await query('COMMIT');
