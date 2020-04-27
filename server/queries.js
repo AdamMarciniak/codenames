@@ -3,7 +3,7 @@ const Pool = require("pg").Pool;
 
 const pool = new Pool(require('./dbConfig'));
 
-const addGameWords = (gameId, wordType, count, table) => pool.query(
+const addGameWords = (gameId, wordType, count, word_set) => pool.query(
   `
     INSERT INTO game_words (word_id, game_id, type)
     (
