@@ -5,7 +5,7 @@ import { getCurrentPlayer, getCurrentTurn } from "../gameStateSelectors";
 import Card from '../components/cards/Card';
 import api, { useApiCall } from "../api";
 import Confetti from 'react-confetti';
-import phrases, {randomPhrase} from './Phrases'
+import {randomPhrase} from './Phrases'
 
 const TEAM_NAMES = {
   RED: 'Red Team',
@@ -15,7 +15,7 @@ const TEAM_NAMES = {
 const ProgressReadout = props => {
   const totalCards = props.gameState.points[props.team].total
   const remainingCards = totalCards - props.gameState.points[props.team].points;
-  
+
   return (
     <div className='points-wrapper' style={{ color:props.color, display:'flex', flexDirection:'column', alignItems:'center',justifyContent:'center'}}>
       <div className='points-progress'>{remainingCards}</div>
@@ -33,65 +33,52 @@ const BoardSection = ({ onClick }) => {
   const yourTurn = currentTurn === currentPlayer.team;
   const theirTurn = currentTurn && currentTurn !== currentPlayer.team;
   const canClickCard = window.location.href.includes("god=1") || (yourTurn && !currentPlayer.isCluegiver);
-  const [winner, setWinner] = useState(gameState.winner);
   const [startNewGame, startingNewGame] = useApiCall('startNewGame');
 
-  useEffect(() => {
-    if (gameState.winner === 'NULL' && winner !== 'NULL') {
-      setWinner(gameState.winner);
-    } else {
-        const timer = setTimeout(() => setWinner(gameState.winner), 2000)
-        return () => {
-          clearTimeout(timer)
-    }
-    }
-   
-  },[gameState, winner])
-
-  if (winner !== 'NULL') {
+  if (gameState.winner) {
     return (
       <section className="game-board" onClick={onClick}>
-      <header className='game-header'>
-        {currentPlayer.team !== 'OBSERVER' && <ProgressReadout color='red' team='red'  gameState={gameState}/>}
-      <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column'}}>
-        {currentPlayer.team === gameState.winner ?
-          <>  
-            <Confetti/>
-            <h1 style={{fontSize:'2rem', margin:'0', marginTop:'10px'}}>You won!</h1>
-            <h2 style={{fontSize:'1rem', textAlign:'center', margin:'0'}}>{randomPhrase('win')}</h2>
-          </> :
-          <>
-          <Confetti numberOfPieces={50}colors={['#6b6b6b']} drawShape={ctx => {
-            ctx.font = "30px Fredoka One";
-            ctx.fillText("BOO", 5, 30);
-          }}/>
-          <h1 style={{fontSize:'2rem', margin:'0', marginTop:'10px'}}>You lost</h1>
-          <h2 style={{fontSize:'1rem', textAlign:'center', margin:'0'}}>{randomPhrase('lose')}</h2>
-          
-          </>
+        <div className="winner-section" style={{display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column'}}>
+          {
+            currentPlayer.team === gameState.winner
+              ? (
+                <>
+                  <Confetti/>
+                  <h3 className="endgame-text-title">You won!</h3>
+                  <h4 className="endgame-text-subtitle">{randomPhrase(gameState, 'win')}</h4>
+                </>
+              )
+              : (
+                <>
+                  <Confetti numberOfPieces={50} colors={['#6b6b6b']} drawShape={ctx => {
+                    ctx.font = "40px Fredoka One";
+                    ctx.fillText("BOO", -50, 25);
+                  }}/>
+                  <h3 className="endgame-text-title">You lost</h3>
+                  <h4 className="endgame-text-subtitle">{randomPhrase(gameState, 'lose')}</h4>
+                </>
+              )
           }
-      </div>
-      {currentPlayer.team !== 'OBSERVER' && <ProgressReadout color='blue' team='blue'  gameState={gameState}/>}
-      </header>
-      <div className="game-card-wrap">
-        {gameState.words.map((word) => (
-          <Card
-            key={word.id}
-            word={word.text}
-            type={word.type}
-            flipped={word.flipped}
-            clickable={canClickCard}
-            showColor={currentPlayer.isCluegiver}
-            onClick={() =>
-              canClickCard && api("revealWord", { wordId: word.id })
-            }
-          />
-        ))}
-      </div>
-      <footer className="game-footer">
-      <button onClick={startNewGame} className="game-new-button" disabled={startingNewGame}>New Game</button>
-      </footer>
-    </section>
+        </div>
+        <div className="game-card-wrap">
+          {gameState.words.map((word) => (
+            <Card
+              key={word.id}
+              word={word.text}
+              type={word.type}
+              flipped={word.flipped}
+              clickable={canClickCard}
+              showColor={currentPlayer.isCluegiver}
+              onClick={() =>
+                canClickCard && api("revealWord", { wordId: word.id })
+              }
+            />
+          ))}
+        </div>
+        <footer className="game-footer">
+          <button onClick={startNewGame} className="game-new-button" disabled={startingNewGame}>New Game</button>
+        </footer>
+      </section>
     )
   }
 
@@ -103,7 +90,7 @@ const BoardSection = ({ onClick }) => {
         {currentPlayer.team !== 'OBSERVER' && theirTurn && <div className="game-turn-readout their-turn">Sit tight, <br />it's {TEAM_NAMES[currentTurn]}'s turn!</div>}
         {currentPlayer.team === 'OBSERVER' && !!currentTurn && <div className="game-turn-readout their-turn">It's {TEAM_NAMES[currentTurn]}'s turn!</div>}
         {currentPlayer.team !== 'OBSERVER' && <ProgressReadout color='blue' team='blue'  gameState={gameState}/>}
-       
+
       </header>
       <div className="game-card-wrap">
         {gameState.words.map((word) => (

@@ -62,6 +62,10 @@ io.on("connection", socket => {
       randomTeam()
     );
 
+    if (!playerId) {
+      return respondError(callback, 500, 'Internal Server Error: Couldn\'t create game');
+    }
+
     registerPlayerSocket(playerId, socket);
     onPlayerGameChanged(playerId);
     respondSuccess(callback, { roomCode, playerSecret });

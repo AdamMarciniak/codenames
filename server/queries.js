@@ -155,15 +155,31 @@ const getGameStateForPlayer = async (playerId) => {
 
   const numberOfTurnEnds = (await query(`
     SELECT
-      COUNT(id) AS count
-    FROM
-      moves
-    WHERE
-      is_turn_end = true
-    AND player_id IN (
-      SELECT id FROM players WHERE room_id = $1
+      COUNT(moves.id) AS count
+    FROM moves
+
+    INNER JOIN players
+    ON players.id = moves.player_id
+
+    LEFT OUTER JOIN game_words
+    ON game_words.word_id = moves.word_id
+
+    WHERE moves.game_id = $1
+
+    AND (
+      game_words.game_id = $1
+      OR
+      game_words.game_id IS NULL
     )
-  `, [roomId])).rows[0].count;
+
+    AND (
+      is_turn_end = true
+      OR
+      (players.team = 'RED' AND game_words.type != 'RED')
+      OR
+      (players.team = 'BLUE' AND game_words.type != 'BLUE')
+    )
+  `, [gameId])).rows[0].count;
 
   let currentTurn;
   if (startingTeam === 'RED') {
@@ -250,9 +266,46 @@ const getGameStateForPlayer = async (playerId) => {
     [gameId]
   )).rows;
 
+  const flippedWords = words.filter(({ flipped }) => flipped);
+  const redFlippedWords = flippedWords.filter(({ type }) => type === 'RED');
+  const blueFlippedWords = flippedWords.filter(({ type }) => type === 'BLUE');
+
+  const assassinFlipperResult = (await query(`
+    SELECT team
+    FROM players
+    WHERE id = (
+      SELECT player_id
+      FROM moves
+      WHERE game_id = $1
+      AND word_id = (
+        SELECT word_id
+        FROM game_words
+        WHERE type = 'ASSASSIN'
+        AND game_id = $1
+      )
+    )
+  `, [gameId]));
+
+  const assassinFlipper = assassinFlipperResult.rows && assassinFlipperResult.rows[0] && assassinFlipperResult.rows[0].team;
+
+  const redWon = assassinFlipper === 'BLUE' || redFlippedWords.length === (startingTeam === 'RED' ? 9 : 8);
+  const blueWon = assassinFlipper === 'RED' || blueFlippedWords.length === (startingTeam === 'BLUE' ? 9 : 8);
+
+  let winner = null;
+
+  if (redWon && !blueWon) {
+    winner = 'RED';
+  } else if (blueWon && !redWon) {
+    winner = 'BLUE';
+  }
+
+  // if both teams win, just treat it as an un-won game.
+  // if we throw an error here it might cause problems for people returning ot old games.
+
   await query('COMMIT');
 
   return {
+    winner,
     roomCode,
     currentTurn,
     players,
