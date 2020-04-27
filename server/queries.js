@@ -34,7 +34,7 @@ const getPlayerId = async (roomCode, secret) => {
   }
 }
 
-const addGameWords = (gameId, wordType, count) => query(
+const addGameWords = (gameId, wordType, count, word_set) => query(
   `
     INSERT INTO game_words (word_id, game_id, type)
     (
@@ -45,11 +45,12 @@ const addGameWords = (gameId, wordType, count) => query(
         FROM game_words
         WHERE game_id = $1
       )
+      AND word_set = $4
       ORDER BY random()
       LIMIT $3
     )
   `,
-  [gameId, wordType, count]
+  [gameId, wordType, count, word_set]
 );
 
 const createRoomAndGame = async (roomCode, currentPlayerName, avatar, currentPlayerSecret, firstTeam) => {
@@ -116,10 +117,10 @@ const createGame = async (roomId, firstTeam, withTransaction = false) => {
 
   const gameId = createGameResult.rows[0].id;
 
-  await addGameWords(gameId, firstTeam, 9);
-  await addGameWords(gameId, secondTeam, 8);
-  await addGameWords(gameId, 'NEUTRAL', 7);
-  await addGameWords(gameId, 'ASSASSIN', 1);
+  await addGameWords(gameId, firstTeam, 9, 'DEFAULT');
+  await addGameWords(gameId, secondTeam, 8, 'DEFAULT');
+  await addGameWords(gameId, 'NEUTRAL', 7, 'DEFAULT');
+  await addGameWords(gameId, 'ASSASSIN', 1, 'DEFAULT');
 
   if (withTransaction) {
     await query('COMMIT');
