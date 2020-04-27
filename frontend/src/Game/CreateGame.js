@@ -39,7 +39,7 @@ const CreateGame = () => {
     } else {
       const {playerSecret, roomCode} = await createRoomAndGame();
       cookies.set('secret', playerSecret, { expires: 365 });
-      window.location.href = '/game/' + roomCode;
+      window.location.href = '/game/' + roomCode.toUpperCase();
     }
   };
 

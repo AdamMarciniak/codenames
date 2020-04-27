@@ -1,4 +1,3 @@
-const { randomString } = require('./utils');
 const Pool = require("pg").Pool;
 
 const pool = new Pool(require('./dbConfig'));
@@ -53,7 +52,7 @@ const addGameWords = (gameId, wordType, count, word_set) => query(
   [gameId, wordType, count, word_set]
 );
 
-const createRoomAndGame = async (roomCode, currentPlayerName, avatar, currentPlayerSecret, firstTeam) => {
+const createRoomAndGame = async (roomCode, currentPlayerName, avatar, currentPlayerSecret, firstTeam, word_set = 'DEFAULT') => {
   await query('BEGIN');
 
   const createRoomResult = await query(
@@ -70,7 +69,7 @@ const createRoomAndGame = async (roomCode, currentPlayerName, avatar, currentPla
 
   const roomId = createRoomResult.rows[0].id
 
-  await createGame(roomId, firstTeam);
+  await createGame(roomId, firstTeam, word_set);
 
   const insertPlayerResult = await query(
     `
@@ -97,7 +96,7 @@ const createRoomAndGame = async (roomCode, currentPlayerName, avatar, currentPla
   return currentPlayerId;
 }
 
-const createGame = async (roomId, firstTeam, withTransaction = false) => {
+const createGame = async (roomId, firstTeam,  word_set =' DEFAULT', withTransaction = false) => {
   const secondTeam = firstTeam === "RED" ? "BLUE" : "RED";
   if (withTransaction) {
     await query('BEGIN');
@@ -117,17 +116,17 @@ const createGame = async (roomId, firstTeam, withTransaction = false) => {
 
   const gameId = createGameResult.rows[0].id;
 
-  await addGameWords(gameId, firstTeam, 9, 'DEFAULT');
-  await addGameWords(gameId, secondTeam, 8, 'DEFAULT');
-  await addGameWords(gameId, 'NEUTRAL', 7, 'DEFAULT');
-  await addGameWords(gameId, 'ASSASSIN', 1, 'DEFAULT');
+  await addGameWords(gameId, firstTeam, 9, word_set);
+  await addGameWords(gameId, secondTeam, 8, word_set);
+  await addGameWords(gameId, 'NEUTRAL', 7, word_set);
+  await addGameWords(gameId, 'ASSASSIN', 1, word_set);
 
   if (withTransaction) {
     await query('COMMIT');
   }
 }
 
-const createNewGame = async (playerId, firstTeam) => {
+const createNewGame = async (playerId, firstTeam, word_set) => {
   await query('BEGIN');
   const roomId = (await query(`SELECT room_id FROM players WHERE id = $1`, [playerId])).rows[0].room_id;
   await query(`
@@ -138,7 +137,7 @@ const createNewGame = async (playerId, firstTeam) => {
     WHERE
       room_id = $1;
   `, [roomId]);
-  await createGame(roomId, firstTeam);
+  await createGame(roomId, firstTeam, word_set);
   await query('COMMIT');
 }
 
