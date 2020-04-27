@@ -152,8 +152,8 @@ io.on("connection", socket => {
     respondSuccess(callback, avatar);
   });
 
-  authenticatedEndpoint(socket, "startNewGame", async (playerId, {word_set = 'DEFAULT'}, callback) => {
-    await db.createNewGame(playerId, randomTeam(), word_set);
+  authenticatedEndpoint(socket, "startNewGame", async (playerId, callback) => {
+    await db.createNewGame(playerId, randomTeam(), word_set = 'DEFAULT');
 
     onPlayerGameChanged(playerId);
     respondSuccess(callback);
