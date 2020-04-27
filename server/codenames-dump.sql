@@ -320,7 +320,8 @@ ALTER SEQUENCE public.secrets_playerid_seq OWNED BY public.secrets.playerid;
 
 CREATE TABLE public.words (
     id integer NOT NULL,
-    text character varying(40) NOT NULL
+    text character varying(40) NOT NULL,
+    word_set character varying(40) NOT NULL
 );
 
 
@@ -475,7 +476,7 @@ ALTER TABLE ONLY public.words
 --
 
 ALTER TABLE ONLY public.words
-    ADD CONSTRAINT words_text_key UNIQUE (text);
+    ADD CONSTRAINT words_text_key UNIQUE (text, word_set);
 
 
 --
