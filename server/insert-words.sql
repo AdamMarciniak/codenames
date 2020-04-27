@@ -785,7 +785,8 @@ INSERT INTO public.words (text, word_set) VALUES
 ('Pipe','NSFW'),
 ('Pink','NSFW'),
 ('Pimp','NSFW'),
-('Pig','NSFW');
+('Pig','NSFW')
+ON CONFLICT (text, word_set) DO NOTHING;
 
 
 
