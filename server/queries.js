@@ -3,7 +3,7 @@ const Pool = require("pg").Pool;
 
 const pool = new Pool(require('./dbConfig'));
 
-const addGameWords = (gameId, wordType, count) => pool.query(
+const addGameWords = (gameId, wordType, count, table) => pool.query(
   `
     INSERT INTO game_words (word_id, game_id, type)
     (
@@ -14,11 +14,12 @@ const addGameWords = (gameId, wordType, count) => pool.query(
         FROM game_words
         WHERE game_id = $1
       )
+      AND word_set = $4
       ORDER BY random()
       LIMIT $3
     )
   `,
-  [gameId, wordType, count]
+  [gameId, wordType, count, word_set]
 );
 
 const createGame = async (gameCode, currentPlayerName, firstTeam) => {
@@ -46,10 +47,10 @@ const createGame = async (gameCode, currentPlayerName, firstTeam) => {
   );
   const currentPlayerId = insertPlayerResult.rows[0].id;
 
-  await addGameWords(gameId, firstTeam, 9);
-  await addGameWords(gameId, secondTeam, 8);
-  await addGameWords(gameId, 'NEUTRAL', 7);
-  await addGameWords(gameId, 'ASSASSIN', 1);
+  await addGameWords(gameId, firstTeam, 9, 'DEFAULT');
+  await addGameWords(gameId, secondTeam, 8, 'DEFAULT');
+  await addGameWords(gameId, 'NEUTRAL', 7, 'DEFAULT');
+  await addGameWords(gameId, 'ASSASSIN', 1, 'DEFAULT');
 
   await pool.query('COMMIT');
 
