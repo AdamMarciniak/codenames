@@ -18,9 +18,7 @@ const ProgressReadout = props => {
 
   return (
     <div className='points-wrapper' style={{ color:props.color, display:'flex', flexDirection:'column', alignItems:'center',justifyContent:'center'}}>
-      <div className='points-progress'>{remainingCards}</div>
-      <div style={{content:'', background: 'red', width: '100%', height:'2px'}}></div>
-      <div className='points-total'>{totalCards}</div>
+      <div className='points-progress'>{remainingCards} {props.team} card{remainingCards === 1 ? '' : 's'} left!</div>
     </div>
   )
 }
@@ -85,11 +83,11 @@ const BoardSection = ({ onClick }) => {
   return (
     <section className="game-board" onClick={onClick}>
       <header className="game-header">
-      {currentPlayer.team !== 'OBSERVER' && <ProgressReadout color='red' team='red'  gameState={gameState}/>}
+      {currentPlayer.team !== 'OBSERVER' && <ProgressReadout color='#ff5454' team='red' gameState={gameState}/>}
         {yourTurn && <div className="game-turn-readout your-turn">It's your turn!</div>}
         {currentPlayer.team !== 'OBSERVER' && theirTurn && <div className="game-turn-readout their-turn">Sit tight, <br />it's {TEAM_NAMES[currentTurn]}'s turn!</div>}
         {currentPlayer.team === 'OBSERVER' && !!currentTurn && <div className="game-turn-readout their-turn">It's {TEAM_NAMES[currentTurn]}'s turn!</div>}
-        {currentPlayer.team !== 'OBSERVER' && <ProgressReadout color='blue' team='blue'  gameState={gameState}/>}
+        {currentPlayer.team !== 'OBSERVER' && <ProgressReadout color='#0081ff' team='blue' gameState={gameState}/>}
 
       </header>
       <div className="game-card-wrap">

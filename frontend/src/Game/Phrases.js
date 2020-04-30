@@ -18,8 +18,7 @@ const phrases = {
   'lose': losingPhrases,
 }
 
-export const randomPhrase = (winState) => {
-    return phrases[winState][Math.floor(Math.random() * phrases[winState].length)];
+export const randomPhrase = (gameState, winState) => {
+  const sumOfWordIds = gameState.words.reduce((sum, {id}) => id + sum, 0);
+  return phrases[winState][sumOfWordIds % phrases[winState].length];
 }
-
-export default phrases;

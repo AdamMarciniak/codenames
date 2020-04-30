@@ -1,8 +1,24 @@
 const { secretsByPlayerId, socketsByPlayerId } = require('./identities');
-
-
 const db = require("./queries");
 
+const getPoints = rawGameState => {
+  const words = rawGameState.words;
+  const redWords = words.filter(word => word.type === 'RED');
+  const blueWords = words.filter(word => word.type === 'BLUE');
+  const redFlippedCount = redWords.filter(word => word.flipped === true).length
+  const blueFlippedCount = blueWords.filter(word => word.flipped === true).length
+
+  return {
+    'red': {
+      'points': redFlippedCount ,
+      'total':redWords.length
+    },
+    'blue': {
+      'points': blueFlippedCount,
+      'total':blueWords.length
+    }
+  }
+}
 
 const formatGameStateForPlayer = (playerId, rawGameState) => ({
   ...rawGameState,
