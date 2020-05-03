@@ -5,36 +5,23 @@ import { getCurrentPlayer, getCurrentTurn } from "../gameStateSelectors";
 import Card from '../components/cards/Card';
 import api, { useApiCall } from "../api";
 import Confetti from 'react-confetti';
-
-const winningPhrases = [
-  'You must be so proud to have such a big brain.',
-  'If only Einstein were as smart as you.',
-  'Time to put this moment into a photo album. Go ahead. The losing team can wait.',
-  'Literally nobody ever gets to this stage. You are a god.',
-
-]
-
-const losingPhrases = [
-  'Is this what your parents raised you for? To lose?',
-  'You poor despicable human.',
-  'Here is a tissue so you can cry into it.',
-  'Codenames? More like code LAME. Back me up Sam.'
-]
-
-const phrases = {
-  'win': winningPhrases,
-  'lose': losingPhrases,
-}
-
-const randomPhrase = (gameState, winState) => {
-  const sumOfWordIds = gameState.words.reduce((sum, {id}) => id + sum, 0);
-  return phrases[winState][sumOfWordIds % phrases[winState].length];
-}
+import {randomPhrase} from './Phrases'
 
 const TEAM_NAMES = {
   RED: 'Red Team',
   BLUE: 'Blue Team'
 };
+
+const ProgressReadout = props => {
+  const totalCards = props.gameState.points[props.team].total
+  const remainingCards = totalCards - props.gameState.points[props.team].points;
+
+  return (
+    <div className='points-wrapper' style={{ color:props.color, display:'flex', flexDirection:'column', alignItems:'center',justifyContent:'center'}}>
+      <div className='points-progress'>{remainingCards} {props.team} card{remainingCards === 1 ? '' : 's'} left!</div>
+    </div>
+  )
+}
 
 const BoardSection = ({ onClick }) => {
   const [gameState] = useGameState(null);
@@ -94,12 +81,14 @@ const BoardSection = ({ onClick }) => {
   }
 
   return (
-
     <section className="game-board" onClick={onClick}>
       <header className="game-header">
+      {currentPlayer.team !== 'OBSERVER' && <ProgressReadout color='#ff5454' team='red' gameState={gameState}/>}
         {yourTurn && <div className="game-turn-readout your-turn">It's your turn!</div>}
         {currentPlayer.team !== 'OBSERVER' && theirTurn && <div className="game-turn-readout their-turn">Sit tight, <br />it's {TEAM_NAMES[currentTurn]}'s turn!</div>}
         {currentPlayer.team === 'OBSERVER' && !!currentTurn && <div className="game-turn-readout their-turn">It's {TEAM_NAMES[currentTurn]}'s turn!</div>}
+        {currentPlayer.team !== 'OBSERVER' && <ProgressReadout color='#0081ff' team='blue' gameState={gameState}/>}
+
       </header>
       <div className="game-card-wrap">
         {gameState.words.map((word) => (

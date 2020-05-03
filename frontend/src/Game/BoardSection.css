@@ -110,6 +110,12 @@
   justify-content: center;
 }
 
+.points-wrapper {
+  text-align: center;
+  margin: 0 50px 0 50px;
+  font-size: 20px;
+}
+
 @media screen and (max-height: 960px), (max-width: 1200px) {
   .game-card-wrap {
     width: calc(100vw - 290px);
@@ -120,6 +126,10 @@
 @media screen and (max-width: 860px) {
   .game-board {
     padding: 10px 10px 10px 60px;
+  }
+
+  .points-wrapper {
+    margin: 0 20px 0 20px;
   }
 
   .game-card-wrap {

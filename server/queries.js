@@ -378,7 +378,6 @@ const isValidroomCode = async roomCode => {
   )).rows[0]
 };
 
-
 const addMove = async (playerId, wordId, isTurnEnd) => {
   await query(
     `

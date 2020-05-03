@@ -14,7 +14,6 @@ const Game = () => {
     return null;
   }
   const currentTurn = getCurrentTurn(gameState);
-  const currentPlayerTeam = getCurrentPlayer(gameState).team;
   return (
     <div className={
       cx(
