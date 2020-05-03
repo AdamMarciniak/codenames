@@ -19,6 +19,10 @@ interface Players  {
   [id: number] : Player
 }
 
+interface Points {
+  [team: 'blue' | 'red'] : { points: number, total: number}
+}
+
 export default interface Gamestate  {
   avatars : Avatar[],
   currentPlayerId: number,
@@ -26,4 +30,5 @@ export default interface Gamestate  {
   roomCode: string,
   words: Word[],
   winner: 'RED' | 'BLUE' | 'NULL'
+  points: Points
 }

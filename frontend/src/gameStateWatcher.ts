@@ -24,11 +24,11 @@ socket.on('gameState', (newGameState) => {
   }
 });
 
-export const addListener = (listener) => {
+export const addListener = (listener: (newGameState: Gamestate) => any) => {
   gameStateListeners.push(listener);
 }
 
-export const removeListener = (listener) => {
+export const removeListener = (listener: (newGameState: Gamestate) => any) => {
   gameStateListeners.splice(gameStateListeners.indexOf(listener), 1);
 }
 

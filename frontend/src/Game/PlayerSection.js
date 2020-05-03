@@ -2,7 +2,7 @@ import React, { useMemo, useCallback } from "react";
 import './PlayerSection.css';
 import { copyContents } from "./utils";
 import PlayerAvatar from "./PlayerAvatar";
-import useGameState from '../useGameState';
+import useGameState from '../useGameState.ts';
 import cx from 'classnames';
 import { getPlayer, getCurrentPlayer, getTeamPlayers, getCanSwitchTeams } from "../gameStateSelectors";
 import { useApiCall } from "../api";

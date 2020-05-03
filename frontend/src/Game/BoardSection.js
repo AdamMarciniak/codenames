@@ -1,6 +1,6 @@
 import React from "react";
 import './BoardSection.css';
-import useGameState from '../useGameState';
+import useGameState from '../useGameState.ts';
 import { getCurrentPlayer, getCurrentTurn } from "../gameStateSelectors";
 import Card from '../components/cards/Card';
 import api, { useApiCall } from "../api";

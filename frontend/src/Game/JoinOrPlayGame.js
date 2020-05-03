@@ -1,5 +1,5 @@
 import React, { useEffect, useCallback } from "react";
-import useGameState from "../useGameState";
+import useGameState from "../useGameState.ts";
 import api, { socket } from "../api";
 import Game from './Game';
 import cookies from 'browser-cookies';

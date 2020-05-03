@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import './Game.css';
-import useGameState from '../useGameState';
+import useGameState from '../useGameState.ts';
 import cx from 'classnames';
 import PlayerSection from "./PlayerSection";
 import { getCurrentTurn } from '../gameStateSelectors';

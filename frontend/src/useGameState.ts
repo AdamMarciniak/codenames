@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
-import { addListener, removeListener, getCurrentGameState } from "./gameStateWatcher";
+import { addListener, removeListener, getCurrentGameState } from "./gameStateWatcher.ts";
+import type Gamestate from '../types/.d'
 
-let globalHasFetched = false;
+let globalHasFetched: boolean = false;
 
 export default () => {
   const [gameState, setGameState] = useState(getCurrentGameState());
@@ -10,7 +11,7 @@ export default () => {
     globalHasFetched = true;
     setHasFetched(true);
     setGameState(getCurrentGameState());
-    const listener = (newGameState) => {
+    const listener = (newGameState : Gamestate) => {
       setGameState(newGameState);
     };
     addListener(listener);
