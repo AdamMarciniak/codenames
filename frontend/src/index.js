@@ -19,6 +19,7 @@ const AntiIframeComponent = () => (
     </h2>
     <a
       style={{ fontSize: "40px", textDecoration: "underline" }}
+      target="_blank"
       href="http://those.codes"
     >
       http://those.codes
