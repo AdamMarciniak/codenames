@@ -11,11 +11,11 @@ const AntiIframeComponent = () => (
     <h1>Woops!</h1>
     <h2>
       Unfortunately, this website has stolen our game without asking us. So
-      please visit us directly at:
+      please visit us directly for an ad-free expreience at:
     </h2>
     <h2>
-      К сожалению, этот сайт украл нашу игру, не спрашивая нас. Поэтому,
-      пожалуйста, посетите нас по адресу:
+      К сожалению, этот сайт украл нашу игру, не спрашивая нас. Так Пожалуйста,
+      посетите нас непосредственно для ознакомления без рекламы на:
     </h2>
     <a
       style={{ fontSize: "40px", textDecoration: "underline" }}
