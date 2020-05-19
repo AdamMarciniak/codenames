@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { addListener, removeListener, getCurrentGameState } from "./gameStateWatcher.ts";
+import { addListener, removeListener, getCurrentGameState } from "./gameStateWatcher";
 import type Gamestate from '../types/.d'
 
 let globalHasFetched: boolean = false;
