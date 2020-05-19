@@ -9,10 +9,20 @@ const CreateGame = () => {
   const [name, setName] = useState("");
   const [error, setError] = useState(null);
   const secret = useMemo(() => cookies.get('secret'), []);
-  const [createRoomAndGame, creatingGame] = useApiCall('createRoomAndGame', { name, avatar, secret }, setError);
+  const [wordSet, setWordSet] = useState('DEFAULT');
+
+  const [createRoomAndGame, creatingGame] = useApiCall('createRoomAndGame', { name, avatar, secret, word_set: wordSet }, setError);
   const [hasCreatedGame, setHasCreatedGame] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [modalText, setModalText] = useState("");
+
+  const handleNSFWClick = () => {
+    if (wordSet === 'DEFAULT') {
+      setWordSet('NSFW');
+    } else {
+      setWordSet('DEFAULT');
+    }
+  }
 
   useEffect(() => {
     if (creatingGame) {
@@ -39,7 +49,7 @@ const CreateGame = () => {
     } else {
       const {playerSecret, roomCode} = await createRoomAndGame();
       cookies.set('secret', playerSecret, { expires: 365 });
-      window.location.href = '/game/' + roomCode;
+      window.location.href = '/game/' + roomCode.toUpperCase();
     }
   };
 
@@ -57,6 +67,8 @@ const CreateGame = () => {
         </label>
         <p>Draw Yourself!</p>
         <DrawBox setAvatar={setAvatar} />
+        <div>{`Word Set = ${wordSet}`}</div>
+        <button style={{width:'50%', fontSize:'12px'}} onClick={handleNSFWClick}>Toggle NSFW</button>
         <button
           onClick={handleSubmit}
           disabled={creatingGame || hasCreatedGame}

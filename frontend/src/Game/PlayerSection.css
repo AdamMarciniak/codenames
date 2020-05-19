@@ -183,6 +183,11 @@
     width: 43px;
     height: 24.5px;
   }
+
+  .galleryContainer > .avatar-container {
+    width: 172px;
+    height: 98px;
+  }
   .player-avatar-crown {
     margin-left: -3px;
   }

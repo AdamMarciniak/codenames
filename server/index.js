@@ -46,7 +46,7 @@ io.on("connection", socket => {
 
   const randomTeam = () => Math.random() > 0.5 ? "RED" : "BLUE";
 
-  socket.on("createRoomAndGame", async ({ name, avatar, secret }, callback) => {
+  socket.on("createRoomAndGame", async ({ name, avatar, secret, word_set = 'DEFAULT' }, callback) => {
     if (!name) {
       return respondError(callback, 400, `The parameter "name" is missing or empty. (Must be string.)`);
     }
@@ -59,8 +59,13 @@ io.on("connection", socket => {
       name,
       avatar,
       playerSecret,
-      randomTeam()
+      randomTeam(),
+      word_set
     );
+
+    if (!playerId) {
+      return respondError(callback, 500, 'Internal Server Error: Couldn\'t create game');
+    }
 
     registerPlayerSocket(playerId, socket);
     onPlayerGameChanged(playerId);
@@ -125,7 +130,6 @@ io.on("connection", socket => {
     if (!wordId) {
       return respondError(callback, 400, `The parameter "wordId" is missing or empty. (Must be Number.)`);
     }
-
     await db.addMove(playerId, wordId, isTurnEnd = false);
     onPlayerGameChanged(playerId);
     respondSuccess(callback);
@@ -147,8 +151,8 @@ io.on("connection", socket => {
     respondSuccess(callback, avatar);
   });
 
-  authenticatedEndpoint(socket, "startNewGame", async (playerId, params, callback) => {
-    await db.createNewGame(playerId, randomTeam());
+  authenticatedEndpoint(socket, "startNewGame", async (playerId, callback) => {
+    await db.createNewGame(playerId, randomTeam(), word_set = 'DEFAULT');
 
     onPlayerGameChanged(playerId);
     respondSuccess(callback);

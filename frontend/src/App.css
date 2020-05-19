@@ -2,7 +2,6 @@ html,
 body,
 #root {
   width: 100%;
-  height: 100%;
   margin: 0;
   padding: 0;
 }
@@ -69,6 +68,7 @@ body,
   align-items: center;
   justify-content: center;
   height: 100%;
+  margin-top: 100px;
 }
 
 .form {
@@ -160,7 +160,7 @@ a {
 }
 
 .gallery {
-  overflow: scroll;
+  overflow: hidden;
   width: 100%;
   height: 100%;
 }
@@ -168,8 +168,13 @@ a {
 .galleryContainer {
   display: flex;
   flex-wrap: wrap;
-  overflow: scroll;
+  overflow: hidden;
   background: #6d6da5;
+}
+
+.gallery-avatar-container {
+  width: 172px;
+  height: 98px;
 }
 
 .avatar-canvas-gallery {
@@ -178,7 +183,7 @@ a {
 }
 
 .squigglySvg {
-  margin-top: 20px;
+  margin-top: 10%;
   margin-bottom: 20px;
   fill: currentColor;
   stroke: black;
@@ -218,5 +223,6 @@ a {
 }
 
 .menu-wrap > .form-wrap {
-  margin-bottom: 30px;
+  margin-bottom: 20px;
+  margin-top: 0;
 }

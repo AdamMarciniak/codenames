@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 11.5
--- Dumped by pg_dump version 11.5
+-- Dumped from database version 12.1
+-- Dumped by pg_dump version 12.1
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -61,7 +61,7 @@ CREATE TYPE public.team_options AS ENUM (
 
 SET default_tablespace = '';
 
-SET default_with_oids = false;
+SET default_table_access_method = heap;
 
 --
 -- Name: avatars; Type: TABLE; Schema: public; Owner: -
@@ -333,7 +333,8 @@ ALTER SEQUENCE public.secrets_playerid_seq OWNED BY public.secrets.playerid;
 
 CREATE TABLE public.words (
     id integer NOT NULL,
-    text character varying(40) NOT NULL
+    text character varying(40) NOT NULL,
+    word_set character varying(40)
 );
 
 
@@ -496,7 +497,7 @@ ALTER TABLE ONLY public.words
 --
 
 ALTER TABLE ONLY public.words
-    ADD CONSTRAINT words_text_key UNIQUE (text);
+    ADD CONSTRAINT words_text_key UNIQUE (text, word_set);
 
 
 --
