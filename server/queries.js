@@ -1,6 +1,6 @@
 const Pool = require("pg").Pool;
 
-const pool = new Pool(require('./dbConfig'));
+const pool = new Pool(require('./dbConfigTunnel'));
 
 const query = async (...args) => {
   try {
@@ -485,6 +485,33 @@ const getAllImages = async () => {
   )).rows
 }
 
+const getLatestGames = async (limit) => {
+  return (await query(
+    `
+      SELECT * FROM games ORDER BY created_at DESC LIMIT $1
+    `,[limit]
+  )).rows
+}
+
+const getRoomCount = async (numPlayers) => {
+  return (await query(
+    `
+    SELECT
+      count(*)
+    FROM 
+    (
+      SELECT
+        room_id,
+        count(distinct name)
+      FROM players
+      GROUP BY room_id
+      HAVING count(distinct name) > $1
+      ORDER BY count(distinct name) DESC
+    ) AS t;
+    `,[numPlayers]
+  )).rows[0]
+}
+
 module.exports = {
   getPlayerId,
   createGame,
@@ -502,4 +529,6 @@ module.exports = {
   insertAvatar,
   getAvatar,
   getAllImages,
+  getLatestGames,
+  getRoomCount,
 };

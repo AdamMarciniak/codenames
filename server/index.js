@@ -46,6 +46,8 @@ io.on("connection", socket => {
 
   const randomTeam = () => Math.random() > 0.5 ? "RED" : "BLUE";
 
+
+
   socket.on("createRoomAndGame", async ({ name, avatar, secret, word_set = 'DEFAULT' }, callback) => {
     if (!name) {
       return respondError(callback, 400, `The parameter "name" is missing or empty. (Must be string.)`);
@@ -157,4 +159,22 @@ io.on("connection", socket => {
     onPlayerGameChanged(playerId);
     respondSuccess(callback);
   });
+
+    socket.on("getLatestGames", async (limit, callback) => {
+    if (limit < 0) {
+      respondError(callback, 404, 'Limit cannot be less than 0')
+    } else {
+      const gamesResult = await db.getLatestGames(limit);
+      respondSuccess(callback, gamesResult);
+    }
+  })
+
+    socket.on("getRoomCount", async (numPlayers, callback) => {
+    if (numPlayers <= 0) {
+      respondError(callback, 404, 'numPlayers cannot be less than or 0')
+    } else {
+      const roomCount = await db.getRoomCount(numPlayers);
+      respondSuccess(callback, roomCount);
+    }
+  })
 });
