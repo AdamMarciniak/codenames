@@ -493,23 +493,40 @@ const getLatestGames = async (limit) => {
   )).rows
 }
 
-const getRoomCount = async (numPlayers) => {
+const getRooms = async (minPlayerCount) => {
   return (await query(
     `
-    SELECT
-      count(*)
-    FROM 
-    (
       SELECT
+        b.room_id, rooms.code, rooms.created_at, b.count
+      FROM (
+        SELECT
         room_id,
         count(distinct name)
-      FROM players
-      GROUP BY room_id
-      HAVING count(distinct name) > $1
-      ORDER BY count(distinct name) DESC
-    ) AS t;
-    `,[numPlayers]
-  )).rows[0]
+        FROM players
+        GROUP BY room_id
+        HAVING count(distinct name) > $1
+        ORDER BY count(distinct name) DESC) as b 
+      INNER JOIN rooms ON b.room_id = rooms.id ORDER BY count DESC;
+    `,[minPlayerCount]
+  )).rows
+}
+
+const getLatestRooms = async (limit) => {
+  return (await query(
+    `
+    SELECT * FROM
+      (
+        SELECT DISTINCT ON (rooms.code) rooms.code, rooms.id, b.last_updated_at
+        FROM (
+          SELECT games.room_id, moves.last_updated_at
+          FROM moves
+          INNER JOIN games ON moves.game_id = games.id
+          ORDER BY last_updated_at ASC) as b 
+        INNER JOIN rooms ON b.room_id = rooms.id ORDER BY rooms.code, b.last_updated_at DESC)
+    AS t
+    ORDER BY t.last_updated_at DESC LIMIT $1;
+    `,[limit]
+  )).rows;
 }
 
 module.exports = {
@@ -530,5 +547,6 @@ module.exports = {
   getAvatar,
   getAllImages,
   getLatestGames,
-  getRoomCount,
+  getRooms,
+  getLatestRooms,
 };

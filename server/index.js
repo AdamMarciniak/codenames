@@ -147,20 +147,17 @@ io.on("connection", socket => {
     if (!id) {
       return respondError(callback, 400, `The parameter "id" is missing or empty. (Must be Number.)`);
     }
-
     const avatar = await db.getAvatar(id);
-
     respondSuccess(callback, avatar);
   });
 
   authenticatedEndpoint(socket, "startNewGame", async (playerId, callback) => {
     await db.createNewGame(playerId, randomTeam(), word_set = 'DEFAULT');
-
     onPlayerGameChanged(playerId);
     respondSuccess(callback);
   });
 
-    socket.on("getLatestGames", async (limit, callback) => {
+  socket.on("getLatestGames", async (limit, callback) => {
     if (limit < 0) {
       respondError(callback, 404, 'Limit cannot be less than 0')
     } else {
@@ -169,12 +166,14 @@ io.on("connection", socket => {
     }
   })
 
-    socket.on("getRoomCount", async (numPlayers, callback) => {
-    if (numPlayers <= 0) {
-      respondError(callback, 404, 'numPlayers cannot be less than or 0')
-    } else {
-      const roomCount = await db.getRoomCount(numPlayers);
-      respondSuccess(callback, roomCount);
-    }
+  socket.on("getRooms", async (minPlayerCount, callback) => {
+    const rooms = minPlayerCount ? await db.getRooms(minPlayerCount) : await db.getRooms(0) ;
+    respondSuccess(callback, rooms);
   })
+
+  socket.on("getLatestRooms", async (limit, callback) => {
+    const latestRooms = limit ? await db.getLatestRooms(limit) : await db.getLatestRooms(100) ;
+    respondSuccess(callback, latestRooms);
+  })
+
 });
