@@ -151,6 +151,17 @@ io.on("connection", socket => {
     respondSuccess(callback, avatar);
   });
 
+  authenticatedEndpoint(socket, "getLatestPlayerWords", async (playerId, {id}, callback) => {
+    if (!playerId) {
+      return respondError(callback, 400, `The parameter "playerId" is missing or empty. (Must be Number.)`);
+    }
+    console.log(playerId);
+    console.log(id);
+    const words = await db.getLatestPlayerWords(playerId);
+    console.log(words);
+    respondSuccess(callback, words);
+  });
+
   authenticatedEndpoint(socket, "startNewGame", async (playerId, callback) => {
     await db.createNewGame(playerId, randomTeam(), word_set = 'DEFAULT');
     onPlayerGameChanged(playerId);

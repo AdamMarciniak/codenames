@@ -222,14 +222,18 @@ const getGameStateForPlayer = async (playerId) => {
     [roomId]
   )).rows
 
+
+
   const players = {};
 
-  playersResult.forEach(({ id, name, team, is_cluegiver }) => {
+  playersResult.forEach(async ({ id, name, team, is_cluegiver }) => {
+    console.log(id, gameId,  await getLatestPlayerWords(id, gameId));
     players[id] = {
       id,
       name,
       team,
       isCluegiver: is_cluegiver,
+      words:  await getLatestPlayerWords(id, gameId),
     };
   });
 
@@ -529,6 +533,22 @@ const getLatestRooms = async (limit) => {
   )).rows;
 }
 
+const getLatestPlayerWords = async (playerId, gameId) => {
+  return (await query(
+    `
+      SELECT
+        DISTINCT ON (word_id) word_id
+      FROM (
+        SELECT *
+        FROM moves
+        WHERE player_id = $1 
+        AND word_id IS NOT NULL
+      ) as t
+      WHERE game_id = $2;
+    `,[playerId, gameId]
+  )).rows;
+}
+
 module.exports = {
   getPlayerId,
   createGame,
@@ -549,4 +569,5 @@ module.exports = {
   getLatestGames,
   getRooms,
   getLatestRooms,
+  getLatestPlayerWords,
 };
