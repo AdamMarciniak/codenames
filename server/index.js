@@ -1,10 +1,32 @@
+const express = require('express')
+const app = express()
+const cors = require('cors')
+const bodyParser = require('body-parser')
 const io = require('./io');
 require('log-timestamp');
 const { randomString } = require("./utils");
 const onPlayerGameChanged = require('./onPlayerGameChanged');
 const { playerIdsBySocketId, registerPlayerSocket, unregisterSocket } = require('./identities');
-
 const db = require("./queries");
+
+const PORT = 8002;
+
+app.use(bodyParser.json())
+app.use(cors())
+
+app.get(
+  ['/new', '/join/:code', '/god', '/join', '/game/*', '/gallery'],
+  (req, res) => {
+      res.sendFile('/var/www/codenames/frontend/buildProduction/index.html')
+    }
+)
+
+app.use('/static', express.static('/var/www/codenames/frontend/buildProduction/static'))
+
+app.get('/', (req, res) => {
+    app.use(express.static('/var/www/codenames/frontend/buildProduction'))
+    res.sendFile('/var/www/codenames/frontend/buildProduction/index.html')
+})
 
 const respondSuccess = (callback, result) => callback(null, result);
 const respondError = (callback, errorCode, errorMessage) => callback({ code: errorCode, message: errorMessage });
@@ -145,16 +167,48 @@ io.on("connection", socket => {
     if (!id) {
       return respondError(callback, 400, `The parameter "id" is missing or empty. (Must be Number.)`);
     }
-
     const avatar = await db.getAvatar(id);
-
     respondSuccess(callback, avatar);
+  });
+
+  authenticatedEndpoint(socket, "getLatestPlayerWords", async (playerId, {id}, callback) => {
+    if (!playerId) {
+      return respondError(callback, 400, `The parameter "playerId" is missing or empty. (Must be Number.)`);
+    }
+    console.log(playerId);
+    console.log(id);
+    const words = await db.getLatestPlayerWords(playerId);
+    console.log(words);
+    respondSuccess(callback, words);
   });
 
   authenticatedEndpoint(socket, "startNewGame", async (playerId, callback) => {
     await db.createNewGame(playerId, randomTeam(), word_set = 'DEFAULT');
-
     onPlayerGameChanged(playerId);
     respondSuccess(callback);
   });
+
+  socket.on("getLatestGames", async (limit, callback) => {
+    if (limit < 0) {
+      respondError(callback, 404, 'Limit cannot be less than 0')
+    } else {
+      const gamesResult = await db.getLatestGames(limit);
+      respondSuccess(callback, gamesResult);
+    }
+  })
+
+  socket.on("getRooms", async (minPlayerCount, callback) => {
+    const rooms = minPlayerCount ? await db.getRooms(minPlayerCount) : await db.getRooms(0) ;
+    respondSuccess(callback, rooms);
+  })
+
+  socket.on("getLatestRooms", async (limit, callback) => {
+    const latestRooms = limit ? await db.getLatestRooms(limit) : await db.getLatestRooms(100) ;
+    respondSuccess(callback, latestRooms);
+  })
+
 });
+
+app.listen(PORT, () => {
+  console.log(`Codenames Server is running on port ${PORT}`)
+})

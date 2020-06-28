@@ -1,6 +1,6 @@
 const Pool = require("pg").Pool;
 
-const pool = new Pool(require('./dbConfig'));
+const pool = new Pool(require('./dbConfigTunnel'));
 
 const query = async (...args) => {
   try {
@@ -222,14 +222,18 @@ const getGameStateForPlayer = async (playerId) => {
     [roomId]
   )).rows
 
+
+
   const players = {};
 
-  playersResult.forEach(({ id, name, team, is_cluegiver }) => {
+  playersResult.forEach(async ({ id, name, team, is_cluegiver }) => {
+    console.log(id, gameId,  await getLatestPlayerWords(id, gameId));
     players[id] = {
       id,
       name,
       team,
       isCluegiver: is_cluegiver,
+      words:  await getLatestPlayerWords(id, gameId),
     };
   });
 
@@ -485,6 +489,66 @@ const getAllImages = async () => {
   )).rows
 }
 
+const getLatestGames = async (limit) => {
+  return (await query(
+    `
+      SELECT * FROM games ORDER BY created_at DESC LIMIT $1
+    `,[limit]
+  )).rows
+}
+
+const getRooms = async (minPlayerCount) => {
+  return (await query(
+    `
+      SELECT
+        b.room_id, rooms.code, rooms.created_at, b.count
+      FROM (
+        SELECT
+        room_id,
+        count(distinct name)
+        FROM players
+        GROUP BY room_id
+        HAVING count(distinct name) > $1
+        ORDER BY count(distinct name) DESC) as b 
+      INNER JOIN rooms ON b.room_id = rooms.id ORDER BY count DESC;
+    `,[minPlayerCount]
+  )).rows
+}
+
+const getLatestRooms = async (limit) => {
+  return (await query(
+    `
+    SELECT * FROM
+      (
+        SELECT DISTINCT ON (rooms.code) rooms.code, rooms.id, b.last_updated_at
+        FROM (
+          SELECT games.room_id, moves.last_updated_at
+          FROM moves
+          INNER JOIN games ON moves.game_id = games.id
+          ORDER BY last_updated_at ASC) as b 
+        INNER JOIN rooms ON b.room_id = rooms.id ORDER BY rooms.code, b.last_updated_at DESC)
+    AS t
+    ORDER BY t.last_updated_at DESC LIMIT $1;
+    `,[limit]
+  )).rows;
+}
+
+const getLatestPlayerWords = async (playerId, gameId) => {
+  return (await query(
+    `
+      SELECT
+        DISTINCT ON (word_id) word_id
+      FROM (
+        SELECT *
+        FROM moves
+        WHERE player_id = $1 
+        AND word_id IS NOT NULL
+      ) as t
+      WHERE game_id = $2;
+    `,[playerId, gameId]
+  )).rows;
+}
+
 module.exports = {
   getPlayerId,
   createGame,
@@ -502,4 +566,8 @@ module.exports = {
   insertAvatar,
   getAvatar,
   getAllImages,
+  getLatestGames,
+  getRooms,
+  getLatestRooms,
+  getLatestPlayerWords,
 };
