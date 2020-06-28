@@ -1,10 +1,32 @@
+const express = require('express')
+const app = express()
+const cors = require('cors')
+const bodyParser = require('body-parser')
 const io = require('./io');
 require('log-timestamp');
 const { randomString } = require("./utils");
 const onPlayerGameChanged = require('./onPlayerGameChanged');
 const { playerIdsBySocketId, registerPlayerSocket, unregisterSocket } = require('./identities');
-
 const db = require("./queries");
+
+const PORT = 8002;
+
+app.use(bodyParser.json())
+app.use(cors())
+
+app.get(
+  ['/new', '/join/:code', '/god', '/join', '/game/*', '/gallery'],
+  (req, res) => {
+      res.sendFile('/var/www/codenames/frontend/buildProduction/index.html')
+    }
+)
+
+app.use('/static', express.static('/var/www/codenames/frontend/buildProduction/static'))
+
+app.get('/', (req, res) => {
+    app.use(express.static('/var/www/codenames/frontend/buildProduction'))
+    res.sendFile('/var/www/codenames/frontend/buildProduction/index.html')
+})
 
 const respondSuccess = (callback, result) => callback(null, result);
 const respondError = (callback, errorCode, errorMessage) => callback({ code: errorCode, message: errorMessage });
@@ -45,8 +67,6 @@ io.on("connection", socket => {
   });
 
   const randomTeam = () => Math.random() > 0.5 ? "RED" : "BLUE";
-
-
 
   socket.on("createRoomAndGame", async ({ name, avatar, secret, word_set = 'DEFAULT' }, callback) => {
     if (!name) {
@@ -188,3 +208,7 @@ io.on("connection", socket => {
   })
 
 });
+
+app.listen(PORT, () => {
+  console.log(`Codenames Server is running on port ${PORT}`)
+})
