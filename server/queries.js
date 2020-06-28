@@ -1,6 +1,6 @@
 const Pool = require("pg").Pool;
 
-const pool = new Pool(require('./dbConfigTunnel'));
+const pool = new Pool(require('./dbConfig'));
 
 const query = async (...args) => {
   try {
