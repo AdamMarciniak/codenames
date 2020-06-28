@@ -9,17 +9,10 @@ const onPlayerGameChanged = require('./onPlayerGameChanged');
 const { playerIdsBySocketId, registerPlayerSocket, unregisterSocket } = require('./identities');
 const db = require("./queries");
 
-const PORT = 8002;
+const PORT = 8003;
 
 app.use(bodyParser.json())
 app.use(cors())
-
-app.get(
-  ['/new', '/join/:code', '/god', '/join', '/game/*', '/gallery'],
-  (req, res) => {
-      res.sendFile('/var/www/codenames/frontend/buildProduction/index.html')
-    }
-)
 
 app.use('/static', express.static('/var/www/codenames/frontend/buildProduction/static'))
 
@@ -27,6 +20,13 @@ app.get('/', (req, res) => {
     app.use(express.static('/var/www/codenames/frontend/buildProduction'))
     res.sendFile('/var/www/codenames/frontend/buildProduction/index.html')
 })
+
+app.get(
+  ['/new', '/join/:code', '/god', '/join', '/game/*', '/gallery'],
+  (req, res) => {
+      res.sendFile('/var/www/codenames/frontend/buildProduction/index.html')
+    }
+)
 
 const respondSuccess = (callback, result) => callback(null, result);
 const respondError = (callback, errorCode, errorMessage) => callback({ code: errorCode, message: errorMessage });
