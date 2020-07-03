@@ -10,20 +10,9 @@ const AntiIframeComponent = () => (
   <>
     <h1>Woops!</h1>
     <h2>
-      Unfortunately, this website has stolen our game without asking us. So
-      please visit us directly for an ad-free experience at:
-    </h2>
-    <h2>
-      К сожалению, этот сайт украл нашу игру, не спрашивая нас. Так пожалуйста,
-      посетите нас напрямую для получения опыта без рекламы на:
-    </h2>
-    <a
-      style={{ fontSize: "40px", textDecoration: "underline" }}
-      target="_blank"
-      href="http://those.codes"
-    >
-      http://those.codes
-    </a>
+      Unfortunately, this website has stolen our game without asking us. 
+      Also, our game is not Codenames. It is Those.codes. We are not affiliated with Codenames.
+    </h2> 
   </>
 );
 

@@ -114,19 +114,7 @@ const PlayerSection = ({ onClick }) => {
         <Roster team={team} key={team} />
       ))}
       <div className="game-control-wrapper" style={{ textAlign: "center" }}>
-        <a
-          href="https://www.buymeacoffee.com/945vaj3"
-          target="_blank"
-          className="game-new-button"
-          style={{
-            fontSize: "15px",
-            textDecoration: "underline",
-            color: "#0051ff",
-            textAlign: "center",
-          }}
-        >
-          Buy us a coffee.
-        </a>
+        
         <button
           onClick={startNewGame}
           className="game-new-button"

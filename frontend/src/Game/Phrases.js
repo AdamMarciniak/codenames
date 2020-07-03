@@ -9,7 +9,6 @@ const losingPhrases = [
   'Is this what your parents raised you for? To lose?',
   'You poor despicable humans.',
   'Here is a tissue so you can cry into it.',
-  'Codenames? More like code LAME. Back me up Sam.',
   'Your cluegiver should be given a stern talking-to.'
 ]
 

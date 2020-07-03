@@ -16,31 +16,12 @@ const CardSVG = ({ outlineColor, word }) => {
         width="346"
         height="229"
         rx="30"
-        fill="#E0D4BE"
-      />
-
-      <rect
-        x="20"
-        y="20"
-        width="306"
-        height="189"
-        rx="20"
-        stroke={outlineColor}
-        strokeWidth={10}
-      />
-
-      <rect
-        x="38"
-        y="112"
-        width="270"
-        height="80"
-        rx="10"
-        fill="white"
+        fill="#FFFFFF"
       />
 
       <text
         x="173"
-        y="165"
+        y="130"
         fontFamily="Montserrat, sans-serif"
         fontWeight="bold"
         fontSize="32"
