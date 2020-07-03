@@ -20,8 +20,6 @@ const api = (endpoint, params) => {
   });
 };
 
-window.api = api;
-
 export const useApiCall = (event, params, onError) => {
   const [inFlight, setInFlight] = useState(false);
   const callback = useCallback(async () => {
