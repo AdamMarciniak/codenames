@@ -24,6 +24,7 @@ app.get('/', (req, res) => {
 app.get(
   ['/new', '/join/:code', '/god', '/join', '/game/*', '/gallery'],
   (req, res) => {
+      console.log('GET');
       res.sendFile('/var/www/codenames/frontend/buildProduction/index.html')
     }
 )
