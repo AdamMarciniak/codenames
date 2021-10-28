@@ -1,6 +1,6 @@
 import io from "socket.io-client";
 import { useCallback, useState } from "react";
-export const socket = io('192.99.54.136:6970');
+export const socket = io('192.99.54.136' + ':6970');
 
 
 let index = 0;
