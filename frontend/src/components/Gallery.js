@@ -26,7 +26,7 @@ const Loader = () => (
   <div className={'loader-wrapper'} style={{display: 'flex', alignItems: 'center', flexDirection:'column'}}>
     <div id={'loader'}/>
     <h1>Loading..</h1>
-    <h3>There are LOTS of drawings</h3>
+    <h3>There are LOTS of avatars. Give it 10 - 20 Seconds. It's worth it ;) </h3>
   </div>
 );
 
