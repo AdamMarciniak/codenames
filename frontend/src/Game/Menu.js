@@ -6,6 +6,7 @@ const Menu = () => {
   return (
     <div className="menu-wrap">
       <SquigglyText>Those.Codes</SquigglyText>
+    <p>Back For a Limited Time Only!<p>
       <p style={{margin: '0 10px 30px 10px',textAlign:'center', color:'grey'}}> Needs at least 4 players.</p>
       <div className="form-wrap">
         <div className="form">
