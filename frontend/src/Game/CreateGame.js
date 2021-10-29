@@ -65,7 +65,7 @@ const CreateGame = () => {
             onChange={(e) => setName(e.currentTarget.value)}
           />
         </label>
-        <p>Draw Yourself!</p>
+        <p>Draw Your Avatar!</p>
         <DrawBox setAvatar={setAvatar} />
         <div>{`Word Set = ${wordSet}`}</div>
         <button style={{width:'50%', fontSize:'12px'}} onClick={handleNSFWClick}>Toggle NSFW</button>
