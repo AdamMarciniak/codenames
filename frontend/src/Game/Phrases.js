@@ -11,7 +11,7 @@ const losingPhrases = [
 //   `It's ok to lose. Frankly, it's kinda lonely at the top.`,
 //   `Here's a tissue you can cry into. Go ahead, the winners can wait.`,
 //   'Your cluegiver should be given a stern talking-to.',
-  `As a loser you owe the winners twenty burpees. Go ahead.... the winners can wait.`
+  `As a loser you owe the winners twenty burpees. Go ahead.... the winners can wait. If your name is Jason you owe thirty.`
 ]
 
 const phrases = {
