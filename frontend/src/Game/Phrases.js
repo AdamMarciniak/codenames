@@ -3,7 +3,7 @@ const winningPhrases = [
 //   'If only Einstein were as smart as you.',
 //   'Time to put this moment into a photo album. Go ahead. The losing team can wait.',
 //   'Literally nobody ever gets to this stage. I applaud your skill.',
-  `As a winner you are entitled to twenty burpees to a given loser of your choosing`
+  `As a winner you are entitled to twenty burpees from a loser of your choosing`
 ]
 
 const losingPhrases = [
