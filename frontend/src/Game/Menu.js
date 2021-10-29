@@ -17,8 +17,9 @@ const Menu = () => {
             Join an existing game
           </Link>
           <Link className="button gallery" to="/gallery">
-            Avatar Gallery (Warning: NSFW)
+            Avatar Gallery (Warning: There are some NSFW Avatars)
           </Link>
+          <p>Made by Adam Marciniak & Sam Watkinson </p>
         </div>
       </div>
     </div>
