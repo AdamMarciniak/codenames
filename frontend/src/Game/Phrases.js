@@ -1,15 +1,17 @@
 const winningPhrases = [
-  'You must be so proud to have such a big brain.',
-  'If only Einstein were as smart as you.',
-  'Time to put this moment into a photo album. Go ahead. The losing team can wait.',
-  'Literally nobody ever gets to this stage. You are a god.',
+//   'You must be so proud to have such a big brain.',
+//   'If only Einstein were as smart as you.',
+//   'Time to put this moment into a photo album. Go ahead. The losing team can wait.',
+//   'Literally nobody ever gets to this stage. I applaud your skill.',
+  `As a winner you are entitled to twenty burpees to a given loser of your choosing`
 ]
 
 const losingPhrases = [
-  'Is this what your parents raised you for? To lose?',
-  'You poor despicable humans.',
-  'Here is a tissue so you can cry into it.',
-  'Your cluegiver should be given a stern talking-to.'
+//   'How does it feel to get your ass kicked?',
+//   `It's ok to lose. Frankly, it's kinda lonely at the top.`,
+//   `Here's a tissue you can cry into. Go ahead, the winners can wait.`,
+//   'Your cluegiver should be given a stern talking-to.',
+  `As a loser you owe the winners twenty burpees. Go ahead.... the winners can wait.`
 ]
 
 const phrases = {
